@@ -668,6 +668,22 @@
         });
       }
     } catch (_) {}
+
+    // เพิ่มเข้า Mailchimp
+    try {
+      await fetch('https://app.us19.list-manage.com/subscribe/post', {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          u: '2a675a53fb5aeaea9267bc6fb',
+          id: '080d907608',
+          EMAIL: email,
+          'b_2a675a53fb5aeaea9267bc6fb_080d907608': ''
+        })
+      });
+    } catch (_) {}
+
     document.getElementById('waitlistForm').style.display = 'none';
     document.getElementById('successMsg').classList.remove('hidden');
   });
