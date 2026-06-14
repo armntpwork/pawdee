@@ -114,41 +114,40 @@
   <span class="text-brand-orange font-bold">PawDee</span> © 2025 · แพลตฟอร์มครบวงจรสำหรับทาสหมาทาสแมว
 </footer>
 
-<!-- Booking Modal -->
+<!-- Coming Soon Modal -->
 <div id="bookModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 hidden">
-  <div class="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl">
-    <div class="flex items-center gap-4 mb-6">
-      <div id="modalAvatar" class="w-16 h-16 rounded-2xl bg-orange-100 flex items-center justify-center text-3xl flex-shrink-0"></div>
-      <div>
-        <h3 id="modalName" class="text-xl font-bold text-gray-900"></h3>
-        <p id="modalService" class="text-sm text-gray-500"></p>
+  <div class="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl text-center">
+    <div class="text-6xl mb-4">🐾</div>
+    <div class="inline-flex items-center gap-2 bg-orange-100 text-brand-orange text-xs font-bold px-3 py-1.5 rounded-full mb-4">
+      <span class="w-2 h-2 bg-brand-orange rounded-full animate-pulse"></span>
+      เร็วๆ นี้
+    </div>
+    <h3 class="text-xl font-extrabold text-gray-900 mb-2">ระบบจองพี่เลี้ยงกำลังมา!</h3>
+    <p class="text-gray-500 text-sm mb-6 leading-relaxed">
+      เราอยู่ระหว่างตรวจสอบและรับรองพี่เลี้ยงทุกคนอย่างละเอียด<br/>
+      เพื่อความปลอดภัยสูงสุดของน้องสัตว์เลี้ยงของคุณ 🐶🐱
+    </p>
+    <div class="bg-orange-50 rounded-2xl p-4 mb-6 text-left space-y-2">
+      <div class="flex items-center gap-2 text-sm text-gray-700">
+        <span class="text-green-500 font-bold">✓</span> ตรวจสอบประวัติพี่เลี้ยงทุกคน
+      </div>
+      <div class="flex items-center gap-2 text-sm text-gray-700">
+        <span class="text-green-500 font-bold">✓</span> ระบบประกันอุบัติเหตุสัตว์เลี้ยง
+      </div>
+      <div class="flex items-center gap-2 text-sm text-gray-700">
+        <span class="text-green-500 font-bold">✓</span> กล้องติดตามแบบ Real-time
       </div>
     </div>
-    <form id="bookingForm" class="space-y-3">
-      <div>
-        <label class="block text-sm font-semibold text-gray-700 mb-1">วันที่ต้องการ</label>
-        <input type="date" id="bookDate" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-brand-orange outline-none font-kanit" required/>
-      </div>
-      <div>
-        <label class="block text-sm font-semibold text-gray-700 mb-1">บริการที่ต้องการ</label>
-        <select id="bookService" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-brand-orange outline-none">
-          <option>รับฝากกลางวัน</option>
-          <option>ค้างคืน</option>
-          <option>พาเดิน</option>
-          <option>ทำความสะอาด</option>
-        </select>
-      </div>
-      <div>
-        <label class="block text-sm font-semibold text-gray-700 mb-1">ข้อความถึงพี่เลี้ยง</label>
-        <textarea id="bookNote" rows="3" placeholder="แนะนำตัว บอกชื่อน้อง และความต้องการพิเศษ..."
-          class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-brand-orange outline-none resize-none text-sm"></textarea>
-      </div>
-      <div id="bookBanner" class="hidden p-3 rounded-xl text-sm font-medium"></div>
-      <div class="flex gap-3 pt-2">
-        <button type="submit" class="flex-1 bg-brand-orange text-white py-3 rounded-xl font-bold hover:bg-brand-orange-deep transition-all">ส่งคำขอจอง</button>
-        <button type="button" id="closeBook" class="px-4 py-3 rounded-xl border-2 border-gray-200 text-gray-600 hover:border-gray-300 font-semibold">ยกเลิก</button>
-      </div>
+    <p class="text-sm text-gray-500 mb-5">แจ้งเตือนเมื่อเปิดให้บริการ กรอกอีเมลได้เลย</p>
+    <form id="notifyForm" class="flex gap-2 mb-4">
+      <input id="notifyEmail" type="email" placeholder="อีเมลของคุณ"
+        class="flex-1 px-4 py-2.5 rounded-xl border-2 border-gray-200 focus:border-brand-orange outline-none text-sm"/>
+      <button type="submit" class="bg-brand-orange text-white px-4 py-2.5 rounded-xl font-bold text-sm hover:bg-brand-orange-deep transition-all flex-shrink-0">
+        แจ้งเตือน
+      </button>
     </form>
+    <div id="notifySuccess" class="hidden text-green-600 text-sm font-medium mb-4">✅ รับทราบแล้ว! จะแจ้งเตือนคุณทันทีที่เปิดให้บริการ</div>
+    <button id="closeBook" class="text-sm text-gray-400 hover:text-gray-600 transition-colors">ปิด</button>
   </div>
 </div>
 
@@ -222,14 +221,8 @@ function renderSitters(list) {
 }
 
 window.openBook = function(id) {
-  const s = allSitters.find(x => x.id === id);
-  if (!s || !s.available) return;
-  currentSitterId = id;
-  document.getElementById('modalAvatar').textContent = s.avatar;
-  document.getElementById('modalName').textContent = s.name;
-  document.getElementById('modalService').textContent = `📍 ${s.area} · ฿${s.price}/วัน`;
-  document.getElementById('bookDate').min = new Date().toISOString().split('T')[0];
-  document.getElementById('bookBanner').classList.add('hidden');
+  document.getElementById('notifySuccess').classList.add('hidden');
+  document.getElementById('notifyEmail').value = '';
   document.getElementById('bookModal').classList.remove('hidden');
 };
 
@@ -237,45 +230,23 @@ document.getElementById('closeBook').addEventListener('click', () => {
   document.getElementById('bookModal').classList.add('hidden');
 });
 
-document.getElementById('bookingForm').addEventListener('submit', async e => {
+document.getElementById('notifyForm').addEventListener('submit', async e => {
   e.preventDefault();
-  const user = getCurrentUser();
-  if (!user) {
-    location.href = 'login.html?next=sitters.html';
-    return;
-  }
+  const email = document.getElementById('notifyEmail').value;
   const btn = e.target.querySelector('button[type=submit]');
-  btn.disabled = true; btn.textContent = 'กำลังส่ง...';
+  btn.disabled = true; btn.textContent = '...';
   try {
     const cfgText = await fetch('./js/firebase-config.js').then(r => r.text());
     const match = cfgText.match(/apiKey:\s*"([^"]+)"/);
     if (match && match[1].startsWith('AIza')) {
       const { db } = await import('./js/firebase-config.js');
       const { collection, addDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-      await addDoc(collection(db, 'bookings'), {
-        sitterId: currentSitterId,
-        userUid: user.uid,
-        userEmail: user.email,
-        date: document.getElementById('bookDate').value,
-        service: document.getElementById('bookService').value,
-        note: document.getElementById('bookNote').value,
-        status: 'pending',
-        createdAt: serverTimestamp()
-      });
+      await addDoc(collection(db, 'notify_list'), { email, page: 'sitters', createdAt: serverTimestamp() });
     }
-    const b = document.getElementById('bookBanner');
-    b.textContent = '✅ ส่งคำขอจองแล้ว! พี่เลี้ยงจะติดต่อกลับภายใน 24 ชั่วโมง';
-    b.className = 'p-3 rounded-xl text-sm font-medium bg-green-50 text-green-700 border border-green-200';
-    b.classList.remove('hidden');
-    setTimeout(() => { document.getElementById('bookModal').classList.add('hidden'); e.target.reset(); }, 3000);
-  } catch (err) {
-    const b = document.getElementById('bookBanner');
-    b.textContent = 'เกิดข้อผิดพลาด กรุณาลองอีกครั้ง';
-    b.className = 'p-3 rounded-xl text-sm font-medium bg-red-50 text-red-700 border border-red-200';
-    b.classList.remove('hidden');
-  } finally {
-    btn.disabled = false; btn.textContent = 'ส่งคำขอจอง';
-  }
+  } catch (_) {}
+  document.getElementById('notifyForm').classList.add('hidden');
+  document.getElementById('notifySuccess').classList.remove('hidden');
+  btn.disabled = false; btn.textContent = 'แจ้งเตือน';
 });
 
 // Filter
