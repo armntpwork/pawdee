@@ -99,18 +99,15 @@
     <div class="flex items-center justify-between h-16">
       <!-- Logo -->
       <a href="#" class="flex items-center gap-2">
-        <div class="w-9 h-9 bg-brand-orange rounded-xl flex items-center justify-center text-white text-xl font-bold shadow-lg">
-          🐾
-        </div>
-        <span class="text-xl font-bold text-gray-900">Paw<span class="text-brand-orange">Dee</span></span>
+        <img src="Pawdee Logo.png" alt="PawDee" class="h-9 w-auto"/>
       </a>
 
       <!-- Desktop Nav -->
       <div class="hidden md:flex items-center gap-8">
         <a href="places.html" class="text-gray-600 hover:text-brand-orange transition-colors font-medium text-sm">🗺️ สถานที่</a>
-        <a href="#features" class="text-gray-600 hover:text-brand-orange transition-colors font-medium text-sm">ฟีเจอร์</a>
+        <a href="sitters.html" class="text-gray-600 hover:text-brand-orange transition-colors font-medium text-sm">🧑 พี่เลี้ยง</a>
+        <a href="emergency.html" class="text-gray-600 hover:text-red-500 transition-colors font-medium text-sm">🚨 คลินิกฉุกเฉิน</a>
         <a href="register-business.html" class="text-gray-600 hover:text-brand-orange transition-colors font-medium text-sm">สำหรับธุรกิจ</a>
-        <a href="#community" class="text-gray-600 hover:text-brand-orange transition-colors font-medium text-sm">ชุมชน</a>
       </div>
 
       <!-- CTA + Auth -->
@@ -652,14 +649,26 @@
   backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
   // Waitlist Form
-  document.getElementById('waitlistForm').addEventListener('submit', (e) => {
+  document.getElementById('waitlistForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = document.getElementById('emailInput').value;
-    if (email) {
-      document.getElementById('waitlistForm').style.display = 'none';
-      document.getElementById('successMsg').classList.remove('hidden');
-      // TODO: ส่งข้อมูลไปยัง backend / Firebase / Mailchimp
-    }
+    const btn = e.target.querySelector('button[type=submit]');
+    btn.disabled = true; btn.textContent = 'กำลังบันทึก...';
+    try {
+      const cfgText = await fetch('./js/firebase-config.js').then(r => r.text());
+      const match = cfgText.match(/apiKey:\s*"([^"]+)"/);
+      if (match && match[1].startsWith('AIza')) {
+        const { db } = await import('./js/firebase-config.js');
+        const { collection, addDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+        await addDoc(collection(db, 'waitlist'), {
+          email,
+          source: 'homepage',
+          createdAt: serverTimestamp()
+        });
+      }
+    } catch (_) {}
+    document.getElementById('waitlistForm').style.display = 'none';
+    document.getElementById('successMsg').classList.remove('hidden');
   });
 
   // Intersection Observer — animate on scroll
