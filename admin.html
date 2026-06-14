@@ -164,6 +164,7 @@
     <div class="flex gap-3">
       <button id="approveBtn" class="flex-1 bg-green-500 text-white py-3 rounded-xl font-bold hover:bg-green-600 transition-all">✓ อนุมัติ</button>
       <button id="rejectBtn" class="flex-1 bg-red-500 text-white py-3 rounded-xl font-bold hover:bg-red-600 transition-all">✗ ปฏิเสธ</button>
+      <button id="deleteBtn" class="px-4 py-3 rounded-xl bg-gray-800 text-white hover:bg-black transition-all font-semibold text-sm">🗑️ ลบ</button>
       <button id="modalClose" class="px-4 py-3 rounded-xl border-2 border-gray-200 text-gray-600 hover:border-gray-300 transition-all font-semibold">ปิด</button>
     </div>
   </div>
@@ -177,7 +178,7 @@ const ADMIN_UIDS = ['WxfVPrYFlVfUMgI4DLqPqTL1LYy2'];
 
 initNavAuth();
 
-let db, collection, query, getDocs, doc, updateDoc, addDoc, serverTimestamp, orderBy, where;
+let db, collection, query, getDocs, doc, updateDoc, addDoc, deleteDoc, serverTimestamp, orderBy, where;
 let currentFilter = 'pending';
 let allDocs = [];
 let currentDocId = null;
@@ -197,7 +198,7 @@ async function initFirestore() {
   const { db: _db } = await import('./js/firebase-config.js');
   const fs = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
   db = _db;
-  ({ collection, query, getDocs, doc, updateDoc, addDoc, serverTimestamp, orderBy, where } = fs);
+  ({ collection, query, getDocs, doc, updateDoc, addDoc, deleteDoc, serverTimestamp, orderBy, where } = fs);
 }
 
 async function loadApplications(status) {
@@ -305,6 +306,24 @@ window.quickAction = async function(id, status) {
   loadApplications(currentFilter);
 };
 
+window.deletePlace = async function(id) {
+  const d = allDocs.find(x => x.id === id);
+  const name = d?.name || 'ร้านนี้';
+  if (!confirm(`ลบ "${name}" ออกจากระบบทั้งหมดใช่ไหม?\nจะลบออกจาก pending_places และ places`)) return;
+
+  // ลบจาก pending_places
+  await deleteDoc(doc(db, 'pending_places', id));
+
+  // ลบจาก places (ค้นหาจากชื่อ)
+  if (d?.name) {
+    const snap = await getDocs(query(collection(db, 'places'), where('name', '==', d.name)));
+    for (const p of snap.docs) await deleteDoc(doc(db, 'places', p.id));
+  }
+
+  document.getElementById('modal').classList.add('hidden');
+  loadApplications(currentFilter);
+};
+
 async function copyToPlaces(d) {
   const placeData = {
     name: d.name || '', type: d.type || 'shop', address: d.address || '',
@@ -328,6 +347,11 @@ document.getElementById('rejectBtn').addEventListener('click', async () => {
   if (!currentDocId) return;
   await quickAction(currentDocId, 'rejected');
   document.getElementById('modal').classList.add('hidden');
+});
+
+document.getElementById('deleteBtn').addEventListener('click', async () => {
+  if (!currentDocId) return;
+  await deletePlace(currentDocId);
 });
 
 document.getElementById('modalClose').addEventListener('click', () => {
