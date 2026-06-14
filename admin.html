@@ -56,7 +56,7 @@
     </div>
 
     <!-- Stats -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
       <div class="stat-card text-center">
         <div id="statPending" class="text-3xl font-extrabold text-yellow-500">—</div>
         <div class="text-sm text-gray-500 mt-1">รอการอนุมัติ</div>
@@ -73,8 +73,21 @@
         <div id="statRejected" class="text-3xl font-extrabold text-red-400">—</div>
         <div class="text-sm text-gray-500 mt-1">ถูกปฏิเสธ</div>
       </div>
+      <div class="stat-card text-center cursor-pointer hover:border-2 hover:border-brand-orange transition-all" id="waitlistStatCard">
+        <div id="statWaitlist" class="text-3xl font-extrabold text-purple-500">—</div>
+        <div class="text-sm text-gray-500 mt-1">Waitlist 📋</div>
+      </div>
     </div>
 
+    <!-- Main Tabs -->
+    <div class="flex gap-2 mb-6 overflow-x-auto">
+      <button class="main-tab active-main px-5 py-2.5 rounded-xl text-sm font-semibold border-2 border-brand-orange bg-brand-orange text-white transition-all" data-panel="places">🏪 สถานที่</button>
+      <button class="main-tab px-5 py-2.5 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 transition-all" data-panel="waitlist">📋 Waitlist</button>
+      <button class="main-tab px-5 py-2.5 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 transition-all" data-panel="notify">🔔 แจ้งเตือนพี่เลี้ยง</button>
+    </div>
+
+    <!-- Panel: สถานที่ -->
+    <div id="panel-places">
     <!-- Filter tabs -->
     <div class="flex gap-2 mb-6 overflow-x-auto">
       <button class="filter-tab active px-5 py-2.5 rounded-xl text-sm font-semibold border-2 border-brand-orange bg-brand-orange text-white transition-all" data-status="pending">รอการอนุมัติ</button>
@@ -90,6 +103,34 @@
         <p>กำลังโหลดข้อมูล...</p>
       </div>
     </div>
+    </div><!-- end panel-places -->
+
+    <!-- Panel: Waitlist -->
+    <div id="panel-waitlist" class="hidden">
+      <div class="flex items-center justify-between mb-4">
+        <p class="text-sm text-gray-500">รายชื่ออีเมลที่สมัคร Waitlist จากหน้าหลัก</p>
+        <button id="exportWaitlist" class="bg-white border-2 border-gray-200 text-gray-700 px-4 py-2 rounded-xl text-sm font-semibold hover:border-brand-orange hover:text-brand-orange transition-all">
+          ⬇️ Export CSV
+        </button>
+      </div>
+      <div id="waitlistList" class="bg-white rounded-2xl shadow-sm overflow-hidden">
+        <div class="text-center py-16 text-gray-400"><div class="text-4xl mb-3">⏳</div><p>กำลังโหลด...</p></div>
+      </div>
+    </div>
+
+    <!-- Panel: แจ้งเตือนพี่เลี้ยง -->
+    <div id="panel-notify" class="hidden">
+      <div class="flex items-center justify-between mb-4">
+        <p class="text-sm text-gray-500">รายชื่ออีเมลที่ขอรับแจ้งเตือนเมื่อระบบพี่เลี้ยงเปิด</p>
+        <button id="exportNotify" class="bg-white border-2 border-gray-200 text-gray-700 px-4 py-2 rounded-xl text-sm font-semibold hover:border-brand-orange hover:text-brand-orange transition-all">
+          ⬇️ Export CSV
+        </button>
+      </div>
+      <div id="notifyList" class="bg-white rounded-2xl shadow-sm overflow-hidden">
+        <div class="text-center py-16 text-gray-400"><div class="text-4xl mb-3">⏳</div><p>กำลังโหลด...</p></div>
+      </div>
+    </div>
+
   </div>
 </main>
 
@@ -110,7 +151,7 @@
 import { onAuthChange, initNavAuth } from './js/auth.js';
 
 // Admin UIDs — เพิ่ม UID ของ admin ที่นี่
-const ADMIN_UIDS = ['REPLACE_WITH_YOUR_FIREBASE_UID'];
+const ADMIN_UIDS = ['WxfVPrYFlVfUMgI4DLqPqTL1LYy2'];
 
 initNavAuth();
 
@@ -127,6 +168,7 @@ onAuthChange(async user => {
   document.getElementById('adminContent').classList.remove('hidden');
   await initFirestore();
   loadApplications('pending');
+  loadWaitlistStat();
 });
 
 async function initFirestore() {
@@ -266,6 +308,105 @@ document.querySelectorAll('.filter-tab').forEach(btn => {
     loadApplications(currentFilter);
   });
 });
+
+// ── Main Tab Switching ────────────────────────────────────────
+const panels = ['places', 'waitlist', 'notify'];
+document.querySelectorAll('.main-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.main-tab').forEach(b => {
+      b.className = 'main-tab px-5 py-2.5 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 transition-all';
+    });
+    btn.className = 'main-tab active-main px-5 py-2.5 rounded-xl text-sm font-semibold border-2 border-brand-orange bg-brand-orange text-white transition-all';
+    panels.forEach(p => document.getElementById('panel-' + p).classList.add('hidden'));
+    const panel = btn.dataset.panel;
+    document.getElementById('panel-' + panel).classList.remove('hidden');
+    if (panel === 'waitlist') loadEmailList('waitlist', 'waitlistList');
+    if (panel === 'notify') loadEmailList('notify_list', 'notifyList');
+  });
+});
+
+document.getElementById('waitlistStatCard').addEventListener('click', () => {
+  document.querySelector('.main-tab[data-panel="waitlist"]').click();
+});
+
+// ── Load Email Lists ──────────────────────────────────────────
+let emailCache = {};
+
+async function loadEmailList(collectionName, elementId) {
+  const el = document.getElementById(elementId);
+  if (emailCache[collectionName]) { renderEmailTable(emailCache[collectionName], elementId, collectionName); return; }
+  el.innerHTML = '<div class="text-center py-12 text-gray-400"><div class="text-3xl mb-2">⏳</div><p>กำลังโหลด...</p></div>';
+  try {
+    const snap = await getDocs(query(collection(db, collectionName), orderBy('createdAt', 'desc')));
+    const rows = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    emailCache[collectionName] = rows;
+    if (collectionName === 'waitlist') document.getElementById('statWaitlist').textContent = rows.length;
+    renderEmailTable(rows, elementId, collectionName);
+  } catch (e) {
+    el.innerHTML = `<div class="p-6 text-red-600 text-sm">เกิดข้อผิดพลาด: ${e.message}</div>`;
+  }
+}
+
+function renderEmailTable(rows, elementId, collectionName) {
+  const el = document.getElementById(elementId);
+  if (rows.length === 0) {
+    el.innerHTML = '<div class="text-center py-12 text-gray-400"><div class="text-3xl mb-2">📭</div><p>ยังไม่มีรายการ</p></div>';
+    return;
+  }
+  el.innerHTML = `
+    <table class="w-full text-sm">
+      <thead class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wide">
+        <tr>
+          <th class="px-5 py-3 text-left">#</th>
+          <th class="px-5 py-3 text-left">อีเมล</th>
+          <th class="px-5 py-3 text-left">แหล่งที่มา</th>
+          <th class="px-5 py-3 text-left">วันที่สมัคร</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        ${rows.map((r, i) => {
+          const date = r.createdAt?.toDate
+            ? r.createdAt.toDate().toLocaleDateString('th-TH', { year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' })
+            : '—';
+          return `<tr class="hover:bg-orange-50 transition-colors">
+            <td class="px-5 py-3 text-gray-400">${i + 1}</td>
+            <td class="px-5 py-3 font-medium text-gray-900">${r.email || '—'}</td>
+            <td class="px-5 py-3 text-gray-500">${r.source || collectionName}</td>
+            <td class="px-5 py-3 text-gray-400">${date}</td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>
+    <div class="px-5 py-3 bg-gray-50 text-xs text-gray-400 border-t border-gray-100">ทั้งหมด ${rows.length} รายการ</div>`;
+}
+
+// ── Export CSV ────────────────────────────────────────────────
+function exportCSV(collectionName, filename) {
+  const rows = emailCache[collectionName];
+  if (!rows || rows.length === 0) { alert('ยังไม่มีข้อมูล'); return; }
+  const header = 'อีเมล,แหล่งที่มา,วันที่สมัคร\n';
+  const csv = header + rows.map(r => {
+    const date = r.createdAt?.toDate ? r.createdAt.toDate().toISOString() : '';
+    return `"${r.email || ''}","${r.source || ''}","${date}"`;
+  }).join('\n');
+  const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+}
+
+document.getElementById('exportWaitlist').addEventListener('click', () => exportCSV('waitlist', 'pawdee-waitlist.csv'));
+document.getElementById('exportNotify').addEventListener('click', () => exportCSV('notify_list', 'pawdee-notify-sitters.csv'));
+
+// โหลด waitlist stat ตอนเริ่ม
+async function loadWaitlistStat() {
+  try {
+    const snap = await getDocs(collection(db, 'waitlist'));
+    document.getElementById('statWaitlist').textContent = snap.size;
+    emailCache['waitlist'] = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  } catch (_) { document.getElementById('statWaitlist').textContent = '—'; }
+}
 </script>
 </body>
 </html>
