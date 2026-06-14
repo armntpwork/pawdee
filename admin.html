@@ -264,7 +264,21 @@ window.quickAction = async function(id, status) {
   await updateDoc(doc(db, 'pending_places', id), { status, updatedAt: serverTimestamp() });
   if (status === 'approved') {
     const d = allDocs.find(x => x.id === id);
-    if (d) await copyToPlaces(d);
+    if (d) {
+      await copyToPlaces(d);
+      fetch('https://hook.us2.make.com/d6vkctkhkk763xd0trwkbsh6w9kmavbn', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          event: 'place_approved',
+          name: d.name,
+          type: d.type,
+          contactName: d.contactName,
+          contactEmail: d.contactEmail,
+          approvedAt: new Date().toLocaleString('th-TH'),
+        })
+      }).catch(() => {});
+    }
   }
   loadApplications(currentFilter);
 };
