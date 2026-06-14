@@ -269,6 +269,54 @@
   </div>
 </main>
 
+<!-- Detail Modal -->
+<div id="placeModal" class="hidden fixed inset-0 z-[200] flex items-end sm:items-center justify-center p-0 sm:p-4">
+  <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" id="modalBackdrop"></div>
+  <div class="relative bg-white w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl overflow-hidden shadow-2xl max-h-[92vh] flex flex-col">
+    <!-- Image -->
+    <div class="relative h-52 bg-gray-100 flex-shrink-0">
+      <img id="modalImg" src="" alt="" class="w-full h-full object-cover"/>
+      <div id="modal24h" class="hidden absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-3 py-1.5 rounded-xl">🚨 24 ชม.</div>
+      <button id="modalClose" class="absolute top-3 right-3 bg-white/90 backdrop-blur rounded-full w-9 h-9 flex items-center justify-center text-gray-700 hover:bg-white shadow-md text-lg">✕</button>
+    </div>
+    <!-- Content -->
+    <div class="overflow-y-auto p-5 flex-1">
+      <div class="flex items-start justify-between gap-3 mb-3">
+        <span id="modalBadge" class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full"></span>
+        <span id="modalVerified" class="hidden inline-flex items-center gap-1 text-xs text-green-600 font-medium">
+          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>Verified
+        </span>
+      </div>
+      <h2 id="modalName" class="text-xl font-extrabold text-gray-900 mb-1"></h2>
+      <p id="modalAddress" class="text-sm text-gray-500 mb-3"></p>
+
+      <div class="grid grid-cols-2 gap-3 mb-4">
+        <div class="bg-orange-50 rounded-2xl p-3">
+          <div class="text-xs text-gray-400 mb-0.5">คะแนน</div>
+          <div class="font-bold text-gray-900">⭐ <span id="modalRating"></span></div>
+          <div id="modalReviews" class="text-xs text-gray-400"></div>
+        </div>
+        <div class="bg-orange-50 rounded-2xl p-3">
+          <div class="text-xs text-gray-400 mb-0.5">เวลาทำการ</div>
+          <div id="modalHours" class="font-semibold text-gray-900 text-sm leading-tight"></div>
+        </div>
+      </div>
+
+      <div id="modalPets" class="mb-4 flex flex-wrap gap-2"></div>
+      <div id="modalWeight" class="hidden mb-3 text-xs text-gray-500"></div>
+    </div>
+    <!-- Actions -->
+    <div class="p-4 border-t border-gray-100 flex gap-3 flex-shrink-0">
+      <a id="modalPhone" href="#" class="hidden flex-1 text-center bg-orange-50 text-brand-orange border border-orange-200 py-3 rounded-2xl font-semibold hover:bg-orange-100 transition-colors">
+        📞 โทรหาร้าน
+      </a>
+      <a id="modalMap" href="#" target="_blank" class="flex-1 text-center bg-brand-orange text-white py-3 rounded-2xl font-semibold hover:bg-brand-orange-deep transition-colors">
+        🗺️ ดูแผนที่
+      </a>
+    </div>
+  </div>
+</div>
+
 <!-- Footer -->
 <footer class="bg-gray-900 text-gray-400 py-10 text-center text-sm mt-16">
   <div class="flex items-center justify-center gap-2 mb-2">
@@ -394,7 +442,7 @@
               <a href="tel:${place.phone}" class="flex-1 text-center bg-orange-50 text-brand-orange border border-orange-200 py-2 rounded-xl text-sm font-semibold hover:bg-orange-100 transition-colors">
                 📞 โทร
               </a>` : ''}
-            <button class="flex-1 bg-brand-orange text-white py-2 rounded-xl text-sm font-semibold hover:bg-brand-orange-deep transition-colors">
+            <button class="detail-btn flex-1 bg-brand-orange text-white py-2 rounded-xl text-sm font-semibold hover:bg-brand-orange-deep transition-colors" data-id="${place.id}">
               ดูรายละเอียด
             </button>
           </div>
@@ -589,6 +637,83 @@
       const q = searchQuery.toLowerCase();
       return matchType && (!q || p.name.toLowerCase().includes(q) || (p.district||'').toLowerCase().includes(q));
     }));
+  });
+
+  // ── Detail Modal ──────────────────────────────────────────────
+  const modal = document.getElementById('placeModal');
+
+  function showDetailModal(place) {
+    const t = TYPE_LABELS[place.type] || { label: place.type, icon: '📍', cls: '' };
+
+    document.getElementById('modalImg').src   = place.imageUrl || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&q=80';
+    document.getElementById('modalImg').alt   = place.name;
+    document.getElementById('modalName').textContent    = place.name;
+    document.getElementById('modalAddress').textContent = `📍 ${place.address || ''}, ${place.district || ''}, ${place.city || ''}`;
+    document.getElementById('modalRating').textContent  = place.rating?.toFixed(1) || '-';
+    document.getElementById('modalReviews').textContent = place.reviewCount ? `${place.reviewCount.toLocaleString()} รีวิว` : '';
+    document.getElementById('modalHours').textContent   = place.openHours || '-';
+
+    const badge = document.getElementById('modalBadge');
+    badge.className = `inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full ${t.cls}`;
+    badge.textContent = `${t.icon} ${t.label}`;
+
+    const verified = document.getElementById('modalVerified');
+    place.verified ? verified.classList.remove('hidden') : verified.classList.add('hidden');
+
+    const emergency = document.getElementById('modal24h');
+    place.emergency24hr ? emergency.classList.remove('hidden') : emergency.classList.add('hidden');
+
+    // สัตว์ที่รับ
+    const petsEl = document.getElementById('modalPets');
+    petsEl.innerHTML = (place.allowedPets || []).map(p =>
+      `<span class="inline-flex items-center gap-1 bg-orange-50 text-orange-700 text-xs font-semibold px-3 py-1.5 rounded-full">${PET_ICONS[p] || '🐾'} ${p === 'dog' ? 'สุนัข' : p === 'cat' ? 'แมว' : p === 'rabbit' ? 'กระต่าย' : p === 'bird' ? 'นก' : p === 'fish' ? 'ปลา' : 'สัตว์อื่นๆ'}</span>`
+    ).join('');
+
+    const weightEl = document.getElementById('modalWeight');
+    if (place.maxWeightKg) {
+      weightEl.textContent = `⚖️ รับน้ำหนักไม่เกิน ${place.maxWeightKg} กก.`;
+      weightEl.classList.remove('hidden');
+    } else {
+      weightEl.classList.add('hidden');
+    }
+
+    // ปุ่มโทร
+    const phoneEl = document.getElementById('modalPhone');
+    if (place.phone) {
+      phoneEl.href = `tel:${place.phone}`;
+      phoneEl.textContent = `📞 ${place.phone}`;
+      phoneEl.classList.remove('hidden');
+    } else {
+      phoneEl.classList.add('hidden');
+    }
+
+    // ปุ่มแผนที่
+    const mapEl = document.getElementById('modalMap');
+    if (place.lat && place.lng) {
+      mapEl.href = `https://www.google.com/maps/search/?api=1&query=${place.lat},${place.lng}`;
+    } else {
+      mapEl.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + (place.city || ''))}`;
+    }
+
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    modal.classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+
+  document.getElementById('modalClose').addEventListener('click', closeModal);
+  document.getElementById('modalBackdrop').addEventListener('click', closeModal);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  // Event delegation บน grid
+  document.getElementById('placesGrid').addEventListener('click', e => {
+    const btn = e.target.closest('.detail-btn');
+    if (!btn) return;
+    const place = allPlaces.find(p => p.id === btn.dataset.id);
+    if (place) showDetailModal(place);
   });
 
   // ── Init ──────────────────────────────────────────────────────
