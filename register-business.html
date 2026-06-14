@@ -271,6 +271,23 @@
 
     try {
       await addDoc(collection(db, 'pending_places'), data);
+
+      // แจ้ง Admin ผ่าน Make.com Webhook
+      fetch('https://hook.us2.make.com/zx56jt2taotthnlyo4kmyy2v2d969uwu', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          event: 'new_business_registration',
+          name: data.name,
+          type: data.type,
+          city: data.city,
+          contactName: data.contactName,
+          contactEmail: data.contactEmail,
+          phone: data.phone,
+          submittedAt: new Date().toLocaleString('th-TH'),
+        })
+      }).catch(() => {}); // ไม่ block ถ้า webhook ล้มเหลว
+
       document.getElementById('bizForm').classList.add('hidden');
       document.getElementById('successState').classList.remove('hidden');
       window.scrollTo({ top: 0, behavior: 'smooth' });
