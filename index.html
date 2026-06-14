@@ -107,20 +107,22 @@
 
       <!-- Desktop Nav -->
       <div class="hidden md:flex items-center gap-8">
+        <a href="places.html" class="text-gray-600 hover:text-brand-orange transition-colors font-medium text-sm">🗺️ สถานที่</a>
         <a href="#features" class="text-gray-600 hover:text-brand-orange transition-colors font-medium text-sm">ฟีเจอร์</a>
-        <a href="#how-it-works" class="text-gray-600 hover:text-brand-orange transition-colors font-medium text-sm">วิธีใช้งาน</a>
-        <a href="#for-business" class="text-gray-600 hover:text-brand-orange transition-colors font-medium text-sm">สำหรับธุรกิจ</a>
+        <a href="register-business.html" class="text-gray-600 hover:text-brand-orange transition-colors font-medium text-sm">สำหรับธุรกิจ</a>
         <a href="#community" class="text-gray-600 hover:text-brand-orange transition-colors font-medium text-sm">ชุมชน</a>
       </div>
 
-      <!-- CTA -->
+      <!-- CTA + Auth -->
       <div class="flex items-center gap-3">
-        <a href="#waitlist" class="hidden sm:inline-flex items-center gap-1 text-sm font-medium text-brand-orange hover:text-brand-orange-deep transition-colors">
-          เข้าสู่ระบบ
-        </a>
-        <a href="#waitlist" class="bg-brand-orange text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-brand-orange-deep transition-all shadow-md hover:shadow-lg">
-          เข้าร่วมก่อนใคร ✨
-        </a>
+        <div id="navAuth">
+          <a href="login.html" class="hidden sm:inline-flex items-center gap-1 text-sm font-medium text-brand-orange hover:text-brand-orange-deep transition-colors">
+            เข้าสู่ระบบ
+          </a>
+          <a href="login.html?tab=signup" class="bg-brand-orange text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-brand-orange-deep transition-all shadow-md hover:shadow-lg">
+            เข้าร่วมก่อนใคร ✨
+          </a>
+        </div>
 
         <!-- Hamburger -->
         <button id="mobileMenuBtn" class="md:hidden p-2 rounded-lg hover:bg-orange-50">
@@ -134,11 +136,11 @@
 
   <!-- Mobile Menu -->
   <div id="mobileMenu" class="hidden md:hidden border-t border-orange-100 bg-white px-4 py-4 space-y-3">
+    <a href="places.html" class="block text-gray-700 hover:text-brand-orange font-medium py-1">🗺️ สถานที่ Pet-Friendly</a>
     <a href="#features" class="block text-gray-700 hover:text-brand-orange font-medium py-1">ฟีเจอร์</a>
-    <a href="#how-it-works" class="block text-gray-700 hover:text-brand-orange font-medium py-1">วิธีใช้งาน</a>
-    <a href="#for-business" class="block text-gray-700 hover:text-brand-orange font-medium py-1">สำหรับธุรกิจ</a>
+    <a href="register-business.html" class="block text-gray-700 hover:text-brand-orange font-medium py-1">สำหรับธุรกิจ</a>
     <a href="#community" class="block text-gray-700 hover:text-brand-orange font-medium py-1">ชุมชน</a>
-    <a href="#waitlist" class="block bg-brand-orange text-white text-center py-3 rounded-xl font-semibold">เข้าร่วมก่อนใคร ✨</a>
+    <a href="login.html?tab=signup" class="block bg-brand-orange text-white text-center py-3 rounded-xl font-semibold">เข้าร่วมก่อนใคร ✨</a>
   </div>
 </nav>
 
@@ -610,6 +612,10 @@
 </button>
 
 <!-- ===== SCRIPTS ===== -->
+<script type="module">
+  import { initNavAuth } from './js/auth.js';
+  initNavAuth();
+</script>
 <script>
   // Scroll Progress Bar
   window.addEventListener('scroll', () => {
