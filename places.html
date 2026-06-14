@@ -302,8 +302,10 @@
         </div>
       </div>
 
-      <div id="modalPets" class="mb-4 flex flex-wrap gap-2"></div>
+      <div id="modalPets" class="mb-3 flex flex-wrap gap-2"></div>
       <div id="modalWeight" class="hidden mb-3 text-xs text-gray-500"></div>
+      <!-- Social Links -->
+      <div id="modalLinks" class="hidden border-t border-gray-100 pt-3 mt-1 flex flex-wrap gap-2"></div>
     </div>
     <!-- Actions -->
     <div class="p-4 border-t border-gray-100 flex gap-3 flex-shrink-0">
@@ -481,6 +483,11 @@
 
     document.getElementById('resultCount').textContent =
       `พบ ${filtered.length} สถานที่${usingDemo ? ' (Demo data)' : ''}`;
+
+    // อัปเดตแผนที่ถ้ากำลังแสดง map view อยู่
+    if (!document.getElementById('mapView').classList.contains('hidden')) {
+      renderMapMarkers(filtered);
+    }
 
     const grid   = document.getElementById('placesGrid');
     const empty  = document.getElementById('emptyState');
@@ -675,6 +682,26 @@
       weightEl.classList.remove('hidden');
     } else {
       weightEl.classList.add('hidden');
+    }
+
+    // Social / Website links
+    const linksEl = document.getElementById('modalLinks');
+    const links = [];
+    if (place.website)   links.push({ href: place.website,   icon: '🌐', label: 'เว็บไซต์' });
+    if (place.facebook)  links.push({ href: place.facebook,  icon: '📘', label: 'Facebook' });
+    if (place.instagram) links.push({ href: place.instagram, icon: '📸', label: 'Instagram' });
+    if (place.line)      links.push({ href: place.line,      icon: '💬', label: 'Line OA' });
+
+    if (links.length > 0) {
+      linksEl.innerHTML = links.map(l =>
+        `<a href="${l.href}" target="_blank" rel="noopener"
+            class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl bg-gray-100 text-gray-700 hover:bg-orange-50 hover:text-brand-orange transition-colors">
+          ${l.icon} ${l.label}
+        </a>`
+      ).join('');
+      linksEl.classList.remove('hidden');
+    } else {
+      linksEl.classList.add('hidden');
     }
 
     // ปุ่มโทร
