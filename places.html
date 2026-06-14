@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PawDee — ค้นหาสถานที่ Pet-Friendly</title>
+  <meta name="description" content="ค้นหาร้านอาหาร คาเฟ่ โรงแรม และคลินิกที่รับสัตว์เลี้ยงทั่วไทย"/>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { brand: { orange: '#FF6B35', 'orange-deep': '#E55A26', cream: '#FFFBF5' } },
+          fontFamily: { sans: ['Kanit', 'ui-sans-serif'] },
+        }
+      }
+    }
+  </script>
+  <style>
+    * { font-family: 'Kanit', sans-serif; }
+    html { scroll-behavior: smooth; }
+    .nav-glass { background: rgba(255,255,255,0.92); backdrop-filter: blur(12px); }
+    .card-hover { transition: transform 0.25s ease, box-shadow 0.25s ease; }
+    .card-hover:hover { transform: translateY(-4px); box-shadow: 0 16px 48px rgba(255,107,53,0.12); }
+    .skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    .badge-cafe     { background:#FFF3E0; color:#E65100; }
+    .badge-hotel    { background:#E3F2FD; color:#1565C0; }
+    .badge-restaurant { background:#F3E5F5; color:#6A1B9A; }
+    .badge-clinic   { background:#FCE4EC; color:#AD1457; }
+    .badge-grooming { background:#E8F5E9; color:#2E7D32; }
+    .badge-condo    { background:#E0F2F1; color:#00695C; }
+    .badge-park     { background:#F1F8E9; color:#558B2F; }
+    .badge-shop     { background:#FFF8E1; color:#F57F17; }
+    .filter-btn { transition: all 0.2s; }
+    .filter-btn.active { background: #FF6B35; color: white; border-color: #FF6B35; }
+    #map { height: 600px; border-radius: 1.5rem; z-index: 0; }
+    .leaflet-popup-content-wrapper { border-radius: 1rem; font-family: 'Kanit', sans-serif; }
+    .map-popup-btn { background:#FF6B35; color:white; border:none; border-radius:0.5rem; padding:0.4rem 0.8rem; font-family:'Kanit',sans-serif; font-size:0.8rem; font-weight:600; cursor:pointer; width:100%; margin-top:0.5rem; }
+    .view-btn.active { background:#FF6B35; color:white; border-color:#FF6B35; }
+  </style>
+</head>
+<body class="bg-brand-cream text-gray-800 antialiased">
+
+<!-- Navbar -->
+<nav class="nav-glass fixed top-0 left-0 right-0 z-50 border-b border-orange-100">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      <a href="index.html" class="flex items-center gap-2">
+        <div class="w-9 h-9 bg-brand-orange rounded-xl flex items-center justify-center text-white text-xl">🐾</div>
+        <span class="text-xl font-bold text-gray-900">Paw<span class="text-brand-orange">Dee</span></span>
+      </a>
+      <div class="hidden md:flex items-center gap-6 text-sm font-medium text-gray-600">
+        <a href="places.html" class="text-brand-orange font-semibold">สถานที่</a>
+        <a href="#" class="hover:text-brand-orange transition-colors">พี่เลี้ยง</a>
+        <a href="#" class="hover:text-brand-orange transition-colors">คลินิกฉุกเฉิน</a>
+      </div>
+      <div id="navAuth">
+        <a href="login.html" class="bg-brand-orange text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-brand-orange-deep transition-all shadow-md">
+          เข้าสู่ระบบ
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="pt-24 pb-8 bg-gradient-to-b from-orange-50 to-brand-cream">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <div class="text-4xl mb-3">🗺️</div>
+    <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-3">
+      สถานที่ <span class="text-brand-orange">Pet-Friendly</span>
+    </h1>
+    <p class="text-gray-500 mb-8">ร้านอาหาร คาเฟ่ โรงแรม คลินิก และอีกมากมายที่ต้อนรับน้องของคุณ</p>
+
+    <!-- Search Bar -->
+    <div class="max-w-2xl mx-auto relative">
+      <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-gray-400">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+      </div>
+      <input
+        id="searchInput"
+        type="text"
+        placeholder="ค้นหาชื่อสถานที่, เขต, หรือเมือง..."
+        class="w-full pl-12 pr-4 py-4 rounded-2xl border-2 border-orange-200 bg-white shadow-sm focus:outline-none focus:border-brand-orange transition-colors text-gray-800 placeholder-gray-400"
+      />
+    </div>
+  </div>
+</section>
+
+<!-- Filters -->
+<div class="sticky top-16 z-40 bg-white/90 backdrop-blur border-b border-gray-100 shadow-sm">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex gap-2 overflow-x-auto scrollbar-hide">
+    <button class="filter-btn active flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-brand-orange" data-type="all">
+      ทั้งหมด
+    </button>
+    <button class="filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 hover:border-brand-orange hover:text-brand-orange" data-type="cafe">
+      ☕ คาเฟ่
+    </button>
+    <button class="filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 hover:border-brand-orange hover:text-brand-orange" data-type="restaurant">
+      🍽️ ร้านอาหาร
+    </button>
+    <button class="filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 hover:border-brand-orange hover:text-brand-orange" data-type="hotel">
+      🏨 โรงแรม
+    </button>
+    <button class="filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 hover:border-brand-orange hover:text-brand-orange" data-type="clinic">
+      🏥 คลินิก
+    </button>
+    <button class="filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 hover:border-brand-orange hover:text-brand-orange" data-type="grooming">
+      🛁 อาบน้ำ-ตัดขน
+    </button>
+    <button class="filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 hover:border-brand-orange hover:text-brand-orange" data-type="condo">
+      🏠 คอนโด
+    </button>
+    <button class="filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 hover:border-brand-orange hover:text-brand-orange" data-type="park">
+      🌳 สวนสาธารณะ
+    </button>
+    <button class="filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 hover:border-brand-orange hover:text-brand-orange" data-type="shop">
+      🛍️ Pet Shop
+    </button>
+  </div>
+</div>
+
+<!-- Main Content -->
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+  <!-- Config Warning Banner -->
+  <div id="configBanner" class="hidden mb-8 bg-amber-50 border-2 border-amber-200 rounded-2xl p-5">
+    <div class="flex items-start gap-4">
+      <div class="text-2xl">⚙️</div>
+      <div class="flex-1">
+        <h3 class="font-bold text-amber-900 mb-1">ยังไม่ได้เชื่อม Firebase</h3>
+        <p class="text-sm text-amber-700 mb-3">
+          ตอนนี้แสดงข้อมูล Demo — แก้ไข <code class="bg-amber-100 px-1 rounded">js/firebase-config.js</code>
+          แล้วรัน <a href="admin-seed.html" class="underline font-semibold">admin-seed.html</a> เพื่อใส่ข้อมูลจริงเข้า Firestore
+        </p>
+        <div class="bg-amber-100 rounded-xl p-3 text-xs text-amber-800 font-mono">
+          <div class="font-bold mb-1">ขั้นตอน:</div>
+          <div>1. สร้าง Firebase project ที่ console.firebase.google.com</div>
+          <div>2. แก้ไข js/firebase-config.js ใส่ config จริง</div>
+          <div>3. เปิด admin-seed.html แล้วกดปุ่ม Seed</div>
+          <div>4. reload หน้านี้</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Result count + View Toggle -->
+  <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+    <p id="resultCount" class="text-sm text-gray-500">กำลังโหลด...</p>
+    <div class="flex items-center gap-3">
+      <!-- Sort -->
+      <select id="sortSelect" class="text-sm border border-gray-200 rounded-xl px-3 py-1.5 focus:outline-none focus:border-brand-orange">
+        <option value="rating">⭐ คะแนนสูงสุด</option>
+        <option value="reviewCount">💬 รีวิวมากสุด</option>
+        <option value="name">🔤 ชื่อ ก-ฮ</option>
+      </select>
+      <!-- View Toggle -->
+      <div class="flex border-2 border-gray-200 rounded-xl overflow-hidden">
+        <button id="viewGrid" class="view-btn active flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold transition-all border-r border-gray-200">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+          การ์ด
+        </button>
+        <button id="viewMap" class="view-btn flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-gray-600 transition-all">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+          แผนที่
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Emergency Banner (clinics only) -->
+  <div id="emergencyBanner" class="hidden mb-6 bg-red-50 border border-red-200 rounded-2xl p-4 flex items-center gap-3">
+    <div class="text-2xl">🚨</div>
+    <div>
+      <div class="font-bold text-red-800">คลินิกฉุกเฉิน 24 ชั่วโมง</div>
+      <div class="text-sm text-red-600">ด้านล่างรวมคลินิกที่เปิด 24 ชม. ไว้ด้านบนสุดแล้ว</div>
+    </div>
+  </div>
+
+  <!-- Skeleton Loaders -->
+  <div id="skeletonGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <div class="bg-white rounded-2xl overflow-hidden shadow-sm" id="sk1">
+      <div class="skeleton h-44 w-full"></div>
+      <div class="p-4 space-y-3">
+        <div class="skeleton h-4 w-3/4 rounded-full"></div>
+        <div class="skeleton h-3 w-1/2 rounded-full"></div>
+        <div class="skeleton h-3 w-full rounded-full"></div>
+        <div class="skeleton h-9 w-full rounded-xl"></div>
+      </div>
+    </div>
+    <div class="bg-white rounded-2xl overflow-hidden shadow-sm hidden sm:block">
+      <div class="skeleton h-44 w-full"></div>
+      <div class="p-4 space-y-3">
+        <div class="skeleton h-4 w-3/4 rounded-full"></div>
+        <div class="skeleton h-3 w-1/2 rounded-full"></div>
+        <div class="skeleton h-3 w-full rounded-full"></div>
+        <div class="skeleton h-9 w-full rounded-xl"></div>
+      </div>
+    </div>
+    <div class="bg-white rounded-2xl overflow-hidden shadow-sm hidden lg:block">
+      <div class="skeleton h-44 w-full"></div>
+      <div class="p-4 space-y-3">
+        <div class="skeleton h-4 w-3/4 rounded-full"></div>
+        <div class="skeleton h-3 w-1/2 rounded-full"></div>
+        <div class="skeleton h-3 w-full rounded-full"></div>
+        <div class="skeleton h-9 w-full rounded-xl"></div>
+      </div>
+    </div>
+    <div class="bg-white rounded-2xl overflow-hidden shadow-sm hidden xl:block">
+      <div class="skeleton h-44 w-full"></div>
+      <div class="p-4 space-y-3">
+        <div class="skeleton h-4 w-3/4 rounded-full"></div>
+        <div class="skeleton h-3 w-1/2 rounded-full"></div>
+        <div class="skeleton h-3 w-full rounded-full"></div>
+        <div class="skeleton h-9 w-full rounded-xl"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Places Grid -->
+  <div id="placesGrid" class="hidden grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+
+  <!-- Map View -->
+  <div id="mapView" class="hidden mb-6">
+    <div id="map"></div>
+    <p class="text-xs text-gray-400 mt-2 text-center">แผนที่จาก OpenStreetMap · คลิกหมุดเพื่อดูรายละเอียด</p>
+  </div>
+
+  <!-- Empty State -->
+  <div id="emptyState" class="hidden text-center py-20">
+    <div class="text-5xl mb-4">🔍</div>
+    <h3 class="text-xl font-bold text-gray-700 mb-2">ไม่พบสถานที่</h3>
+    <p class="text-gray-500 text-sm">ลองเปลี่ยน keyword หรือ filter ใหม่นะครับ</p>
+  </div>
+
+  <!-- Error State -->
+  <div id="errorState" class="hidden text-center py-20">
+    <div class="text-5xl mb-4">⚠️</div>
+    <h3 class="text-xl font-bold text-gray-700 mb-2">โหลดข้อมูลไม่ได้</h3>
+    <p id="errorMsg" class="text-gray-500 text-sm mb-4"></p>
+    <button onclick="location.reload()" class="bg-brand-orange text-white px-6 py-2 rounded-xl font-semibold">
+      ลองอีกครั้ง
+    </button>
+  </div>
+</main>
+
+<!-- Footer -->
+<footer class="bg-gray-900 text-gray-400 py-10 text-center text-sm mt-16">
+  <div class="flex items-center justify-center gap-2 mb-2">
+    <div class="w-7 h-7 bg-brand-orange rounded-lg flex items-center justify-center text-sm">🐾</div>
+    <span class="text-white font-bold">PawDee</span>
+  </div>
+  <p>© 2026 PawDee — Made with ❤️ สำหรับทาสหมาทาสแมว</p>
+</footer>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- ─── JS (ES Module) ─────────────────────────────────── -->
+<script type="module">
+  import { initNavAuth } from './js/auth.js';
+  initNavAuth();
+
+  // ── ตรวจ config ก่อน import Firebase (ป้องกันการค้าง) ──────
+  let db = null;
+  let isConfigured = false;
+
+  try {
+    const cfgText     = await fetch('./js/firebase-config.js').then(r => r.text());
+    const apiKeyMatch = cfgText.match(/apiKey:\s*"([^"]+)"/);
+    isConfigured      = apiKeyMatch ? apiKeyMatch[1].startsWith('AIza') : false;
+  } catch (_) {}
+
+  if (isConfigured) {
+    try {
+      const { db: _db } = await import('./js/firebase-config.js');
+      db = _db;
+    } catch (_) { isConfigured = false; }
+  }
+
+  const { collection, getDocs, query, orderBy } = isConfigured
+    ? await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js')
+    : {};
+
+  // ── Type config ───────────────────────────────────────────────
+  const TYPE_LABELS = {
+    cafe:       { label: 'คาเฟ่',        icon: '☕', cls: 'badge-cafe'       },
+    hotel:      { label: 'โรงแรม',       icon: '🏨', cls: 'badge-hotel'      },
+    restaurant: { label: 'ร้านอาหาร',    icon: '🍽️', cls: 'badge-restaurant' },
+    clinic:     { label: 'คลินิก',       icon: '🏥', cls: 'badge-clinic'     },
+    grooming:   { label: 'อาบน้ำตัดขน', icon: '🛁', cls: 'badge-grooming'   },
+    condo:      { label: 'คอนโด',        icon: '🏠', cls: 'badge-condo'      },
+    park:       { label: 'สวนสาธารณะ',  icon: '🌳', cls: 'badge-park'       },
+    shop:       { label: 'Pet Shop',     icon: '🛍️', cls: 'badge-shop'       },
+  };
+
+  const PET_ICONS = { dog: '🐕', cat: '🐈', rabbit: '🐇', bird: '🦜', fish: '🐟', other: '🐾' };
+
+  // ── State ─────────────────────────────────────────────────────
+  let allPlaces   = [];
+  let activeType  = 'all';
+  let searchQuery = '';
+  let sortBy      = 'rating';
+  let usingDemo   = false;
+
+  // ── Demo data (shown when Firebase not configured) ─────────────
+  const DEMO_PLACES = [
+    { id:'d1', name:'Hound & Ground Coffee', type:'cafe', address:'ถ.เอกมัย แขวงคลองตันเหนือ', district:'วัฒนา', city:'กรุงเทพฯ', allowedPets:['dog','cat'], maxWeightKg:null, needCarrier:false, rating:4.8, reviewCount:142, phone:'02-123-4567', openHours:'จ-ศ 08:00-20:00', imageUrl:'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=400&q=80', verified:true, featured:true },
+    { id:'d2', name:'Paw Paradise Hotel', type:'hotel', address:'ถ.สุขุมวิท 39', district:'วัฒนา', city:'กรุงเทพฯ', allowedPets:['dog','cat','rabbit'], maxWeightKg:20, needCarrier:false, rating:4.9, reviewCount:87, phone:'02-987-6543', openHours:'เปิด 24 ชั่วโมง', imageUrl:'https://images.unsplash.com/photo-1551882547-ff40c63fe2fa?w=400&q=80', verified:true, featured:true },
+    { id:'d3', name:'คลินิกสัตวแพทย์ เพื่อนรัก 24 ชม.', type:'clinic', address:'ถ.ลาดพร้าว 101', district:'ลาดพร้าว', city:'กรุงเทพฯ', allowedPets:['dog','cat','rabbit'], maxWeightKg:null, needCarrier:false, rating:4.7, reviewCount:312, phone:'02-555-0809', openHours:'เปิด 24 ชั่วโมง', imageUrl:'https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def?w=400&q=80', verified:true, featured:true, emergency24hr:true },
+    { id:'d4', name:'The Bark & Brew', type:'restaurant', address:'ถ.อารีย์สัมพันธ์', district:'พญาไท', city:'กรุงเทพฯ', allowedPets:['dog'], maxWeightKg:15, needCarrier:false, rating:4.5, reviewCount:98, phone:'02-246-1111', openHours:'ทุกวัน 11:00-22:00', imageUrl:'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400&q=80', verified:true, featured:false },
+    { id:'d5', name:'Furry Friends Spa', type:'grooming', address:'ซ.ทองหล่อ 13', district:'วัฒนา', city:'กรุงเทพฯ', allowedPets:['dog','cat'], maxWeightKg:null, needCarrier:false, rating:4.6, reviewCount:204, phone:'086-333-4444', openHours:'จ-ศ 09:00-19:00', imageUrl:'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&q=80', verified:true, featured:false },
+    { id:'d6', name:'Meow Garden Café', type:'cafe', address:'ถ.นิมมานเหมินท์', district:'สุเทพ', city:'เชียงใหม่', allowedPets:['cat'], maxWeightKg:null, needCarrier:false, rating:4.9, reviewCount:521, phone:'053-211-222', openHours:'ทุกวัน 10:00-21:00', imageUrl:'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=400&q=80', verified:true, featured:true },
+    { id:'d7', name:'PetSmart Superstore รัชดา', type:'shop', address:'ถ.รัชดาภิเษก', district:'ห้วยขวาง', city:'กรุงเทพฯ', allowedPets:['dog','cat','rabbit'], maxWeightKg:null, needCarrier:true, rating:4.2, reviewCount:89, phone:'02-513-0000', openHours:'ทุกวัน 10:00-22:00', imageUrl:'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=400&q=80', verified:true, featured:false },
+    { id:'d8', name:'บ้านสัตว์แพทย์ฉุกเฉิน 24 ชม. สาทร', type:'clinic', address:'ถ.สาทรใต้', district:'สาทร', city:'กรุงเทพฯ', allowedPets:['dog','cat'], maxWeightKg:null, needCarrier:false, rating:4.8, reviewCount:445, phone:'02-287-0222', openHours:'เปิด 24 ชั่วโมง', imageUrl:'https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def?w=400&q=80', verified:true, featured:true, emergency24hr:true },
+  ];
+
+  // ── Build card HTML ───────────────────────────────────────────
+  function buildCard(place) {
+    const t = TYPE_LABELS[place.type] || { label: place.type, icon: '📍', cls: '' };
+    const stars = '⭐'.repeat(Math.round(place.rating));
+    const petIcons = (place.allowedPets || []).map(p => PET_ICONS[p] || '🐾').join(' ');
+    const weightTag = place.maxWeightKg
+      ? `<span class="text-xs text-gray-400">น้ำหนักไม่เกิน ${place.maxWeightKg} กก.</span>`
+      : '';
+    const emergency = place.emergency24hr
+      ? `<div class="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-lg">🚨 24 ชม.</div>`
+      : '';
+    const verified = place.verified
+      ? `<span class="inline-flex items-center gap-1 text-xs text-green-600 font-medium"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>Verified</span>`
+      : '';
+    const demoTag = usingDemo
+      ? `<div class="absolute top-2 right-2 bg-amber-400 text-white text-xs font-bold px-2 py-1 rounded-lg">Demo</div>`
+      : '';
+
+    return `
+      <article class="card-hover bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 flex flex-col">
+        <div class="relative h-44 bg-gray-100 overflow-hidden">
+          <img
+            src="${place.imageUrl || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&q=80'}"
+            alt="${place.name}"
+            class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+            loading="lazy"
+            onerror="this.src='https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&q=80'"
+          />
+          ${emergency}
+          ${demoTag}
+        </div>
+        <div class="p-4 flex flex-col flex-1">
+          <div class="flex items-start justify-between gap-2 mb-2">
+            <span class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full ${t.cls}">
+              ${t.icon} ${t.label}
+            </span>
+            ${verified}
+          </div>
+          <h3 class="font-bold text-gray-900 leading-tight mb-1">${place.name}</h3>
+          <p class="text-xs text-gray-500 mb-2">📍 ${place.district}, ${place.city}</p>
+          <div class="flex items-center gap-2 text-sm mb-1">
+            <span class="text-yellow-500">⭐</span>
+            <span class="font-semibold">${place.rating.toFixed(1)}</span>
+            <span class="text-gray-400 text-xs">(${place.reviewCount} รีวิว)</span>
+          </div>
+          <div class="text-xs text-gray-500 mb-1">🕐 ${place.openHours}</div>
+          <div class="text-sm mb-1">${petIcons}</div>
+          ${weightTag}
+          <div class="flex-1"></div>
+          <div class="flex gap-2 mt-4">
+            ${place.phone ? `
+              <a href="tel:${place.phone}" class="flex-1 text-center bg-orange-50 text-brand-orange border border-orange-200 py-2 rounded-xl text-sm font-semibold hover:bg-orange-100 transition-colors">
+                📞 โทร
+              </a>` : ''}
+            <button class="flex-1 bg-brand-orange text-white py-2 rounded-xl text-sm font-semibold hover:bg-brand-orange-deep transition-colors">
+              ดูรายละเอียด
+            </button>
+          </div>
+        </div>
+      </article>
+    `;
+  }
+
+  // ── Render ────────────────────────────────────────────────────
+  function render() {
+    let filtered = allPlaces.filter(p => {
+      const matchType   = activeType === 'all' || p.type === activeType;
+      const q           = searchQuery.toLowerCase();
+      const matchSearch = !q || p.name.toLowerCase().includes(q)
+                              || (p.district || '').toLowerCase().includes(q)
+                              || (p.city    || '').toLowerCase().includes(q)
+                              || (p.address || '').toLowerCase().includes(q);
+      return matchType && matchSearch;
+    });
+
+    // Sort
+    filtered.sort((a, b) => {
+      if (sortBy === 'rating')      return b.rating - a.rating;
+      if (sortBy === 'reviewCount') return b.reviewCount - a.reviewCount;
+      if (sortBy === 'name')        return a.name.localeCompare(b.name, 'th');
+      return 0;
+    });
+
+    // Emergency clinics float to top when filtering by clinic
+    if (activeType === 'clinic') {
+      filtered.sort((a, b) => (b.emergency24hr ? 1 : 0) - (a.emergency24hr ? 1 : 0));
+      document.getElementById('emergencyBanner').classList.remove('hidden');
+    } else {
+      document.getElementById('emergencyBanner').classList.add('hidden');
+    }
+
+    document.getElementById('resultCount').textContent =
+      `พบ ${filtered.length} สถานที่${usingDemo ? ' (Demo data)' : ''}`;
+
+    const grid   = document.getElementById('placesGrid');
+    const empty  = document.getElementById('emptyState');
+
+    if (filtered.length === 0) {
+      grid.classList.add('hidden');
+      empty.classList.remove('hidden');
+    } else {
+      empty.classList.add('hidden');
+      grid.classList.remove('hidden');
+      grid.innerHTML = filtered.map(buildCard).join('');
+    }
+  }
+
+  // ── Load from Firestore ───────────────────────────────────────
+  async function loadPlaces() {
+    // ถ้า config ยังเป็น placeholder — ข้ามไปใช้ demo ทันที
+    if (!isConfigured) {
+      usingDemo = true;
+      allPlaces = DEMO_PLACES;
+      document.getElementById('configBanner').classList.remove('hidden');
+      document.getElementById('skeletonGrid').classList.add('hidden');
+      render();
+      return;
+    }
+
+    try {
+      // timeout 8 วินาที เผื่อ Firestore ช้า
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('timeout')), 8000)
+      );
+      const snap = await Promise.race([
+        getDocs(query(collection(db, 'places'), orderBy('rating', 'desc'))),
+        timeoutPromise,
+      ]);
+
+      if (snap.empty) throw new Error('empty');
+
+      allPlaces = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      usingDemo = false;
+
+    } catch (err) {
+      usingDemo = true;
+      allPlaces = DEMO_PLACES;
+      document.getElementById('configBanner').classList.remove('hidden');
+    }
+
+    document.getElementById('skeletonGrid').classList.add('hidden');
+    render();
+  }
+
+  // ── Event listeners ───────────────────────────────────────────
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeType = btn.dataset.type;
+      render();
+    });
+  });
+
+  let searchTimeout;
+  document.getElementById('searchInput').addEventListener('input', e => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+      searchQuery = e.target.value.trim();
+      render();
+    }, 300);
+  });
+
+  document.getElementById('sortSelect').addEventListener('change', e => {
+    sortBy = e.target.value;
+    render();
+  });
+
+  // ── Map (Leaflet) ─────────────────────────────────────────────
+  let leafletMap = null;
+  let markers    = [];
+
+  const TYPE_ICONS = {
+    cafe:'☕', hotel:'🏨', restaurant:'🍽️', clinic:'🏥',
+    grooming:'🛁', condo:'🏠', park:'🌳', shop:'🛍️'
+  };
+
+  function initMap() {
+    if (leafletMap) return;
+    leafletMap = L.map('map').setView([13.756, 100.502], 11);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      maxZoom: 19,
+    }).addTo(leafletMap);
+  }
+
+  function renderMapMarkers(places) {
+    if (!leafletMap) return;
+    markers.forEach(m => m.remove());
+    markers = [];
+
+    const bounds = [];
+    places.forEach(p => {
+      if (!p.lat || !p.lng) return;
+      const icon = TYPE_ICONS[p.type] || '📍';
+      const marker = L.marker([p.lat, p.lng], {
+        icon: L.divIcon({
+          html: `<div style="background:white;border:2px solid #FF6B35;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 8px rgba(0,0,0,.2)">${icon}</div>`,
+          className: '',
+          iconSize: [36, 36],
+          iconAnchor: [18, 18],
+        })
+      }).addTo(leafletMap);
+
+      marker.bindPopup(`
+        <div style="min-width:180px;font-family:'Kanit',sans-serif">
+          <div style="font-weight:700;font-size:0.9rem;margin-bottom:4px">${p.name}</div>
+          <div style="font-size:0.75rem;color:#6b7280;margin-bottom:2px">📍 ${p.district}, ${p.city}</div>
+          <div style="font-size:0.75rem;color:#6b7280;margin-bottom:6px">⭐ ${p.rating?.toFixed(1) || '-'} · 🕐 ${p.openHours || '-'}</div>
+          ${p.phone ? `<div style="font-size:0.75rem;margin-bottom:6px">📞 ${p.phone}</div>` : ''}
+          ${p.phone ? `<a href="tel:${p.phone}"><button class="map-popup-btn">📞 โทรหาร้าน</button></a>` : ''}
+        </div>
+      `);
+      markers.push(marker);
+      bounds.push([p.lat, p.lng]);
+    });
+
+    if (bounds.length > 0) {
+      leafletMap.fitBounds(bounds, { padding: [40, 40], maxZoom: 14 });
+    }
+    setTimeout(() => leafletMap.invalidateSize(), 100);
+  }
+
+  // ── View Toggle ───────────────────────────────────────────────
+  document.getElementById('viewGrid').addEventListener('click', () => {
+    document.getElementById('viewGrid').classList.add('active');
+    document.getElementById('viewMap').classList.remove('active');
+    document.getElementById('viewGrid').style.color = '';
+    document.getElementById('viewMap').style.color = '#6b7280';
+    document.getElementById('placesGrid').classList.remove('hidden');
+    document.getElementById('mapView').classList.add('hidden');
+  });
+
+  document.getElementById('viewMap').addEventListener('click', () => {
+    document.getElementById('viewMap').classList.add('active');
+    document.getElementById('viewGrid').classList.remove('active');
+    document.getElementById('placesGrid').classList.add('hidden');
+    document.getElementById('mapView').classList.remove('hidden');
+    initMap();
+    renderMapMarkers(allPlaces.filter(p => {
+      const matchType = activeType === 'all' || p.type === activeType;
+      const q = searchQuery.toLowerCase();
+      return matchType && (!q || p.name.toLowerCase().includes(q) || (p.district||'').toLowerCase().includes(q));
+    }));
+  });
+
+  // ── Init ──────────────────────────────────────────────────────
+  loadPlaces();
+</script>
+
+</body>
+</html>
