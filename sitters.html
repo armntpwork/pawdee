@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PawDee — ค้นหาพี่เลี้ยงสัตว์เลี้ยง</title>
+  <meta name="description" content="ค้นหาพี่เลี้ยงสัตว์เลี้ยงที่ผ่านการยืนยันตัวตน ไว้วางใจได้ ราคาโปร่งใส"/>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { brand: { orange:'#FF6B35','orange-deep':'#E55A26',cream:'#FFFBF5' } },
+          fontFamily: { sans: ['Kanit','ui-sans-serif'] }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { font-family:'Kanit',sans-serif; }
+    html { scroll-behavior:smooth; }
+    .nav-glass { background:rgba(255,255,255,0.92); backdrop-filter:blur(12px); }
+    .card-hover { transition:transform 0.25s, box-shadow 0.25s; }
+    .card-hover:hover { transform:translateY(-4px); box-shadow:0 16px 48px rgba(255,107,53,0.12); }
+    .filter-btn.active { background:#FF6B35; color:white; border-color:#FF6B35; }
+    .star { color:#FBBF24; }
+    .badge-verified { background:#DCFCE7; color:#166534; }
+  </style>
+</head>
+<body class="bg-brand-cream text-gray-800 antialiased">
+
+<!-- Navbar -->
+<nav class="nav-glass fixed top-0 left-0 right-0 z-50 border-b border-orange-100">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      <a href="index.html" class="flex items-center gap-2">
+        <div class="w-9 h-9 bg-brand-orange rounded-xl flex items-center justify-center text-xl">🐾</div>
+        <span class="text-xl font-bold text-gray-900">Paw<span class="text-brand-orange">Dee</span></span>
+      </a>
+      <div class="hidden md:flex items-center gap-6 text-sm font-medium text-gray-600">
+        <a href="places.html" class="hover:text-brand-orange transition-colors">สถานที่</a>
+        <a href="sitters.html" class="text-brand-orange font-semibold">พี่เลี้ยง</a>
+        <a href="emergency.html" class="hover:text-brand-orange transition-colors">คลินิกฉุกเฉิน</a>
+      </div>
+      <div id="navAuth"></div>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="pt-24 pb-8 bg-gradient-to-b from-orange-50 to-brand-cream">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <div class="text-4xl mb-3">🧑‍🤝‍🧑</div>
+    <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-3">
+      พี่เลี้ยง <span class="text-brand-orange">สัตว์เลี้ยง</span>
+    </h1>
+    <p class="text-gray-500 mb-8">ผ่านการยืนยันตัวตน ประกันอุบัติเหตุ ไว้วางใจได้ 100%</p>
+    <!-- Search -->
+    <div class="max-w-2xl mx-auto flex gap-3">
+      <div class="relative flex-1">
+        <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-gray-400">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        </div>
+        <input id="searchInput" type="text" placeholder="ค้นหาชื่อ, เขต, บริการ..."
+          class="w-full pl-12 pr-4 py-4 rounded-2xl border-2 border-orange-200 bg-white shadow-sm focus:outline-none focus:border-brand-orange transition-colors"/>
+      </div>
+      <select id="sortSelect" class="px-4 py-4 rounded-2xl border-2 border-orange-200 bg-white text-sm font-semibold text-gray-700 focus:outline-none focus:border-brand-orange">
+        <option value="rating">คะแนนสูง</option>
+        <option value="price_low">ราคาต่ำ</option>
+        <option value="reviews">รีวิวมาก</option>
+      </select>
+    </div>
+  </div>
+</section>
+
+<!-- Filters -->
+<div class="sticky top-16 z-40 bg-white/90 backdrop-blur border-b border-gray-100 shadow-sm">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex gap-2 overflow-x-auto">
+    <button class="filter-btn active flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-brand-orange" data-service="all">ทั้งหมด</button>
+    <button class="filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600" data-service="daycare">รับฝากกลางวัน 🌞</button>
+    <button class="filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600" data-service="overnight">ค้างคืน 🌙</button>
+    <button class="filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600" data-service="walk">พาเดิน 🦮</button>
+    <button class="filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600" data-service="grooming">ทำความสะอาด ✂️</button>
+    <button class="filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600" data-service="training">ฝึกสุนัข 🎯</button>
+  </div>
+</div>
+
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div id="resultsInfo" class="text-sm text-gray-500 mb-4"></div>
+  <div id="sittersGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <!-- Loading skeleton -->
+    <div class="animate-pulse bg-white rounded-3xl p-5 h-72"></div>
+    <div class="animate-pulse bg-white rounded-3xl p-5 h-72"></div>
+    <div class="animate-pulse bg-white rounded-3xl p-5 h-72"></div>
+    <div class="animate-pulse bg-white rounded-3xl p-5 h-72"></div>
+  </div>
+</section>
+
+<!-- CTA — เป็นพี่เลี้ยง -->
+<section class="bg-gradient-to-r from-orange-500 to-orange-400 py-16 mt-8">
+  <div class="max-w-4xl mx-auto px-4 text-center text-white">
+    <div class="text-4xl mb-4">💼</div>
+    <h2 class="text-2xl sm:text-3xl font-extrabold mb-3">อยากเป็นพี่เลี้ยงสัตว์เลี้ยง?</h2>
+    <p class="text-orange-100 mb-6 max-w-xl mx-auto">รับรายได้เสริม ทำงานได้ตามเวลาที่สะดวก รักสัตว์ก็เริ่มได้เลย!</p>
+    <a href="login.html?next=register-sitter.html" class="bg-white text-brand-orange font-bold px-8 py-4 rounded-2xl hover:shadow-xl transition-all inline-block">
+      สมัครเป็นพี่เลี้ยง →
+    </a>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="bg-gray-900 text-gray-400 py-8 text-center text-sm">
+  <span class="text-brand-orange font-bold">PawDee</span> © 2025 · แพลตฟอร์มครบวงจรสำหรับทาสหมาทาสแมว
+</footer>
+
+<!-- Booking Modal -->
+<div id="bookModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 hidden">
+  <div class="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl">
+    <div class="flex items-center gap-4 mb-6">
+      <div id="modalAvatar" class="w-16 h-16 rounded-2xl bg-orange-100 flex items-center justify-center text-3xl flex-shrink-0"></div>
+      <div>
+        <h3 id="modalName" class="text-xl font-bold text-gray-900"></h3>
+        <p id="modalService" class="text-sm text-gray-500"></p>
+      </div>
+    </div>
+    <form id="bookingForm" class="space-y-3">
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">วันที่ต้องการ</label>
+        <input type="date" id="bookDate" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-brand-orange outline-none font-kanit" required/>
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">บริการที่ต้องการ</label>
+        <select id="bookService" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-brand-orange outline-none">
+          <option>รับฝากกลางวัน</option>
+          <option>ค้างคืน</option>
+          <option>พาเดิน</option>
+          <option>ทำความสะอาด</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">ข้อความถึงพี่เลี้ยง</label>
+        <textarea id="bookNote" rows="3" placeholder="แนะนำตัว บอกชื่อน้อง และความต้องการพิเศษ..."
+          class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-brand-orange outline-none resize-none text-sm"></textarea>
+      </div>
+      <div id="bookBanner" class="hidden p-3 rounded-xl text-sm font-medium"></div>
+      <div class="flex gap-3 pt-2">
+        <button type="submit" class="flex-1 bg-brand-orange text-white py-3 rounded-xl font-bold hover:bg-brand-orange-deep transition-all">ส่งคำขอจอง</button>
+        <button type="button" id="closeBook" class="px-4 py-3 rounded-xl border-2 border-gray-200 text-gray-600 hover:border-gray-300 font-semibold">ยกเลิก</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script type="module">
+import { onAuthChange, initNavAuth, getCurrentUser } from './js/auth.js';
+initNavAuth();
+
+const DEMO_SITTERS = [
+  { id:'s1', name:'คุณมินตรา สวัสดี', avatar:'🧑', area:'ลาดพร้าว, กรุงเทพ', rating:4.9, reviews:127, price:250, services:['daycare','overnight','walk'], pets:['หมา','แมว'], verified:true, badge:'Top Rated', bio:'รักสัตว์มาตลอด มีประสบการณ์ 5 ปี มีบ้านพักขนาดใหญ่ แมวและหมาอยู่ด้วยกันได้ค่ะ', available:true },
+  { id:'s2', name:'คุณปิยะ มั่นคง', avatar:'👨', area:'สุขุมวิท, กรุงเทพ', rating:4.8, reviews:89, price:300, services:['daycare','grooming','training'], pets:['หมา'], verified:true, badge:'Verified Pro', bio:'เจ้าของฟาร์มหมา อบรม Dog Trainer จาก เซ็นทรัลแอนิมอล มา 3 ปีครับ', available:true },
+  { id:'s3', name:'คุณสุดา ใจดี', avatar:'👩', area:'บางนา, กรุงเทพ', rating:4.7, reviews:56, price:200, services:['daycare','overnight'], pets:['หมา','แมว','กระต่าย'], verified:false, badge:'', bio:'รับฝากสัตว์เลี้ยงทุกชนิด บ้านอยู่ชั้นล่าง มีสวนหลังบ้านให้น้องวิ่งเล่น', available:true },
+  { id:'s4', name:'คุณนพดล แสงทอง', avatar:'🧔', area:'จตุจักร, กรุงเทพ', rating:4.9, reviews:203, price:350, services:['training','walk','grooming'], pets:['หมา'], verified:true, badge:'Top Rated', bio:'Certified Dog Trainer, ฝึกหมาทุกสายพันธุ์ มีใบอนุญาตจาก TDTB', available:false },
+  { id:'s5', name:'คุณอัญชลี วงค์สุวรรณ', avatar:'👩‍🦱', area:'พระราม 9, กรุงเทพ', rating:4.6, reviews:44, price:180, services:['daycare','walk'], pets:['หมา','แมว'], verified:true, badge:'', bio:'ทำงานที่บ้าน ดูแลน้องได้ตลอดวัน มีกล้องให้เจ้าของดูออนไลน์ได้เลยค่ะ', available:true },
+  { id:'s6', name:'คุณชัยวัฒน์ อนันต์', avatar:'👨‍🦲', area:'รัชดาภิเษก, กรุงเทพ', rating:4.8, reviews:71, price:280, services:['overnight','grooming'], pets:['หมา','แมว','นก'], verified:true, badge:'', bio:'เจ้าของคอนโดมิเนียมที่รับสัตว์เลี้ยง มีประสบการณ์ดูแลสัตว์มากกว่า 8 ปี', available:true },
+  { id:'s7', name:'คุณวรรณา กิตติวงศ์', avatar:'👩‍🦰', area:'มีนบุรี, กรุงเทพ', rating:4.5, reviews:28, price:150, services:['daycare'], pets:['แมว'], verified:false, badge:'', bio:'เลี้ยงแมวมา 10 ปี บ้านเงียบสงบ เหมาะสำหรับแมวที่ขี้ตกใจ ไม่มีสุนัขในบ้าน', available:true },
+  { id:'s8', name:'คุณธนพล เรืองรัตน์', avatar:'🧑‍🦱', area:'ดอนเมือง, กรุงเทพ', rating:4.7, reviews:95, price:220, services:['daycare','overnight','walk','training'], pets:['หมา'], verified:true, badge:'Verified Pro', bio:'อดีตทหาร ฝึกหมาเฝ้าบ้าน ออกกำลังกาย และเชื่อฟัง ผลงานมากกว่า 200 ตัว', available:true },
+];
+
+let allSitters = [...DEMO_SITTERS];
+let filtered = [...allSitters];
+let currentFilter = 'all';
+let currentSort = 'rating';
+let currentSitterId = null;
+
+renderSitters(filtered);
+
+function renderSitters(list) {
+  const grid = document.getElementById('sittersGrid');
+  document.getElementById('resultsInfo').textContent = `พบ ${list.length} พี่เลี้ยง`;
+
+  if (list.length === 0) {
+    grid.innerHTML = `<div class="col-span-full text-center py-16 text-gray-400">
+      <div class="text-5xl mb-3">🔍</div>
+      <p class="font-medium">ไม่พบพี่เลี้ยงที่ตรงกัน ลองเปลี่ยนคำค้นหาดูครับ</p>
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML = list.map(s => {
+    const stars = '★'.repeat(Math.floor(s.rating)) + (s.rating % 1 >= 0.5 ? '½' : '');
+    const serviceIcons = { daycare:'🌞', overnight:'🌙', walk:'🦮', grooming:'✂️', training:'🎯' };
+    const svcBadges = s.services.map(sv => `<span class="text-xs bg-orange-50 text-orange-700 px-2 py-0.5 rounded-lg">${serviceIcons[sv] || ''} ${sv === 'daycare' ? 'ฝากกลางวัน' : sv === 'overnight' ? 'ค้างคืน' : sv === 'walk' ? 'พาเดิน' : sv === 'grooming' ? 'ทำความสะอาด' : 'ฝึกสุนัข'}</span>`).join('');
+    return `
+      <div class="card-hover bg-white rounded-3xl p-5 shadow-sm border border-gray-100 cursor-pointer" onclick="openBook('${s.id}')">
+        <div class="relative mb-4">
+          <div class="w-16 h-16 rounded-2xl bg-orange-100 flex items-center justify-center text-4xl">${s.avatar}</div>
+          ${s.verified ? '<div class="absolute -top-1 -right-1 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white text-xs font-bold">✓</div>' : ''}
+          ${!s.available ? '<div class="absolute top-0 left-0 w-16 h-16 rounded-2xl bg-black/40 flex items-center justify-center text-white text-xs font-bold">เต็ม</div>' : ''}
+        </div>
+        <div class="font-bold text-gray-900 text-sm leading-tight mb-0.5">${s.name}</div>
+        <div class="text-xs text-gray-500 mb-2">📍 ${s.area}</div>
+        <div class="flex items-center gap-1 mb-3">
+          <span class="star text-sm">${'★'.repeat(Math.floor(s.rating))}</span>
+          <span class="text-sm font-bold text-gray-800">${s.rating}</span>
+          <span class="text-xs text-gray-400">(${s.reviews})</span>
+          ${s.badge ? `<span class="ml-auto text-xs badge-verified px-2 py-0.5 rounded-full font-semibold">${s.badge}</span>` : ''}
+        </div>
+        <div class="flex flex-wrap gap-1 mb-4">${svcBadges}</div>
+        <div class="flex items-center justify-between">
+          <div>
+            <span class="text-brand-orange font-extrabold text-lg">฿${s.price}</span>
+            <span class="text-xs text-gray-400">/วัน</span>
+          </div>
+          <button onclick="event.stopPropagation();openBook('${s.id}')"
+            class="${s.available ? 'bg-brand-orange text-white hover:bg-brand-orange-deep' : 'bg-gray-200 text-gray-400 cursor-not-allowed'} px-4 py-2 rounded-xl text-sm font-bold transition-all">
+            ${s.available ? 'จอง' : 'เต็ม'}
+          </button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+window.openBook = function(id) {
+  const s = allSitters.find(x => x.id === id);
+  if (!s || !s.available) return;
+  currentSitterId = id;
+  document.getElementById('modalAvatar').textContent = s.avatar;
+  document.getElementById('modalName').textContent = s.name;
+  document.getElementById('modalService').textContent = `📍 ${s.area} · ฿${s.price}/วัน`;
+  document.getElementById('bookDate').min = new Date().toISOString().split('T')[0];
+  document.getElementById('bookBanner').classList.add('hidden');
+  document.getElementById('bookModal').classList.remove('hidden');
+};
+
+document.getElementById('closeBook').addEventListener('click', () => {
+  document.getElementById('bookModal').classList.add('hidden');
+});
+
+document.getElementById('bookingForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const user = getCurrentUser();
+  if (!user) {
+    location.href = 'login.html?next=sitters.html';
+    return;
+  }
+  const btn = e.target.querySelector('button[type=submit]');
+  btn.disabled = true; btn.textContent = 'กำลังส่ง...';
+  try {
+    const cfgText = await fetch('./js/firebase-config.js').then(r => r.text());
+    const match = cfgText.match(/apiKey:\s*"([^"]+)"/);
+    if (match && match[1].startsWith('AIza')) {
+      const { db } = await import('./js/firebase-config.js');
+      const { collection, addDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+      await addDoc(collection(db, 'bookings'), {
+        sitterId: currentSitterId,
+        userUid: user.uid,
+        userEmail: user.email,
+        date: document.getElementById('bookDate').value,
+        service: document.getElementById('bookService').value,
+        note: document.getElementById('bookNote').value,
+        status: 'pending',
+        createdAt: serverTimestamp()
+      });
+    }
+    const b = document.getElementById('bookBanner');
+    b.textContent = '✅ ส่งคำขอจองแล้ว! พี่เลี้ยงจะติดต่อกลับภายใน 24 ชั่วโมง';
+    b.className = 'p-3 rounded-xl text-sm font-medium bg-green-50 text-green-700 border border-green-200';
+    b.classList.remove('hidden');
+    setTimeout(() => { document.getElementById('bookModal').classList.add('hidden'); e.target.reset(); }, 3000);
+  } catch (err) {
+    const b = document.getElementById('bookBanner');
+    b.textContent = 'เกิดข้อผิดพลาด กรุณาลองอีกครั้ง';
+    b.className = 'p-3 rounded-xl text-sm font-medium bg-red-50 text-red-700 border border-red-200';
+    b.classList.remove('hidden');
+  } finally {
+    btn.disabled = false; btn.textContent = 'ส่งคำขอจอง';
+  }
+});
+
+// Filter
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => {
+      b.className = 'filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600';
+    });
+    btn.className = 'filter-btn active flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-brand-orange';
+    currentFilter = btn.dataset.service;
+    applyFilters();
+  });
+});
+
+document.getElementById('searchInput').addEventListener('input', applyFilters);
+document.getElementById('sortSelect').addEventListener('change', e => { currentSort = e.target.value; applyFilters(); });
+
+function applyFilters() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  filtered = allSitters.filter(s => {
+    const matchService = currentFilter === 'all' || s.services.includes(currentFilter);
+    const matchSearch = !q || s.name.toLowerCase().includes(q) || s.area.toLowerCase().includes(q) || s.bio.toLowerCase().includes(q);
+    return matchService && matchSearch;
+  });
+  if (currentSort === 'rating') filtered.sort((a,b) => b.rating - a.rating);
+  else if (currentSort === 'price_low') filtered.sort((a,b) => a.price - b.price);
+  else if (currentSort === 'reviews') filtered.sort((a,b) => b.reviews - a.reviews);
+  renderSitters(filtered);
+}
+</script>
+</body>
+</html>

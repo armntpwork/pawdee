@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PawDee — Admin Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { brand: { orange:'#FF6B35','orange-deep':'#E55A26',cream:'#FFFBF5' } },
+          fontFamily: { sans: ['Kanit','ui-sans-serif'] }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { font-family:'Kanit',sans-serif; }
+    .nav-glass { background:rgba(255,255,255,0.92); backdrop-filter:blur(12px); }
+    .stat-card { background:white; border-radius:1.5rem; padding:1.5rem; box-shadow:0 4px 20px rgba(0,0,0,0.06); }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800 antialiased">
+
+<nav class="nav-glass fixed top-0 left-0 right-0 z-50 border-b border-gray-200">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="flex items-center gap-2">
+          <div class="w-9 h-9 bg-brand-orange rounded-xl flex items-center justify-center text-xl">🐾</div>
+          <span class="text-xl font-bold text-gray-900">Paw<span class="text-brand-orange">Dee</span></span>
+        </a>
+        <span class="bg-brand-orange text-white text-xs font-bold px-2.5 py-1 rounded-lg">ADMIN</span>
+      </div>
+      <div id="navAuth"></div>
+    </div>
+  </div>
+</nav>
+
+<main class="pt-20 pb-16">
+  <!-- Access denied -->
+  <div id="accessDenied" class="hidden max-w-md mx-auto px-4 py-24 text-center">
+    <div class="text-6xl mb-4">🚫</div>
+    <h2 class="text-2xl font-bold text-gray-900 mb-2">ไม่มีสิทธิ์เข้าถึง</h2>
+    <p class="text-gray-500 mb-6">หน้านี้สำหรับ Admin เท่านั้น กรุณาเข้าสู่ระบบด้วยบัญชี Admin</p>
+    <a href="index.html" class="text-brand-orange font-semibold hover:underline">← กลับหน้าหลัก</a>
+  </div>
+
+  <!-- Admin content -->
+  <div id="adminContent" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="mb-8">
+      <h1 class="text-3xl font-extrabold text-gray-900">Admin Dashboard</h1>
+      <p class="text-gray-500 mt-1">จัดการสถานที่และผู้ใช้งานของ PawDee</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div class="stat-card text-center">
+        <div id="statPending" class="text-3xl font-extrabold text-yellow-500">—</div>
+        <div class="text-sm text-gray-500 mt-1">รอการอนุมัติ</div>
+      </div>
+      <div class="stat-card text-center">
+        <div id="statApproved" class="text-3xl font-extrabold text-green-500">—</div>
+        <div class="text-sm text-gray-500 mt-1">อนุมัติแล้ว</div>
+      </div>
+      <div class="stat-card text-center">
+        <div id="statPlaces" class="text-3xl font-extrabold text-brand-orange">—</div>
+        <div class="text-sm text-gray-500 mt-1">สถานที่ทั้งหมด</div>
+      </div>
+      <div class="stat-card text-center">
+        <div id="statRejected" class="text-3xl font-extrabold text-red-400">—</div>
+        <div class="text-sm text-gray-500 mt-1">ถูกปฏิเสธ</div>
+      </div>
+    </div>
+
+    <!-- Filter tabs -->
+    <div class="flex gap-2 mb-6 overflow-x-auto">
+      <button class="filter-tab active px-5 py-2.5 rounded-xl text-sm font-semibold border-2 border-brand-orange bg-brand-orange text-white transition-all" data-status="pending">รอการอนุมัติ</button>
+      <button class="filter-tab px-5 py-2.5 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 transition-all" data-status="approved">อนุมัติแล้ว</button>
+      <button class="filter-tab px-5 py-2.5 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 transition-all" data-status="rejected">ถูกปฏิเสธ</button>
+      <button class="filter-tab px-5 py-2.5 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 transition-all" data-status="all">ทั้งหมด</button>
+    </div>
+
+    <!-- Applications list -->
+    <div id="applicationsList" class="space-y-4">
+      <div class="text-center py-16 text-gray-400">
+        <div class="text-4xl mb-3">⏳</div>
+        <p>กำลังโหลดข้อมูล...</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Approve modal -->
+<div id="modal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 hidden">
+  <div class="bg-white rounded-3xl p-6 max-w-lg w-full shadow-2xl">
+    <h3 class="text-lg font-bold text-gray-900 mb-4" id="modalTitle">รายละเอียดการสมัคร</h3>
+    <div id="modalBody" class="space-y-2 text-sm text-gray-700 mb-6 max-h-80 overflow-y-auto"></div>
+    <div class="flex gap-3">
+      <button id="approveBtn" class="flex-1 bg-green-500 text-white py-3 rounded-xl font-bold hover:bg-green-600 transition-all">✓ อนุมัติ</button>
+      <button id="rejectBtn" class="flex-1 bg-red-500 text-white py-3 rounded-xl font-bold hover:bg-red-600 transition-all">✗ ปฏิเสธ</button>
+      <button id="modalClose" class="px-4 py-3 rounded-xl border-2 border-gray-200 text-gray-600 hover:border-gray-300 transition-all font-semibold">ปิด</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { onAuthChange, initNavAuth } from './js/auth.js';
+
+// Admin UIDs — เพิ่ม UID ของ admin ที่นี่
+const ADMIN_UIDS = ['REPLACE_WITH_YOUR_FIREBASE_UID'];
+
+initNavAuth();
+
+let db, collection, query, getDocs, doc, updateDoc, addDoc, serverTimestamp, orderBy, where;
+let currentFilter = 'pending';
+let allDocs = [];
+let currentDocId = null;
+
+onAuthChange(async user => {
+  if (!user || !ADMIN_UIDS.includes(user.uid)) {
+    document.getElementById('accessDenied').classList.remove('hidden');
+    return;
+  }
+  document.getElementById('adminContent').classList.remove('hidden');
+  await initFirestore();
+  loadApplications('pending');
+});
+
+async function initFirestore() {
+  const { db: _db } = await import('./js/firebase-config.js');
+  const fs = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+  db = _db;
+  ({ collection, query, getDocs, doc, updateDoc, addDoc, serverTimestamp, orderBy, where } = fs);
+}
+
+async function loadApplications(status) {
+  const list = document.getElementById('applicationsList');
+  list.innerHTML = '<div class="text-center py-16 text-gray-400"><div class="text-4xl mb-3">⏳</div><p>กำลังโหลด...</p></div>';
+  try {
+    let q;
+    if (status === 'all') {
+      q = query(collection(db, 'pending_places'), orderBy('createdAt', 'desc'));
+    } else {
+      q = query(collection(db, 'pending_places'), where('status', '==', status), orderBy('createdAt', 'desc'));
+    }
+    const snap = await getDocs(q);
+
+    // Stats
+    const allSnap = await getDocs(collection(db, 'pending_places'));
+    const placesSnap = await getDocs(collection(db, 'places'));
+    let pending = 0, approved = 0, rejected = 0;
+    allSnap.forEach(d => {
+      const s = d.data().status;
+      if (s === 'pending' || !s) pending++;
+      else if (s === 'approved') approved++;
+      else if (s === 'rejected') rejected++;
+    });
+    document.getElementById('statPending').textContent = pending;
+    document.getElementById('statApproved').textContent = approved;
+    document.getElementById('statRejected').textContent = rejected;
+    document.getElementById('statPlaces').textContent = placesSnap.size;
+
+    allDocs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+    if (snap.empty) {
+      list.innerHTML = '<div class="text-center py-16 text-gray-400"><div class="text-4xl mb-3">✅</div><p>ไม่มีรายการในหมวดนี้</p></div>';
+      return;
+    }
+
+    list.innerHTML = allDocs.map(d => {
+      const statusCls = d.status === 'approved' ? 'bg-green-100 text-green-700' : d.status === 'rejected' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700';
+      const statusTh = d.status === 'approved' ? 'อนุมัติแล้ว' : d.status === 'rejected' ? 'ถูกปฏิเสธ' : 'รอการอนุมัติ';
+      const date = d.createdAt?.toDate ? d.createdAt.toDate().toLocaleDateString('th-TH', { year:'numeric', month:'short', day:'numeric' }) : '—';
+      const pets = Array.isArray(d.pets) ? d.pets.join(', ') : d.pets || '—';
+      return `
+        <div class="bg-white rounded-2xl p-5 border border-gray-100 hover:border-orange-200 transition-colors cursor-pointer" onclick="openModal('${d.id}')">
+          <div class="flex items-start justify-between gap-4">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="font-bold text-gray-900">${d.name || 'ไม่มีชื่อ'}</span>
+                <span class="text-xs px-2 py-0.5 rounded-full font-semibold ${statusCls}">${statusTh}</span>
+              </div>
+              <div class="text-sm text-gray-500 mt-1 truncate">${d.address || '—'}</div>
+              <div class="flex gap-4 mt-2 text-xs text-gray-400">
+                <span>📋 ${d.type || '—'}</span>
+                <span>🐾 ${pets}</span>
+                <span>📅 ${date}</span>
+              </div>
+            </div>
+            <div class="flex gap-2 flex-shrink-0">
+              ${d.status !== 'approved' ? `<button onclick="event.stopPropagation();quickAction('${d.id}','approved')" class="bg-green-500 text-white px-3 py-1.5 rounded-xl text-xs font-bold hover:bg-green-600 transition-all">✓ อนุมัติ</button>` : ''}
+              ${d.status !== 'rejected' ? `<button onclick="event.stopPropagation();quickAction('${d.id}','rejected')" class="bg-red-100 text-red-600 px-3 py-1.5 rounded-xl text-xs font-bold hover:bg-red-200 transition-all">✗</button>` : ''}
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+  } catch (e) {
+    list.innerHTML = `<div class="bg-red-50 rounded-2xl p-6 text-red-700 text-sm">เกิดข้อผิดพลาด: ${e.message}</div>`;
+  }
+}
+
+window.openModal = function(id) {
+  currentDocId = id;
+  const d = allDocs.find(x => x.id === id);
+  if (!d) return;
+  document.getElementById('modalTitle').textContent = d.name || 'ไม่มีชื่อ';
+  document.getElementById('modalBody').innerHTML = Object.entries({
+    'ประเภท': d.type, 'ที่อยู่': d.address, 'เมือง': d.city, 'จังหวัด': d.province,
+    'โทรศัพท์': d.phone, 'เว็บไซต์': d.website, 'Facebook': d.facebook,
+    'สัตว์ที่รับ': Array.isArray(d.pets) ? d.pets.join(', ') : d.pets,
+    'บริการ': Array.isArray(d.services) ? d.services.join(', ') : d.services,
+    'เปิด-ปิด': d.hours, 'ราคา': d.priceRange, 'รายละเอียด': d.description,
+    'ชื่อผู้ติดต่อ': d.contactName, 'อีเมลผู้ติดต่อ': d.contactEmail, 'สถานะ': d.status
+  }).filter(([,v]) => v).map(([k,v]) => `<div class="flex gap-2"><span class="font-semibold text-gray-600 w-32 flex-shrink-0">${k}:</span><span>${v}</span></div>`).join('');
+  document.getElementById('modal').classList.remove('hidden');
+};
+
+window.quickAction = async function(id, status) {
+  await updateDoc(doc(db, 'pending_places', id), { status, updatedAt: serverTimestamp() });
+  if (status === 'approved') {
+    const d = allDocs.find(x => x.id === id);
+    if (d) await copyToPlaces(d);
+  }
+  loadApplications(currentFilter);
+};
+
+async function copyToPlaces(d) {
+  const placeData = {
+    name: d.name || '', type: d.type || 'shop', address: d.address || '',
+    city: d.city || '', province: d.province || '', phone: d.phone || '',
+    website: d.website || '', facebook: d.facebook || '',
+    pets: d.pets || [], services: d.services || [], hours: d.hours || '',
+    priceRange: d.priceRange || '฿', description: d.description || '',
+    rating: 0, reviews: 0, lat: 13.7563, lng: 100.5018,
+    createdAt: serverTimestamp()
+  };
+  await addDoc(collection(db, 'places'), placeData);
+}
+
+document.getElementById('approveBtn').addEventListener('click', async () => {
+  if (!currentDocId) return;
+  await quickAction(currentDocId, 'approved');
+  document.getElementById('modal').classList.add('hidden');
+});
+
+document.getElementById('rejectBtn').addEventListener('click', async () => {
+  if (!currentDocId) return;
+  await quickAction(currentDocId, 'rejected');
+  document.getElementById('modal').classList.add('hidden');
+});
+
+document.getElementById('modalClose').addEventListener('click', () => {
+  document.getElementById('modal').classList.add('hidden');
+});
+
+document.querySelectorAll('.filter-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-tab').forEach(b => {
+      b.className = 'filter-tab px-5 py-2.5 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 transition-all';
+    });
+    btn.className = 'filter-tab active px-5 py-2.5 rounded-xl text-sm font-semibold border-2 border-brand-orange bg-brand-orange text-white transition-all';
+    currentFilter = btn.dataset.status;
+    loadApplications(currentFilter);
+  });
+});
+</script>
+</body>
+</html>
