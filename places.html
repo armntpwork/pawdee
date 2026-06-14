@@ -67,13 +67,23 @@
 </nav>
 
 <!-- Hero -->
-<section class="pt-24 pb-8 bg-gradient-to-b from-orange-50 to-brand-cream">
+<section class="pt-24 pb-10 paw-bg bg-brand-cream">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-    <div class="text-4xl mb-3">🗺️</div>
-    <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-3">
-      สถานที่ <span class="text-brand-orange">Pet-Friendly</span>
+
+    <!-- Badge -->
+    <div class="inline-flex items-center gap-2 bg-orange-100 text-brand-orange text-sm font-bold px-4 py-2 rounded-full mb-6">
+      <span class="w-2 h-2 bg-brand-orange rounded-full animate-pulse"></span>
+      ค้นหาสถานที่ Pet-Friendly ทั่วไทย
+    </div>
+
+    <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-900 mb-4 leading-tight">
+      ทุกที่ที่น้องของคุณ<br/>
+      <span class="gradient-text">ไปได้</span>
     </h1>
-    <p class="text-gray-500 mb-8">ร้านอาหาร คาเฟ่ โรงแรม คลินิก และอีกมากมายที่ต้อนรับน้องของคุณ</p>
+    <p class="text-lg text-gray-500 mb-8 max-w-xl mx-auto leading-relaxed">
+      ร้านอาหาร คาเฟ่ โรงแรม คลินิก และอีกมากมาย<br class="hidden sm:block"/>
+      ที่ต้อนรับน้องของคุณทั่วประเทศไทย
+    </p>
 
     <!-- Search Bar -->
     <div class="max-w-2xl mx-auto relative">
@@ -86,8 +96,21 @@
         id="searchInput"
         type="text"
         placeholder="ค้นหาชื่อสถานที่, เขต, หรือเมือง..."
-        class="w-full pl-12 pr-4 py-4 rounded-2xl border-2 border-orange-200 bg-white shadow-sm focus:outline-none focus:border-brand-orange transition-colors text-gray-800 placeholder-gray-400"
+        class="w-full pl-12 pr-4 py-4 rounded-2xl border-2 border-orange-200 bg-white shadow-md focus:outline-none focus:border-brand-orange transition-colors text-gray-800 placeholder-gray-400"
       />
+    </div>
+
+    <!-- Quick stats -->
+    <div class="flex items-center justify-center gap-6 mt-6 text-sm text-gray-500">
+      <span>☕ คาเฟ่</span>
+      <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
+      <span>🏨 โรงแรม</span>
+      <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
+      <span>🏥 คลินิก</span>
+      <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
+      <span>🛁 อาบน้ำ-ตัดขน</span>
+      <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
+      <span>🛍️ Pet Shop</span>
     </div>
   </div>
 </section>
