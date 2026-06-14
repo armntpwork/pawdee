@@ -460,19 +460,24 @@
     }
 
     try {
-      // timeout 8 วินาที เผื่อ Firestore ช้า
+      // timeout 10 วินาที เผื่อ Firestore ช้า
       const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('timeout')), 8000)
+        setTimeout(() => reject(new Error('timeout')), 10000)
       );
       const snap = await Promise.race([
         getDocs(query(collection(db, 'places'), orderBy('rating', 'desc'))),
         timeoutPromise,
       ]);
 
-      if (snap.empty) throw new Error('empty');
-
-      allPlaces = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      usingDemo = false;
+      if (snap.empty) {
+        // Firebase config OK แต่ยังไม่มีข้อมูล — ใช้ demo พร้อมบอก admin ให้ seed
+        usingDemo = true;
+        allPlaces = DEMO_PLACES;
+        document.getElementById('configBanner').classList.remove('hidden');
+      } else {
+        allPlaces = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        usingDemo = false;
+      }
 
     } catch (err) {
       usingDemo = true;
