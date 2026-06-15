@@ -89,11 +89,6 @@
       background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23F97316' fill-opacity='0.05'%3E%3Cellipse cx='15' cy='10' rx='4' ry='5'/%3E%3Cellipse cx='30' cy='8' rx='4' ry='5'/%3E%3Cellipse cx='45' cy='10' rx='4' ry='5'/%3E%3Cellipse cx='8' cy='22' rx='4' ry='5'/%3E%3Cellipse cx='52' cy='22' rx='4' ry='5'/%3E%3Cellipse cx='30' cy='35' rx='12' ry='14'/%3E%3C/g%3E%3C/svg%3E");
     }
 
-    /* Animal parade marquee */
-    .marquee-track { display:flex; gap:2rem; animation: marquee 28s linear infinite; width:max-content; }
-    @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-    .marquee-track:hover { animation-play-state: paused; }
-
     /* Wiggle on hover */
     .wiggle:hover { animation: wiggle 0.5s ease; }
     @keyframes wiggle {
@@ -193,7 +188,7 @@
         <!-- Badge -->
         <div class="inline-flex items-center gap-2 bg-orange-100 text-brand-orange px-4 py-2 rounded-full text-sm font-semibold mb-6">
           <span class="w-2 h-2 bg-brand-orange rounded-full animate-pulse"></span>
-          กำลังจะเปิดตัวเร็วๆ นี้ 🚀
+          เปิด Early Access แล้วครับ ✨
         </div>
 
         <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight text-gray-900 mb-6">
@@ -226,7 +221,7 @@
             <div class="w-9 h-9 rounded-full border-2 border-white bg-yellow-200 flex items-center justify-center text-sm">🐾</div>
           </div>
           <p class="text-sm text-gray-600">
-            <span class="font-bold text-gray-900">1,200+</span> คนสนใจแล้ว
+            <span class="font-bold text-gray-900">100+</span> คนสนใจแล้ว
           </p>
         </div>
       </div>
@@ -274,39 +269,6 @@
     </svg>
   </div>
 </section>
-
-<!-- ===== ANIMAL PARADE ===== -->
-<div class="bg-white border-y border-orange-100 py-4 overflow-hidden">
-  <div class="marquee-track select-none" aria-hidden="true">
-    <span class="wiggle inline-block text-4xl cursor-default">🐕</span>
-    <span class="text-sm font-semibold text-gray-400 self-center">สุนัข</span>
-    <span class="wiggle inline-block text-4xl cursor-default">🐈</span>
-    <span class="text-sm font-semibold text-gray-400 self-center">แมว</span>
-    <span class="wiggle inline-block text-4xl cursor-default">🐇</span>
-    <span class="text-sm font-semibold text-gray-400 self-center">กระต่าย</span>
-    <span class="wiggle inline-block text-4xl cursor-default">🦜</span>
-    <span class="text-sm font-semibold text-gray-400 self-center">นก</span>
-    <span class="wiggle inline-block text-4xl cursor-default">🐹</span>
-    <span class="text-sm font-semibold text-gray-400 self-center">แฮมสเตอร์</span>
-    <span class="wiggle inline-block text-4xl cursor-default">🐟</span>
-    <span class="text-sm font-semibold text-gray-400 self-center">ปลา</span>
-    <span class="text-brand-orange font-bold text-sm self-center">🐾 PawDee รับทุกน้อง</span>
-    <!-- duplicate for seamless loop -->
-    <span class="wiggle inline-block text-4xl cursor-default">🐕</span>
-    <span class="text-sm font-semibold text-gray-400 self-center">สุนัข</span>
-    <span class="wiggle inline-block text-4xl cursor-default">🐈</span>
-    <span class="text-sm font-semibold text-gray-400 self-center">แมว</span>
-    <span class="wiggle inline-block text-4xl cursor-default">🐇</span>
-    <span class="text-sm font-semibold text-gray-400 self-center">กระต่าย</span>
-    <span class="wiggle inline-block text-4xl cursor-default">🦜</span>
-    <span class="text-sm font-semibold text-gray-400 self-center">นก</span>
-    <span class="wiggle inline-block text-4xl cursor-default">🐹</span>
-    <span class="text-sm font-semibold text-gray-400 self-center">แฮมสเตอร์</span>
-    <span class="wiggle inline-block text-4xl cursor-default">🐟</span>
-    <span class="text-sm font-semibold text-gray-400 self-center">ปลา</span>
-    <span class="text-brand-orange font-bold text-sm self-center">🐾 PawDee รับทุกน้อง</span>
-  </div>
-</div>
 
 <!-- ===== PROBLEM SECTION ===== -->
 <section class="bg-white py-16">
@@ -522,28 +484,28 @@
 <section id="community" class="bg-gradient-to-br from-orange-500 to-amber-500 py-20">
   <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="text-center mb-12">
-      <h2 class="text-3xl font-bold text-white">เป้าหมายที่เราตั้งไว้</h2>
-      <p class="text-orange-100 mt-2">ภายในปีแรกหลังเปิดตัว</p>
+      <h2 class="text-3xl font-bold text-white">ตอนนี้มีอะไรบ้างแล้ว</h2>
+      <p class="text-orange-100 mt-2">ตัวเลขจริง ณ วันนี้ — ยังเล็กอยู่ แต่กำลังโตทุกวัน</p>
     </div>
     <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center text-white">
       <div class="bg-white/10 backdrop-blur rounded-3xl p-6 hover:bg-white/20 transition-colors">
         <div class="text-4xl mb-2">🐾</div>
-        <div class="text-4xl font-extrabold mb-1">50K+</div>
+        <div class="text-4xl font-extrabold mb-1">500+</div>
         <div class="text-orange-100 text-sm font-medium">เจ้าของสัตว์เลี้ยง</div>
       </div>
       <div class="bg-white/10 backdrop-blur rounded-3xl p-6 hover:bg-white/20 transition-colors">
         <div class="text-4xl mb-2">🐶</div>
-        <div class="text-4xl font-extrabold mb-1">5K+</div>
+        <div class="text-4xl font-extrabold mb-1">50+</div>
         <div class="text-orange-100 text-sm font-medium">พี่เลี้ยงที่ verify แล้ว</div>
       </div>
       <div class="bg-white/10 backdrop-blur rounded-3xl p-6 hover:bg-white/20 transition-colors">
         <div class="text-4xl mb-2">🏪</div>
-        <div class="text-4xl font-extrabold mb-1">2K+</div>
+        <div class="text-4xl font-extrabold mb-1">1K+</div>
         <div class="text-orange-100 text-sm font-medium">ร้านและสถานที่</div>
       </div>
       <div class="bg-white/10 backdrop-blur rounded-3xl p-6 hover:bg-white/20 transition-colors">
         <div class="text-4xl mb-2">🏥</div>
-        <div class="text-4xl font-extrabold mb-1">500+</div>
+        <div class="text-4xl font-extrabold mb-1">50+</div>
         <div class="text-orange-100 text-sm font-medium">คลินิกสัตวแพทย์</div>
       </div>
     </div>
@@ -626,6 +588,52 @@
         </div>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- ===== FOUNDER'S NOTE ===== -->
+<section class="bg-white py-20">
+  <div class="max-w-2xl mx-auto px-4 sm:px-6">
+
+    <!-- Quote mark -->
+    <div class="text-6xl text-orange-200 font-serif leading-none mb-4 select-none">"</div>
+
+    <div class="space-y-4 text-gray-700 leading-relaxed text-base sm:text-lg">
+      <p>
+        มีวันหนึ่งที่ผมได้รับโทรศัพท์จากแม่ที่บ้านว่า <strong class="text-gray-900">น้องแมวโดนรถเหยียบ</strong>
+        กระดูกน่าจะหัก หมดแรงแล้ว
+      </p>
+      <p>
+        ตอนนั้นผมอยู่กรุงเทพฯ พ่ออยู่ที่ทำงาน <strong class="text-gray-900">แม่อยู่บ้านคนเดียว</strong>
+        แม่ไม่ค่อยถนัดเรื่องเทคโนโลยี จะหาว่าคลินิกสัตว์ไหนเปิดอยู่ ใกล้บ้านแค่ไหน
+        รับสัตว์ป่วยฉุกเฉินได้เลยไหม — ไม่รู้จะเริ่มหาจากไหนสักที
+      </p>
+      <p>
+        น้องแมวรอดมาได้ แต่ผมยังนึกไม่ออกว่าถ้าช้ากว่านั้นมันจะเป็นยังไง
+      </p>
+      <p>
+        อีกเหตุการณ์คือตอนทำงานร้านกาแฟ Pet-Friendly แห่งหนึ่ง เราอนุญาตให้พาน้องเข้าได้
+        <strong class="text-gray-900">แต่ต้องอยู่โซนข้างนอกเท่านั้น</strong>
+        ลูกค้าหลายคนไม่รู้ พาหมาเข้ามานั่งในร้าน กลายเป็นเรื่องเข้าใจผิดกันทั้งสองฝ่าย
+        ทั้งที่จริงๆ แค่มีข้อมูลที่ชัดกว่านี้ก็ไม่มีปัญหาแล้ว
+      </p>
+      <p>
+        PawDee เลยเกิดมาจากสองเหตุการณ์นี้ครับ
+        หาคลินิกตอนฉุกเฉินไม่ได้ และข้อมูลร้าน Pet-Friendly ที่ไม่ครบ
+        ยังเป็นแค่จุดเริ่มต้น แต่ถ้ามันช่วยแม่ของใครสักคนได้
+        <strong class="text-gray-900">ก็คุ้มแล้วครับ</strong>
+      </p>
+    </div>
+
+    <!-- Signature -->
+    <div class="flex items-center gap-4 mt-8 pt-6 border-t border-gray-100">
+      <div class="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center text-2xl flex-shrink-0">🐱</div>
+      <div>
+        <div class="font-bold text-gray-900">อาร์ม</div>
+        <div class="text-sm text-gray-500">ผู้สร้าง PawDee · เจ้าของน้องแมว</div>
+      </div>
+    </div>
+
   </div>
 </section>
 
