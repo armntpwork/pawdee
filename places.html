@@ -48,6 +48,7 @@
     .badge-clinic   { background:#FCE4EC; color:#AD1457; }
     .badge-grooming { background:#E8F5E9; color:#2E7D32; }
     .badge-condo    { background:#E0F2F1; color:#00695C; }
+  
     .badge-park     { background:#F1F8E9; color:#558B2F; }
     .badge-shop     { background:#FFF8E1; color:#F57F17; }
     .filter-btn { transition: all 0.2s; }
@@ -67,6 +68,7 @@
     .logo-frame-basic   { border:3px solid #F97316; box-shadow:0 2px 10px rgba(249,115,22,0.35); }
     .logo-frame-premium { border:3px solid #FBBF24; box-shadow:0 0 14px rgba(251,191,36,0.55); }
   </style>
+  <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
 </head>
 <body class="bg-brand-cream text-gray-800 antialiased">
 
@@ -206,7 +208,7 @@
           <div class="font-bold mb-1">ขั้นตอน:</div>
           <div>1. สร้าง Firebase project ที่ console.firebase.google.com</div>
           <div>2. แก้ไข js/firebase-config.js ใส่ config จริง</div>
-          <div>3. เปิด admin-seed.html แล้วกดปุ่ม Seed</div>
+          <div>3. เปิด admin-seed.html แล้วกดปุ��ม Seed</div>
           <div>4. reload หน้านี้</div>
         </div>
       </div>
@@ -631,7 +633,7 @@
                 📞 โทร
               </a>` : ''}
             <button class="detail-btn flex-1 bg-brand-orange text-white py-2 rounded-xl text-sm font-semibold hover:bg-brand-orange-deep transition-colors" data-id="${place.id}">
-              ดูรายละเอียด
+              ดูรายล�����อียด
             </button>
           </div>
         </div>
@@ -798,7 +800,7 @@
       err => {
         txt.textContent = 'หาร้านใกล้ฉัน'; btn.disabled = false;
         if (err.code === 1) alert('กรุณาอนุญาตให้เข้าถึงตำแหน่งในเบราว์เซอร์ก่อนนะครับ 🙏');
-        else alert('ไม่สามารถระบุตำแหน่งได้ ลองอีกครั้งครับ');
+        else alert('ไม่สามารถระบุตำแหน่งไ���้ ลองอีกครั้งครับ');
       },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
     );

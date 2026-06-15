@@ -48,6 +48,7 @@
     .pulse-dot { width:10px; height:10px; border-radius:50%; background:#EF4444; box-shadow:0 0 0 0 rgba(239,68,68,0.4); animation:pulse-ring 1.5s infinite; }
     @keyframes pulse-ring { 0% { box-shadow:0 0 0 0 rgba(239,68,68,0.4); } 70% { box-shadow:0 0 0 10px rgba(239,68,68,0); } 100% { box-shadow:0 0 0 0 rgba(239,68,68,0); } }
   </style>
+  <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
 </head>
 <body class="bg-brand-cream text-gray-800 antialiased">
 
@@ -102,7 +103,7 @@
         <div>
           <div class="font-bold text-red-700 mb-2">สัญญาณฉุกเฉินที่ต้องพาไปหาหมอทันที</div>
           <div class="text-sm text-red-600 grid grid-cols-1 sm:grid-cols-2 gap-1">
-            <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 bg-red-400 rounded-full flex-shrink-0"></span>หยุดหายใจหรือหายใจลำบาก</span>
+            <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 bg-red-400 rounded-full flex-shrink-0"></span>หยุดหายใจหรือ���ายใจลำบาก</span>
             <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 bg-red-400 rounded-full flex-shrink-0"></span>ชัก หมดสติ ล้มลง</span>
             <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 bg-red-400 rounded-full flex-shrink-0"></span>เลือดออกมาก บาดแผลลึก</span>
             <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 bg-red-400 rounded-full flex-shrink-0"></span>กินยา/สารพิษเข้าไป</span>
@@ -224,7 +225,7 @@ let map, markers = [];
 const mapEl = document.getElementById('map');
 map = L.map(mapEl).setView([13.7563, 100.5018], 11);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '© OpenStreetMap contributors', maxZoom: 19
+  attribution: '�� OpenStreetMap contributors', maxZoom: 19
 }).addTo(map);
 
 function addMarkers(list) {
