@@ -119,6 +119,49 @@
     }
     .stat-animate { animation: countUp 0.6s ease forwards; }
   </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://pawdee.vercel.app/#website",
+        "url": "https://pawdee.vercel.app/",
+        "name": "PawDee",
+        "description": "ศูนย์กลางข้อมูล รีวิว และชุมชนสำหรับเจ้าของสัตว์เลี้ยงในไทย",
+        "inLanguage": "th",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://pawdee.vercel.app/places?q={search_term_string}"
+          },
+          "query-input": "required name=search_term_string"
+        }
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://pawdee.vercel.app/#organization",
+        "name": "PawDee",
+        "url": "https://pawdee.vercel.app/",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://pawdee.vercel.app/logo+name.png"
+        },
+        "sameAs": [
+          "https://www.facebook.com/pawdeepet/",
+          "https://www.instagram.com/pawdeepet"
+        ],
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "email": "armntp.work@gmail.com",
+          "contactType": "customer service",
+          "availableLanguage": "Thai"
+        }
+      }
+    ]
+  }
+  </script>
 </head>
 <body class="bg-brand-cream text-gray-800 antialiased overflow-x-hidden">
 
@@ -233,7 +276,7 @@
         <div class="absolute inset-0 bg-gradient-radial from-orange-100/60 to-transparent rounded-full scale-110 blur-2xl pointer-events-none"></div>
 
         <!-- Animals image -->
-        <img src="animals-hero.png.png" alt="น้องสัตว์น่ารัก" class="relative z-10 w-full max-w-lg drop-shadow-2xl animate-float" style="filter: drop-shadow(0 20px 40px rgba(249,115,22,0.15));"/>
+        <img src="animals-hero.png.png" alt="สุนัข แมว และสัตว์เลี้ยงในสถานที่ Pet-Friendly กับ PawDee" class="relative z-10 w-full max-w-lg drop-shadow-2xl animate-float" style="filter: drop-shadow(0 20px 40px rgba(249,115,22,0.15));"/>
 
         <!-- Floating badges -->
         <div class="animate-float-delay absolute top-8 right-4 bg-white rounded-2xl shadow-xl px-4 py-3 flex items-center gap-3 z-20">

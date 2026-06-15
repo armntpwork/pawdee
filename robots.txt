@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+Disallow: /admin
+Disallow: /admin-seed
+Disallow: /generate-icon
+
+Sitemap: https://pawdee.vercel.app/sitemap.xml

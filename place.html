@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>สถานที่ Pet-Friendly | PawDee</title>
+  <link rel="icon" href="Pawdee Logo.png" type="image/png"/>
+  <link rel="manifest" href="/manifest.json"/>
+  <link rel="apple-touch-icon" href="/icon-512.png"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+  <meta name="apple-mobile-web-app-title" content="PawDee"/>
+  <meta name="description" content="ข้อมูลสถานที่ Pet-Friendly บน PawDee — รายละเอียด ที่อยู่ นโยบายสัตว์เลี้ยง และรีวิวจากเจ้าของจริง"/>
+  <meta property="og:type" content="place"/>
+  <meta property="og:site_name" content="PawDee"/>
+  <meta property="og:locale" content="th_TH"/>
+  <meta property="og:image" content="https://pawdee.vercel.app/animals-hero.png.png"/>
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { brand: { orange: '#F97316', 'orange-deep': '#EA580C', cream: '#FFFBEB' } },
+          fontFamily: { sans: ['Kanit', 'ui-sans-serif'] }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { font-family: 'Kanit', sans-serif; }
+    html { scroll-behavior: smooth; }
+    .nav-glass { background: rgba(255,255,255,0.92); backdrop-filter: blur(12px); }
+    .badge-cafe      { background:#FFF3E0; color:#E65100; }
+    .badge-hotel     { background:#E3F2FD; color:#1565C0; }
+    .badge-restaurant{ background:#F3E5F5; color:#6A1B9A; }
+    .badge-clinic    { background:#FCE4EC; color:#AD1457; }
+    .badge-grooming  { background:#E8F5E9; color:#2E7D32; }
+    .badge-condo     { background:#E0F2F1; color:#00695C; }
+    .badge-park      { background:#F1F8E9; color:#558B2F; }
+    .badge-shop      { background:#FFF8E1; color:#F57F17; }
+    .logo-frame-free    { border:3px solid white; box-shadow:0 2px 8px rgba(0,0,0,0.18); }
+    .logo-frame-basic   { border:3px solid #F97316; box-shadow:0 2px 10px rgba(249,115,22,0.35); }
+    .logo-frame-premium { border:3px solid #FBBF24; box-shadow:0 0 14px rgba(251,191,36,0.55); }
+    .pet-policy-row { display:flex; align-items:flex-start; gap:0.75rem; padding:0.75rem 0; border-bottom:1px solid #F3F4F6; }
+    .pet-policy-row:last-child { border-bottom:none; }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800 antialiased">
+
+<!-- Navbar -->
+<nav class="nav-glass fixed top-0 left-0 right-0 z-50 border-b border-orange-100">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      <a href="index.html" class="flex items-center gap-2">
+        <img src="Pawdee Logo.png" alt="PawDee" class="h-8 w-auto"/>
+        <span class="text-xl font-bold text-gray-900">Paw<span class="text-brand-orange">Dee</span></span>
+      </a>
+      <div class="hidden md:flex items-center gap-8">
+        <a href="places.html" class="text-brand-orange font-semibold text-sm">🗺️ สถานที่</a>
+        <a href="sitters.html" class="text-gray-600 hover:text-brand-orange transition-colors font-medium text-sm">🧑 พี่เลี้ยง</a>
+        <a href="emergency.html" class="text-gray-600 hover:text-red-500 transition-colors font-medium text-sm">🚨 คลินิกฉุกเฉิน</a>
+        <a href="register-business.html" class="text-gray-600 hover:text-brand-orange transition-colors font-medium text-sm">สำหรับธุรกิจ</a>
+      </div>
+      <div id="navAuth"></div>
+      <button id="mobileMenuBtn" class="md:hidden p-2 rounded-lg hover:bg-orange-50 ml-2">
+        <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </div>
+  </div>
+  <div id="mobileMenu" class="hidden md:hidden border-t border-orange-100 bg-white px-4 py-4 space-y-3">
+    <a href="places.html" class="block text-brand-orange font-semibold py-1">🗺️ สถานที่ Pet-Friendly</a>
+    <a href="sitters.html" class="block text-gray-700 hover:text-brand-orange font-medium py-1">🧑 พี่เลี้ยงสัตว์</a>
+    <a href="emergency.html" class="block text-gray-700 hover:text-red-500 font-medium py-1">🚨 คลินิกฉุกเฉิน</a>
+    <a href="register-business.html" class="block text-gray-700 hover:text-brand-orange font-medium py-1">🏪 สำหรับธุรกิจ</a>
+  </div>
+</nav>
+
+<!-- Loading State -->
+<div id="loadingState" class="pt-24 pb-16 min-h-screen flex items-center justify-center">
+  <div class="text-center">
+    <div class="text-5xl mb-4 animate-bounce">🐾</div>
+    <p class="text-gray-500 font-medium">กำลังโหลดข้อมูล...</p>
+  </div>
+</div>
+
+<!-- Error State -->
+<div id="errorState" class="hidden pt-24 pb-16 min-h-screen flex items-center justify-center">
+  <div class="text-center max-w-md mx-auto px-4">
+    <div class="text-6xl mb-4">😿</div>
+    <h1 class="text-2xl font-bold text-gray-900 mb-2">ไม่พบสถานที่นี้</h1>
+    <p class="text-gray-500 mb-6">อาจถูกลบออกจากระบบหรือ URL ไม่ถูกต้อง</p>
+    <a href="places.html" class="inline-flex items-center gap-2 bg-brand-orange text-white px-6 py-3 rounded-2xl font-semibold hover:bg-brand-orange-deep transition-colors">
+      ← ค้นหาสถานที่อื่น
+    </a>
+  </div>
+</div>
+
+<!-- Place Content (hidden until loaded) -->
+<div id="placeContent" class="hidden">
+
+  <!-- Hero Image -->
+  <div class="relative h-64 sm:h-80 lg:h-96 bg-gray-200 overflow-hidden mt-16">
+    <img id="heroImg" src="" alt="" class="w-full h-full object-cover"/>
+    <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+    <!-- Logo overlay -->
+    <div id="logoOverlay" class="hidden absolute bottom-4 left-4">
+      <div id="logoFrame" class="w-16 h-16 rounded-2xl overflow-hidden bg-white">
+        <img id="logoImg" src="" alt="" class="w-full h-full object-cover"/>
+      </div>
+    </div>
+    <!-- Tier badge -->
+    <div id="tierBadge" class="hidden absolute top-4 right-4"></div>
+    <!-- Emergency badge -->
+    <div id="emergencyBadge" class="hidden absolute top-4 left-4 bg-red-500 text-white text-xs font-bold px-3 py-1.5 rounded-xl">🚨 24 ชม.</div>
+  </div>
+
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+
+    <!-- Breadcrumb (SEO: helps Google understand page hierarchy) -->
+    <nav aria-label="breadcrumb" class="mb-4">
+      <ol class="flex items-center gap-2 text-sm text-gray-400">
+        <li><a href="index.html" class="hover:text-brand-orange transition-colors">PawDee</a></li>
+        <li><span class="text-gray-300">›</span></li>
+        <li><a href="places.html" class="hover:text-brand-orange transition-colors">ค้นหาสถานที่ Pet-Friendly</a></li>
+        <li><span class="text-gray-300">›</span></li>
+        <li id="breadcrumbName" class="text-gray-600 font-medium truncate max-w-48"></li>
+      </ol>
+    </nav>
+
+    <!-- Place Header -->
+    <div class="mb-6">
+      <div class="flex flex-wrap items-center gap-2 mb-3">
+        <span id="typeBadge" class="inline-flex items-center gap-1 text-xs font-semibold px-3 py-1 rounded-full"></span>
+        <span id="verifiedBadge" class="hidden inline-flex items-center gap-1.5 text-xs font-semibold text-green-600 bg-green-50 px-3 py-1 rounded-full border border-green-200">
+          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+          Verified
+        </span>
+      </div>
+
+      <h1 id="placeName" class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-2 leading-tight"></h1>
+
+      <div class="flex flex-wrap items-center gap-4 text-sm text-gray-500 mb-4">
+        <span id="placeAddress" class="flex items-start gap-1.5">
+          <span class="mt-0.5 flex-shrink-0">📍</span>
+          <span></span>
+        </span>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-4">
+        <div class="flex items-center gap-1.5">
+          <span class="text-yellow-500 text-lg">⭐</span>
+          <span id="placeRating" class="text-xl font-extrabold text-gray-900"></span>
+          <span id="placeReviewCount" class="text-gray-400 text-sm"></span>
+        </div>
+        <div class="flex items-center gap-1.5 text-sm text-gray-600">
+          <span>🕐</span>
+          <span id="placeHours"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid lg:grid-cols-3 gap-6">
+
+      <!-- Left column: main info -->
+      <div class="lg:col-span-2 space-y-6">
+
+        <!-- Pet-Friendly Details (คีย์ข้อมูล SEO หลัก) -->
+        <div class="bg-white rounded-3xl p-6 shadow-sm border border-orange-100">
+          <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+            🐾 นโยบายสัตว์เลี้ยง
+            <span class="text-xs font-normal text-gray-400">(ข้อมูลที่ Google Maps ไม่มี)</span>
+          </h2>
+
+          <div id="petPolicyRows"></div>
+
+          <div id="allowedPetsSection" class="mt-4 pt-4 border-t border-gray-100">
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">สัตว์เลี้ยงที่รับ</p>
+            <div id="allowedPetsChips" class="flex flex-wrap gap-2"></div>
+          </div>
+        </div>
+
+        <!-- Reviews -->
+        <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+          <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+            💬 รีวิวจากเจ้าของสัตว์เลี้ยง
+            <span id="reviewCountBadge" class="text-xs bg-orange-100 text-brand-orange font-bold px-2 py-0.5 rounded-full"></span>
+          </h2>
+          <div id="reviewsList">
+            <div class="text-center py-8 text-gray-400">
+              <div class="text-3xl mb-2">📝</div>
+              <p class="text-sm">กำลังโหลดรีวิว...</p>
+            </div>
+          </div>
+          <div id="writeReviewCta" class="hidden mt-4 pt-4 border-t border-gray-100 text-center">
+            <a href="places.html" class="inline-flex items-center gap-2 text-brand-orange font-semibold text-sm hover:underline">
+              เขียนรีวิวผ่านหน้าค้นหา →
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right column: contact + actions -->
+      <div class="space-y-4">
+
+        <!-- CTA Actions -->
+        <div class="bg-white rounded-3xl p-5 shadow-sm border border-orange-100">
+          <div id="phoneBtn" class="hidden mb-3">
+            <a id="phoneBtnLink" href="#" class="flex items-center justify-center gap-2 bg-brand-orange text-white py-3.5 px-5 rounded-2xl font-bold text-sm hover:bg-brand-orange-deep transition-colors w-full">
+              📞 โทรเลย
+            </a>
+          </div>
+          <a id="mapsBtn" href="#" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-2 bg-white border-2 border-orange-200 text-gray-700 py-3 px-5 rounded-2xl font-semibold text-sm hover:border-brand-orange hover:text-brand-orange transition-colors w-full mb-3">
+            🗺️ เปิดใน Google Maps
+          </a>
+          <button id="shareBtn" class="flex items-center justify-center gap-2 bg-gray-50 text-gray-600 py-3 px-5 rounded-2xl font-medium text-sm hover:bg-gray-100 transition-colors w-full">
+            🔗 แชร์สถานที่นี้
+          </button>
+        </div>
+
+        <!-- Social / Online Channels -->
+        <div id="socialSection" class="hidden bg-white rounded-3xl p-5 shadow-sm border border-gray-100">
+          <h2 class="text-sm font-bold text-gray-700 mb-3">ช่องทางออนไลน์</h2>
+          <div id="socialLinks" class="space-y-2"></div>
+        </div>
+
+        <!-- Back to search -->
+        <div class="text-center">
+          <a href="places.html" class="inline-flex items-center gap-2 text-gray-500 text-sm hover:text-brand-orange transition-colors font-medium">
+            ← กลับไปค้นหาสถานที่
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="bg-gray-900 text-white py-12 mt-16">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+      <div class="col-span-2 md:col-span-1">
+        <div class="flex items-center gap-2 mb-3">
+          <img src="Pawdee Logo.png" alt="PawDee Logo" class="h-8 w-auto"/>
+          <span class="font-bold text-xl">Paw<span class="text-brand-orange">Dee</span></span>
+        </div>
+        <p class="text-gray-400 text-sm leading-relaxed">ศูนย์กลางข้อมูล รีวิว และชุมชน สำหรับเจ้าของสัตว์เลี้ยงในไทย</p>
+        <div class="flex gap-3 mt-4">
+          <a href="https://www.facebook.com/pawdeepet/" target="_blank" rel="noopener" class="w-9 h-9 bg-white/10 rounded-xl hover:bg-brand-orange transition-colors flex items-center justify-center" aria-label="Facebook PawDee">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+          </a>
+          <a href="https://www.instagram.com/pawdeepet" target="_blank" rel="noopener" class="w-9 h-9 bg-white/10 rounded-xl hover:bg-brand-orange transition-colors flex items-center justify-center" aria-label="Instagram PawDee">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          </a>
+        </div>
+      </div>
+      <div>
+        <h3 class="font-semibold mb-3 text-sm">ฟีเจอร์</h3>
+        <ul class="space-y-2 text-gray-400 text-sm">
+          <li><a href="places.html" class="hover:text-brand-orange transition-colors">🗺️ สถานที่ Pet-Friendly</a></li>
+          <li><a href="sitters.html" class="hover:text-brand-orange transition-colors">🧑 พี่เลี้ยงสัตว์</a></li>
+          <li><a href="emergency.html" class="hover:text-brand-orange transition-colors">🚨 คลินิกฉุกเฉิน</a></li>
+          <li><a href="register-business.html" class="hover:text-brand-orange transition-colors">🏪 ลงทะเบียนธุรกิจ</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="font-semibold mb-3 text-sm">ติดต่อ</h3>
+        <ul class="space-y-2 text-gray-400 text-sm">
+          <li>📧 <a href="mailto:armntp.work@gmail.com" class="hover:text-brand-orange transition-colors">armntp.work@gmail.com</a></li>
+          <li>📱 LINE: <a href="https://line.me/R/ti/p/@237mvbgf" target="_blank" rel="noopener" class="hover:text-brand-orange transition-colors">@237mvbgf</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="border-t border-gray-800 pt-6 flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-gray-500">
+      <p>© 2025 PawDee. สงวนลิขสิทธิ์.</p>
+      <div class="flex gap-4">
+        <a href="privacy.html" class="hover:text-brand-orange transition-colors">นโยบายความเป็นส่วนตัว</a>
+        <a href="terms.html" class="hover:text-brand-orange transition-colors">เงื่อนไขการใช้งาน</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script type="module">
+import { db, isConfigured } from './js/firebase-config.js';
+import { doc, getDoc, collection, query, where, getDocs, orderBy, limit } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { initNavAuth } from './js/auth.js';
+
+initNavAuth();
+
+// Mobile menu
+document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+  document.getElementById('mobileMenu').classList.toggle('hidden');
+});
+
+const TYPE_LABELS = {
+  cafe:       { label: 'คาเฟ่',        icon: '☕', cls: 'badge-cafe'       },
+  hotel:      { label: 'โรงแรม',       icon: '🏨', cls: 'badge-hotel'      },
+  restaurant: { label: 'ร้านอาหาร',    icon: '🍽️', cls: 'badge-restaurant' },
+  clinic:     { label: 'คลินิกสัตว์',  icon: '🏥', cls: 'badge-clinic'     },
+  grooming:   { label: 'อาบน้ำตัดขน', icon: '🛁', cls: 'badge-grooming'   },
+  condo:      { label: 'คอนโด',        icon: '🏠', cls: 'badge-condo'      },
+  park:       { label: 'สวนสาธารณะ',  icon: '🌳', cls: 'badge-park'       },
+  shop:       { label: 'Pet Shop',     icon: '🛍️', cls: 'badge-shop'       },
+};
+
+const PET_LABELS = {
+  dog: '🐕 สุนัข', cat: '🐈 แมว', rabbit: '🐇 กระต่าย',
+  bird: '🦜 นก', fish: '🐠 ปลา', hamster: '🐹 แฮมสเตอร์', other: '🐾 อื่นๆ'
+};
+
+const REVIEW_TAG_LABELS = {
+  petFriendlyStaff: '😊 พนักงานใจดีกับน้อง',
+  waterBowl:        '💧 มีน้ำให้น้อง',
+  indoorOk:         '🏠 ให้น้องนั่งในได้',
+  spacious:         '📐 พื้นที่กว้างขวาง',
+  clean:            '✨ สะอาด',
+  easyParking:      '🚗 จอดรถง่าย',
+};
+
+// ── Load Place ──────────────────────────────────────────────
+const params  = new URLSearchParams(location.search);
+const placeId = params.get('id');
+
+if (!placeId || !isConfigured) {
+  showError();
+} else {
+  loadPlace();
+}
+
+async function loadPlace() {
+  try {
+    const snap = await getDoc(doc(db, 'places', placeId));
+    if (!snap.exists()) { showError(); return; }
+    const place = { id: snap.id, ...snap.data() };
+    renderPlace(place);
+    loadReviews(placeId);
+  } catch (e) {
+    console.error(e);
+    showError();
+  }
+}
+
+function showError() {
+  document.getElementById('loadingState').classList.add('hidden');
+  document.getElementById('errorState').classList.remove('hidden');
+}
+
+function showContent() {
+  document.getElementById('loadingState').classList.add('hidden');
+  document.getElementById('placeContent').classList.remove('hidden');
+}
+
+// ── Render Place ────────────────────────────────────────────
+function renderPlace(place) {
+  const t = TYPE_LABELS[place.type] || { label: place.type, icon: '📍', cls: '' };
+
+  // ── Update <title> + meta description ──
+  const titleStr = `${place.name} — ${t.label} Pet-Friendly ที่ ${place.district || ''} ${place.city || ''} | PawDee`;
+  document.title = titleStr;
+  document.querySelector('meta[name="description"]').content =
+    `${place.name} ${t.label} Pet-Friendly ที่ ${place.address || ''} ${place.district || ''} ${place.city || ''}` +
+    (place.indoorSeating ? ' รับสัตว์เลี้ยงในร้านได้' : '') +
+    (place.maxWeightKg == null || place.maxWeightKg >= 20 ? ' รับพันธุ์ใหญ่' : '') +
+    ` ⭐ ${place.rating?.toFixed(1) || ''} (${place.reviewCount || 0} รีวิว)`;
+  document.querySelector('meta[property="og:title"]') &&
+    (document.querySelector('meta[property="og:title"]').content = titleStr);
+  if (place.imageUrl) {
+    document.querySelector('meta[property="og:image"]').content = place.imageUrl;
+  }
+
+  // ── Inject JSON-LD LocalBusiness ──
+  const schemaType = { clinic:'VeterinaryCare', hotel:'LodgingBusiness', restaurant:'Restaurant', cafe:'CafeOrCoffeeShop' }[place.type] || 'LocalBusiness';
+  const ldJson = {
+    '@context': 'https://schema.org',
+    '@type': schemaType,
+    name: place.name,
+    image: place.imageUrl || undefined,
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: place.address || '',
+      addressLocality: place.district || '',
+      addressRegion: place.city || '',
+      addressCountry: 'TH'
+    },
+    telephone: place.phone || undefined,
+    url: place.website || `https://pawdee.vercel.app/place/${placeId}`,
+    openingHours: place.openHours || undefined,
+    aggregateRating: place.reviewCount > 0 ? {
+      '@type': 'AggregateRating',
+      ratingValue: place.rating?.toFixed(1),
+      reviewCount: place.reviewCount
+    } : undefined,
+    geo: (place.lat && place.lng) ? { '@type': 'GeoCoordinates', latitude: place.lat, longitude: place.lng } : undefined,
+  };
+  const ldScript = document.createElement('script');
+  ldScript.type = 'application/ld+json';
+  ldScript.text = JSON.stringify(ldJson, (_, v) => v === undefined ? undefined : v);
+  document.head.appendChild(ldScript);
+
+  // ── Hero Image ──
+  const heroImg = document.getElementById('heroImg');
+  heroImg.src = place.imageUrl || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=1200&q=80';
+  heroImg.alt = `${place.name} — ${t.label} Pet-Friendly`;
+  heroImg.onerror = () => { heroImg.src = 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=1200&q=80'; };
+
+  // Logo
+  if (place.logoUrl) {
+    const tier = place.tier || 'free';
+    document.getElementById('logoOverlay').classList.remove('hidden');
+    document.getElementById('logoFrame').className = `logo-frame-${tier} w-16 h-16 rounded-2xl overflow-hidden bg-white`;
+    const logoImg = document.getElementById('logoImg');
+    logoImg.src = place.logoUrl;
+    logoImg.alt = `${place.name} logo`;
+  }
+
+  // Tier badge
+  const tier = place.tier || 'free';
+  if (tier === 'premium') {
+    const tb = document.getElementById('tierBadge');
+    tb.classList.remove('hidden');
+    tb.innerHTML = `<span class="text-xs font-bold px-3 py-1.5 rounded-xl" style="background:linear-gradient(135deg,#F59E0B,#D97706);color:white;">⭐ Premium</span>`;
+  } else if (tier === 'basic') {
+    const tb = document.getElementById('tierBadge');
+    tb.classList.remove('hidden');
+    tb.innerHTML = `<span class="text-xs font-bold bg-brand-orange text-white px-3 py-1.5 rounded-xl">✓ Basic</span>`;
+  }
+
+  // Emergency badge
+  if (place.emergency24hr) {
+    document.getElementById('emergencyBadge').classList.remove('hidden');
+  }
+
+  // ── Breadcrumb ──
+  document.getElementById('breadcrumbName').textContent = place.name;
+
+  // ── Type badge ──
+  const typeBadge = document.getElementById('typeBadge');
+  typeBadge.className = `inline-flex items-center gap-1 text-xs font-semibold px-3 py-1 rounded-full ${t.cls}`;
+  typeBadge.textContent = `${t.icon} ${t.label}`;
+
+  // Verified badge
+  if (place.verified) {
+    document.getElementById('verifiedBadge').classList.remove('hidden');
+  }
+
+  // ── H1 name ──
+  document.getElementById('placeName').textContent = place.name;
+
+  // ── Address ──
+  const addrParts = [place.address, place.district, place.city].filter(Boolean).join(', ');
+  document.querySelector('#placeAddress span:last-child').textContent = addrParts;
+
+  // ── Rating ──
+  document.getElementById('placeRating').textContent = place.rating?.toFixed(1) || '-';
+  document.getElementById('placeReviewCount').textContent = place.reviewCount ? `(${place.reviewCount} รีวิว)` : '';
+  document.getElementById('placeHours').textContent = place.openHours || '-';
+
+  // ── Pet Policy Rows ──
+  const policies = [];
+  if (place.indoorSeating === true) {
+    policies.push({ icon:'✅', label:'นั่งในร้านได้', note:'น้องเข้านั่งในร้านได้เลย ไม่ต้องนั่งข้างนอก' });
+  } else if (place.indoorSeating === false) {
+    policies.push({ icon:'⚠️', label:'นั่งข้างนอกเท่านั้น', note:'น้องต้องอยู่โซนกลางแจ้งหรือเฉลียง' });
+  }
+  if (place.maxWeightKg == null) {
+    policies.push({ icon:'✅', label:'รับพันธุ์ใหญ่ได้ (ไม่จำกัดน้ำหนัก)', note:'ไม่มีข้อจำกัดน้ำหนักน้อง' });
+  } else if (place.maxWeightKg >= 20) {
+    policies.push({ icon:'✅', label:`รับได้ถึง ${place.maxWeightKg} กก.`, note:'รับพันธุ์ใหญ่ได้' });
+  } else {
+    policies.push({ icon:'⚠️', label:`รับได้ถึง ${place.maxWeightKg} กก.`, note:'เฉพาะสายพันธุ์เล็ก' });
+  }
+  if (place.needCarrier === false) {
+    policies.push({ icon:'✅', label:'ไม่ต้องใส่กรง', note:'สามารถเดินอิสระหรืออุ้มได้' });
+  } else if (place.needCarrier === true) {
+    policies.push({ icon:'❌', label:'ต้องใส่กรงหรือสายจูง', note:'กรุณาเตรียมกรง/สายจูงมาด้วย' });
+  }
+  if (place.emergency24hr) {
+    policies.push({ icon:'🚨', label:'เปิด 24 ชั่วโมง', note:'รับกรณีฉุกเฉินตลอด 24 ชม.' });
+  }
+
+  if (policies.length === 0) {
+    policies.push({ icon:'ℹ️', label:'ข้อมูลนโยบายสัตว์เลี้ยง', note:'ยังไม่มีข้อมูลละเอียด — ลองโทรสอบถามก่อนนะครับ' });
+  }
+
+  document.getElementById('petPolicyRows').innerHTML = policies.map(p => `
+    <div class="pet-policy-row">
+      <span class="text-xl flex-shrink-0 mt-0.5">${p.icon}</span>
+      <div>
+        <div class="font-semibold text-gray-900 text-sm">${p.label}</div>
+        <div class="text-xs text-gray-500">${p.note}</div>
+      </div>
+    </div>
+  `).join('');
+
+  // ── Allowed Pets ──
+  const pets = place.allowedPets || [];
+  if (pets.length > 0) {
+    document.getElementById('allowedPetsChips').innerHTML = pets.map(p =>
+      `<span class="text-sm bg-orange-50 text-orange-700 border border-orange-200 px-3 py-1 rounded-full font-medium">${PET_LABELS[p] || p}</span>`
+    ).join('');
+  } else {
+    document.getElementById('allowedPetsSection').classList.add('hidden');
+  }
+
+  // ── Phone CTA ──
+  if (place.phone) {
+    document.getElementById('phoneBtn').classList.remove('hidden');
+    document.getElementById('phoneBtnLink').href = `tel:${place.phone}`;
+    document.getElementById('phoneBtnLink').textContent = `📞 ${place.phone}`;
+  }
+
+  // ── Google Maps button ──
+  const mapsBtn = document.getElementById('mapsBtn');
+  if (place.lat && place.lng) {
+    mapsBtn.href = `https://www.google.com/maps/search/?api=1&query=${place.lat},${place.lng}`;
+  } else {
+    const q = encodeURIComponent(`${place.name} ${place.city || ''}`);
+    mapsBtn.href = `https://www.google.com/maps/search/?api=1&query=${q}`;
+  }
+
+  // ── Share button ──
+  document.getElementById('shareBtn').addEventListener('click', () => {
+    const url  = location.href;
+    const text = `ดู ${place.name} ${t.label} Pet-Friendly บน PawDee`;
+    if (navigator.share) {
+      navigator.share({ title: place.name, text, url }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(url).then(() => {
+        const btn = document.getElementById('shareBtn');
+        btn.textContent = '✅ คัดลอก URL แล้ว';
+        setTimeout(() => { btn.textContent = '🔗 แชร์สถานที่นี้'; }, 2000);
+      });
+    }
+  });
+
+  // ── Social Links ──
+  const socialItems = [];
+  if (place.website)   socialItems.push({ icon:'🌐', label:'เว็บไซต์',  href: place.website });
+  if (place.facebook)  socialItems.push({ icon:'📘', label:'Facebook',  href: place.facebook });
+  if (place.instagram) socialItems.push({ icon:'📸', label:'Instagram', href: place.instagram });
+  if (place.line)      socialItems.push({ icon:'💬', label:'LINE',      href: `https://line.me/R/ti/p/${place.line}` });
+
+  if (socialItems.length > 0) {
+    document.getElementById('socialSection').classList.remove('hidden');
+    document.getElementById('socialLinks').innerHTML = socialItems.map(s => `
+      <a href="${s.href}" target="_blank" rel="noopener noreferrer"
+         class="flex items-center gap-2.5 text-sm text-gray-600 hover:text-brand-orange transition-colors py-1">
+        <span>${s.icon}</span>
+        <span class="font-medium">${s.label}</span>
+        <span class="text-gray-300 ml-auto">→</span>
+      </a>
+    `).join('');
+  }
+
+  showContent();
+}
+
+// ── Load Reviews ────────────────────────────────────────────
+async function loadReviews(id) {
+  try {
+    const q    = query(collection(db, 'reviews'), where('placeId', '==', id), orderBy('createdAt', 'desc'), limit(20));
+    const snap = await getDocs(q);
+    const reviews = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderReviews(reviews);
+  } catch {
+    renderReviews([]);
+  }
+}
+
+function renderReviews(reviews) {
+  const countBadge = document.getElementById('reviewCountBadge');
+  countBadge.textContent = reviews.length > 0 ? `${reviews.length} รีวิว` : '';
+
+  const list = document.getElementById('reviewsList');
+  if (reviews.length === 0) {
+    list.innerHTML = `
+      <div class="text-center py-8 text-gray-400">
+        <div class="text-3xl mb-2">🌟</div>
+        <p class="text-sm">ยังไม่มีรีวิว เป็นคนแรกที่รีวิวสถานที่นี้!</p>
+      </div>`;
+    document.getElementById('writeReviewCta').classList.remove('hidden');
+    return;
+  }
+
+  list.innerHTML = reviews.map(r => {
+    const stars = '⭐'.repeat(Math.round(r.rating || 0));
+    const date  = r.createdAt?.toDate ? r.createdAt.toDate().toLocaleDateString('th-TH', { year:'numeric', month:'short', day:'numeric' }) : '';
+    const tags  = (r.tags || []).map(t => `<span class="text-xs bg-orange-50 text-orange-700 px-2 py-0.5 rounded-full border border-orange-200">${REVIEW_TAG_LABELS[t] || t}</span>`).join('');
+    const avatar = r.userPhotoURL
+      ? `<img src="${r.userPhotoURL}" alt="${r.userName || 'ผู้รีวิว'}" class="w-9 h-9 rounded-full object-cover"/>`
+      : `<div class="w-9 h-9 rounded-full bg-orange-100 text-brand-orange flex items-center justify-center font-bold text-sm">${(r.userName || 'U')[0].toUpperCase()}</div>`;
+
+    return `
+      <div class="py-4 border-b border-gray-100 last:border-0">
+        <div class="flex items-center gap-3 mb-2">
+          ${avatar}
+          <div class="flex-1 min-w-0">
+            <div class="font-semibold text-gray-900 text-sm">${r.userName || 'ผู้ใช้ PawDee'}</div>
+            <div class="flex items-center gap-2 text-xs text-gray-400">
+              <span>${stars}</span>
+              ${date ? `<span>· ${date}</span>` : ''}
+            </div>
+          </div>
+        </div>
+        ${r.comment ? `<p class="text-sm text-gray-700 leading-relaxed mb-2">${r.comment}</p>` : ''}
+        ${tags ? `<div class="flex flex-wrap gap-1">${tags}</div>` : ''}
+      </div>`;
+  }).join('');
+
+  document.getElementById('writeReviewCta').classList.remove('hidden');
+}
+</script>
+</body>
+</html>
