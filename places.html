@@ -322,6 +322,42 @@
       <div id="modalWeight" class="hidden mb-3 text-xs text-gray-500"></div>
       <!-- Social Links -->
       <div id="modalLinks" class="hidden border-t border-gray-100 pt-3 mt-1 flex flex-wrap gap-2"></div>
+
+      <!-- Reviews Section -->
+      <div id="modalReviewsSection" class="mt-4 pt-4 border-t border-gray-100">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="font-bold text-gray-900 text-sm">💬 รีวิวจากผู้ใช้</h3>
+          <span id="reviewsCount" class="text-xs text-gray-400"></span>
+        </div>
+        <div id="reviewsList" class="space-y-3 mb-4"></div>
+
+        <!-- Form: login + haven't reviewed yet -->
+        <div id="reviewFormWrap" class="hidden">
+          <div class="bg-orange-50 rounded-2xl p-4">
+            <p class="text-sm font-semibold text-gray-800 mb-3">เขียนรีวิวของคุณ</p>
+            <div class="flex gap-1 mb-3" id="starPicker">
+              <button type="button" data-star="1" class="star-btn text-3xl leading-none text-gray-300 transition-colors hover:scale-110">★</button>
+              <button type="button" data-star="2" class="star-btn text-3xl leading-none text-gray-300 transition-colors hover:scale-110">★</button>
+              <button type="button" data-star="3" class="star-btn text-3xl leading-none text-gray-300 transition-colors hover:scale-110">★</button>
+              <button type="button" data-star="4" class="star-btn text-3xl leading-none text-gray-300 transition-colors hover:scale-110">★</button>
+              <button type="button" data-star="5" class="star-btn text-3xl leading-none text-gray-300 transition-colors hover:scale-110">★</button>
+            </div>
+            <textarea id="reviewComment" rows="3"
+              placeholder="เล่าประสบการณ์ของคุณ... (ไม่บังคับ)"
+              class="w-full text-sm border border-orange-200 rounded-xl px-3 py-2.5 resize-none focus:outline-none focus:ring-2 focus:ring-brand-orange/30 bg-white placeholder-gray-300"></textarea>
+            <button id="submitReviewBtn"
+              class="mt-2.5 w-full bg-brand-orange text-white text-sm font-semibold py-2.5 rounded-xl hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+              ส่งรีวิว
+            </button>
+          </div>
+        </div>
+
+        <!-- Not logged in -->
+        <div id="reviewLoginPrompt" class="hidden text-center py-3 bg-gray-50 rounded-2xl">
+          <p class="text-xs text-gray-400 mb-1.5">เข้าสู่ระบบเพื่อเขียนรีวิว</p>
+          <a href="login.html" class="text-xs text-brand-orange font-semibold hover:underline">เข้าสู่ระบบ →</a>
+        </div>
+      </div>
     </div>
     <!-- Actions -->
     <div class="p-4 border-t border-gray-100 flex gap-3 flex-shrink-0">
@@ -387,8 +423,11 @@
 
 <!-- ─── JS (ES Module) ─────────────────────────────────── -->
 <script type="module">
-  import { initNavAuth } from './js/auth.js';
+  import { initNavAuth, onAuthChange } from './js/auth.js';
   initNavAuth();
+
+  let currentUser = null;
+  onAuthChange(user => { currentUser = user; });
 
   // ── ตรวจ config ก่อน import Firebase (ป้องกันการค้าง) ──────
   let db = null;
@@ -407,7 +446,7 @@
     } catch (_) { isConfigured = false; }
   }
 
-  const { collection, getDocs, query, orderBy } = isConfigured
+  const { collection, getDocs, query, orderBy, addDoc, where, serverTimestamp, limit, updateDoc, doc } = isConfigured
     ? await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js')
     : {};
 
@@ -718,6 +757,125 @@
     }));
   });
 
+  // ── Reviews ───────────────────────────────────────────────────
+  let currentPlaceId = null;
+  let selectedRating = 0;
+
+  function setStars(n) {
+    selectedRating = n;
+    document.querySelectorAll('.star-btn').forEach(btn => {
+      btn.style.color = parseInt(btn.dataset.star) <= n ? '#F97316' : '#D1D5DB';
+    });
+  }
+
+  document.querySelectorAll('.star-btn').forEach(btn => {
+    btn.addEventListener('click', () => setStars(parseInt(btn.dataset.star)));
+    btn.addEventListener('mouseover', () => {
+      const hov = parseInt(btn.dataset.star);
+      document.querySelectorAll('.star-btn').forEach(b => {
+        b.style.color = parseInt(b.dataset.star) <= hov ? '#F97316' : '#D1D5DB';
+      });
+    });
+    btn.addEventListener('mouseout', () => setStars(selectedRating));
+  });
+
+  async function loadReviews(placeId) {
+    const list        = document.getElementById('reviewsList');
+    const formWrap    = document.getElementById('reviewFormWrap');
+    const loginPrompt = document.getElementById('reviewLoginPrompt');
+    const countEl     = document.getElementById('reviewsCount');
+
+    list.innerHTML = '<div class="text-center py-4 text-gray-300 text-sm">⏳ กำลังโหลด...</div>';
+    formWrap.classList.add('hidden');
+    loginPrompt.classList.add('hidden');
+
+    if (!isConfigured || !db) {
+      list.innerHTML = '<p class="text-xs text-gray-300 text-center py-2">ยังไม่ได้เชื่อมต่อฐานข้อมูล</p>';
+      return;
+    }
+
+    try {
+      const q    = query(collection(db, 'reviews'), where('placeId', '==', placeId));
+      const snap = await getDocs(q);
+      const reviews = snap.docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0))
+        .slice(0, 20);
+
+      countEl.textContent = reviews.length ? `${reviews.length} รีวิว` : '';
+
+      if (reviews.length === 0) {
+        list.innerHTML = '<p class="text-xs text-gray-400 text-center py-3">ยังไม่มีรีวิว — เป็นคนแรก! 🐾</p>';
+      } else {
+        list.innerHTML = reviews.map(r => `
+          <div class="flex gap-2.5">
+            <div class="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-sm font-bold text-brand-orange flex-shrink-0 overflow-hidden">
+              ${r.userPhotoURL ? `<img src="${r.userPhotoURL}" class="w-full h-full object-cover"/>` : (r.userName || 'U')[0].toUpperCase()}
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-0.5 flex-wrap">
+                <span class="text-xs font-semibold text-gray-800">${r.userName || 'ผู้ใช้'}</span>
+                <span class="text-sm text-brand-orange tracking-tight">${'★'.repeat(r.rating)}<span class="text-gray-200">${'★'.repeat(5 - r.rating)}</span></span>
+              </div>
+              ${r.comment ? `<p class="text-xs text-gray-600 leading-relaxed">${r.comment}</p>` : ''}
+              <p class="text-[10px] text-gray-300 mt-0.5">${r.createdAt?.toDate ? r.createdAt.toDate().toLocaleDateString('th-TH', { year:'numeric', month:'short', day:'numeric' }) : ''}</p>
+            </div>
+          </div>`).join('');
+      }
+
+      const alreadyReviewed = currentUser ? reviews.some(r => r.userId === currentUser.uid) : false;
+      if (!currentUser) {
+        loginPrompt.classList.remove('hidden');
+      } else if (!alreadyReviewed) {
+        setStars(0);
+        document.getElementById('reviewComment').value = '';
+        const btn = document.getElementById('submitReviewBtn');
+        btn.disabled = false;
+        btn.textContent = 'ส่งรีวิว';
+        formWrap.classList.remove('hidden');
+      }
+    } catch (e) {
+      list.innerHTML = '<p class="text-xs text-red-400 text-center py-2">โหลดรีวิวไม่ได้ ลองใหม่อีกครั้ง</p>';
+      console.error('loadReviews:', e);
+    }
+  }
+
+  document.getElementById('submitReviewBtn').addEventListener('click', async () => {
+    if (!currentUser) { alert('กรุณาเข้าสู่ระบบก่อน'); return; }
+    if (!selectedRating) { alert('กรุณาเลือกคะแนน ⭐'); return; }
+    const comment = document.getElementById('reviewComment').value.trim();
+    const btn = document.getElementById('submitReviewBtn');
+    btn.disabled = true;
+    btn.textContent = '⏳ กำลังส่ง...';
+    try {
+      await addDoc(collection(db, 'reviews'), {
+        placeId:      currentPlaceId,
+        userId:       currentUser.uid,
+        userName:     currentUser.displayName || currentUser.email?.split('@')[0] || 'ผู้ใช้',
+        userPhotoURL: currentUser.photoURL || null,
+        rating:       selectedRating,
+        comment,
+        createdAt:    serverTimestamp(),
+      });
+      // คำนวณคะแนนเฉลี่ยใหม่
+      const allSnap = await getDocs(query(collection(db, 'reviews'), where('placeId', '==', currentPlaceId)));
+      const ratings = allSnap.docs.map(d => d.data().rating);
+      const avg = Math.round((ratings.reduce((a, b) => a + b, 0) / ratings.length) * 10) / 10;
+      await updateDoc(doc(db, 'places', currentPlaceId), { rating: avg, reviewCount: ratings.length });
+      // อัปเดต local cache + modal display
+      const local = allPlaces.find(p => p.id === currentPlaceId);
+      if (local) { local.rating = avg; local.reviewCount = ratings.length; }
+      document.getElementById('modalRating').textContent  = avg.toFixed(1);
+      document.getElementById('modalReviews').textContent = `${ratings.length.toLocaleString()} รีวิว`;
+      await loadReviews(currentPlaceId);
+    } catch (e) {
+      alert('เกิดข้อผิดพลาด กรุณาลองใหม่');
+      console.error('submitReview:', e);
+      btn.disabled = false;
+      btn.textContent = 'ส่งรีวิว';
+    }
+  });
+
   // ── Detail Modal ──────────────────────────────────────────────
   const modal = document.getElementById('placeModal');
 
@@ -822,6 +980,8 @@
       mapEl.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + (place.city || ''))}`;
     }
 
+    currentPlaceId = place.id;
+    loadReviews(place.id);
     modal.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
   }
