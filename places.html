@@ -128,10 +128,10 @@
     </div>
 
     <!-- Nearby Button -->
-    <div class="flex justify-center mt-3 mb-2">
-      <button id="nearbyBtn" class="inline-flex items-center gap-2 bg-white border-2 border-orange-200 hover:border-brand-orange text-gray-600 hover:text-brand-orange px-5 py-2.5 rounded-2xl text-sm font-semibold shadow-sm transition-all">
+    <div class="flex justify-center mt-4 mb-2">
+      <button id="nearbyBtn" class="inline-flex items-center gap-2 bg-brand-orange hover:bg-brand-orange-deep text-white px-6 py-3 rounded-2xl text-sm font-bold shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-        <span id="nearbyBtnText">หาร้านใกล้ฉัน</span>
+        <span id="nearbyBtnText">📍 หาร้านใกล้ฉัน</span>
       </button>
     </div>
 
@@ -145,6 +145,17 @@
     </div>
   </div>
 </section>
+
+<!-- "What Google Maps doesn't have" strip -->
+<div class="bg-gradient-to-r from-orange-500 to-amber-500 text-white py-2.5">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 flex flex-wrap items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm font-semibold">
+    <span class="opacity-80 text-xs uppercase tracking-wider hidden sm:inline">Google Maps ไม่มี →</span>
+    <span class="bg-white/20 px-3 py-1 rounded-full">🐕 รับพันธุ์ใหญ่ได้ไหม?</span>
+    <span class="bg-white/20 px-3 py-1 rounded-full">🏠 นั่งในร้านได้เลยไหม?</span>
+    <span class="bg-white/20 px-3 py-1 rounded-full">🚫 ต้องใส่กรงไหม?</span>
+    <span class="bg-white/20 px-3 py-1 rounded-full">👋 รีวิวจากเจ้าของสัตว์จริงๆ</span>
+  </div>
+</div>
 
 <!-- Filters -->
 <div class="sticky top-16 z-40 bg-white/90 backdrop-blur border-b border-gray-100 shadow-sm">
@@ -180,12 +191,12 @@
 </div>
 
 <!-- Pet Attribute Filters -->
-<div class="bg-white/80 backdrop-blur border-b border-gray-100">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 flex items-center gap-2 overflow-x-auto scrollbar-hide">
-    <span class="text-xs text-gray-400 font-medium flex-shrink-0">กรองเพิ่ม:</span>
-    <button class="pet-filter-btn flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-semibold border-2 border-gray-200 text-gray-600 hover:border-purple-400 hover:text-purple-600" data-attr="largeDogOk">🐕 รับพันธุ์ใหญ่</button>
-    <button class="pet-filter-btn flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-semibold border-2 border-gray-200 text-gray-600 hover:border-purple-400 hover:text-purple-600" data-attr="indoorSeating">🏠 นั่งในร้านได้</button>
-    <button class="pet-filter-btn flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-semibold border-2 border-gray-200 text-gray-600 hover:border-purple-400 hover:text-purple-600" data-attr="noCarrierNeeded">🚫 ไม่ต้องใส่กรง</button>
+<div class="bg-orange-50/60 backdrop-blur border-b border-orange-100">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex items-center gap-2 overflow-x-auto scrollbar-hide">
+    <span class="text-xs text-brand-orange font-bold flex-shrink-0 whitespace-nowrap">⭐ Google Maps ไม่มี:</span>
+    <button class="pet-filter-btn flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-semibold border-2 border-orange-200 text-orange-700 bg-white hover:border-purple-400 hover:text-purple-600 transition-all" data-attr="largeDogOk">🐕 รับพันธุ์ใหญ่</button>
+    <button class="pet-filter-btn flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-semibold border-2 border-orange-200 text-orange-700 bg-white hover:border-purple-400 hover:text-purple-600 transition-all" data-attr="indoorSeating">🏠 นั่งในร้านได้</button>
+    <button class="pet-filter-btn flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-semibold border-2 border-orange-200 text-orange-700 bg-white hover:border-purple-400 hover:text-purple-600 transition-all" data-attr="noCarrierNeeded">🚫 ไม่ต้องใส่กรง</button>
   </div>
 </div>
 
@@ -775,8 +786,9 @@
     const txt = document.getElementById('nearbyBtnText');
     if (nearbyMode) {
       nearbyMode = false; userLocation = null;
-      txt.textContent = 'หาร้านใกล้ฉัน';
-      btn.classList.remove('border-brand-orange','text-brand-orange','bg-orange-50');
+      txt.textContent = '📍 หาร้านใกล้ฉัน';
+      btn.classList.remove('bg-green-500','hover:bg-green-600');
+      btn.classList.add('bg-brand-orange','hover:bg-brand-orange-deep');
       document.getElementById('sortDistanceOption').disabled = true;
       if (sortBy === 'distance') { sortBy = 'rating'; document.getElementById('sortSelect').value = 'rating'; }
       render(); return;
@@ -789,7 +801,8 @@
         userLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude };
         nearbyMode = true;
         txt.textContent = '✅ ใกล้ฉัน (แตะเพื่อปิด)';
-        btn.classList.add('border-brand-orange','text-brand-orange','bg-orange-50');
+        btn.classList.remove('bg-brand-orange','hover:bg-brand-orange-deep');
+        btn.classList.add('bg-green-500','hover:bg-green-600');
         btn.disabled = false;
         document.getElementById('sortDistanceOption').disabled = false;
         sortBy = 'distance'; document.getElementById('sortSelect').value = 'distance';
