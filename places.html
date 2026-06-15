@@ -40,6 +40,7 @@
     .leaflet-popup-content-wrapper { border-radius: 1rem; font-family: 'Kanit', sans-serif; }
     .map-popup-btn { background:#F97316; color:white; border:none; border-radius:0.5rem; padding:0.4rem 0.8rem; font-family:'Kanit',sans-serif; font-size:0.8rem; font-weight:600; cursor:pointer; width:100%; margin-top:0.5rem; }
     .view-btn.active { background:#F97316; color:white; border-color:#F97316; }
+    .paw-bg { background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23F97316' fill-opacity='0.04'%3E%3Cellipse cx='15' cy='10' rx='4' ry='5'/%3E%3Cellipse cx='30' cy='8' rx='4' ry='5'/%3E%3Cellipse cx='45' cy='10' rx='4' ry='5'/%3E%3Cellipse cx='30' cy='35' rx='12' ry='14'/%3E%3C/g%3E%3C/svg%3E"); }
   </style>
 </head>
 <body class="bg-brand-cream text-gray-800 antialiased">
@@ -59,55 +60,55 @@
         <a href="register-business.html" class="text-gray-600 hover:text-brand-orange transition-colors font-medium text-sm">สำหรับธุรกิจ</a>
       </div>
       <div id="navAuth"></div>
+      <button id="mobileMenuBtn" class="md:hidden p-2 rounded-lg hover:bg-orange-50 ml-2">
+  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+</button>
     </div>
   </div>
+<div id="mobileMenu" class="hidden md:hidden border-t border-orange-100 bg-white px-4 py-4 space-y-3">
+  <a href="places.html" class="block text-brand-orange font-semibold py-1">🗺️ สถานที่ Pet-Friendly</a>
+  <a href="sitters.html" class="block text-gray-700 hover:text-brand-orange font-medium py-1">🧑 พี่เลี้ยงสัตว์</a>
+  <a href="emergency.html" class="block text-gray-700 hover:text-red-500 font-medium py-1">🚨 คลินิกฉุกเฉิน</a>
+  <a href="register-business.html" class="block text-gray-700 hover:text-brand-orange font-medium py-1">🏪 สำหรับธุรกิจ</a>
+</div>
 </nav>
 
 <!-- Hero -->
-<section class="pt-24 pb-10 paw-bg bg-brand-cream">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+<section class="pt-24 pb-10 paw-bg bg-brand-cream relative overflow-hidden">
+  <!-- Soft blobs -->
+  <div class="absolute top-0 right-0 w-64 h-64 bg-orange-200 rounded-full opacity-20 -translate-y-16 translate-x-16 blur-3xl pointer-events-none"></div>
+  <div class="absolute bottom-0 left-0 w-48 h-48 bg-yellow-200 rounded-full opacity-20 translate-y-8 -translate-x-8 blur-3xl pointer-events-none"></div>
 
-    <!-- Badge -->
-    <div class="inline-flex items-center gap-2 bg-orange-100 text-brand-orange text-sm font-bold px-4 py-2 rounded-full mb-6">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+    <div class="inline-flex items-center gap-2 bg-orange-100 text-brand-orange text-sm font-bold px-4 py-2 rounded-full mb-4">
       <span class="w-2 h-2 bg-brand-orange rounded-full animate-pulse"></span>
       ค้นหาสถานที่ Pet-Friendly ทั่วไทย
     </div>
 
-    <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-900 mb-4 leading-tight">
+    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-3 leading-tight">
       ทุกที่ที่น้องของคุณ<br/>
-      <span class="gradient-text">ไปได้</span>
+      <span style="background:linear-gradient(135deg,#F97316,#FFB347);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">ไปได้</span>
     </h1>
-    <p class="text-lg text-gray-500 mb-8 max-w-xl mx-auto leading-relaxed">
-      ร้านอาหาร คาเฟ่ โรงแรม คลินิก และอีกมากมาย<br class="hidden sm:block"/>
-      ที่ต้อนรับน้องของคุณทั่วประเทศไทย
+    <p class="text-base sm:text-lg text-gray-500 mb-6 max-w-xl mx-auto leading-relaxed">
+      ร้านอาหาร คาเฟ่ โรงแรม คลินิก และอีกมากมาย ที่ต้อนรับน้องของคุณทั่วประเทศไทย
     </p>
 
     <!-- Search Bar -->
-    <div class="max-w-2xl mx-auto relative">
+    <div class="max-w-2xl mx-auto relative mb-4">
       <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-gray-400">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-        </svg>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
       </div>
-      <input
-        id="searchInput"
-        type="text"
-        placeholder="ค้นหาชื่อสถานที่, เขต, หรือเมือง..."
-        class="w-full pl-12 pr-4 py-4 rounded-2xl border-2 border-orange-200 bg-white shadow-md focus:outline-none focus:border-brand-orange transition-colors text-gray-800 placeholder-gray-400"
-      />
+      <input id="searchInput" type="text" placeholder="ค้นหาชื่อสถานที่, เขต, หรือเมือง..."
+        class="w-full pl-12 pr-4 py-4 rounded-2xl border-2 border-orange-200 bg-white shadow-md focus:outline-none focus:border-brand-orange transition-colors text-gray-800 placeholder-gray-400 text-sm sm:text-base"/>
     </div>
 
-    <!-- Quick stats -->
-    <div class="flex items-center justify-center gap-6 mt-6 text-sm text-gray-500">
-      <span>☕ คาเฟ่</span>
-      <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
-      <span>🏨 โรงแรม</span>
-      <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
-      <span>🏥 คลินิก</span>
-      <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
-      <span>🛁 อาบน้ำ-ตัดขน</span>
-      <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
-      <span>🛍️ Pet Shop</span>
+    <!-- Quick stats pills -->
+    <div class="flex flex-wrap items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-500">
+      <span class="bg-amber-50 text-amber-700 px-3 py-1 rounded-full font-medium">☕ คาเฟ่</span>
+      <span class="bg-blue-50 text-blue-700 px-3 py-1 rounded-full font-medium">🏨 โรงแรม</span>
+      <span class="bg-pink-50 text-pink-700 px-3 py-1 rounded-full font-medium">🏥 คลินิก</span>
+      <span class="bg-green-50 text-green-700 px-3 py-1 rounded-full font-medium">🛁 อาบน้ำ-ตัดขน</span>
+      <span class="bg-orange-50 text-orange-700 px-3 py-1 rounded-full font-medium">🛍️ Pet Shop</span>
     </div>
   </div>
 </section>
@@ -253,9 +254,10 @@
 
   <!-- Empty State -->
   <div id="emptyState" class="hidden text-center py-20">
-    <div class="text-5xl mb-4">🔍</div>
+    <div class="text-6xl mb-4">🐾</div>
     <h3 class="text-xl font-bold text-gray-700 mb-2">ไม่พบสถานที่</h3>
     <p class="text-gray-500 text-sm">ลองเปลี่ยน keyword หรือ filter ใหม่นะครับ</p>
+    <div class="text-4xl mt-4 opacity-50">🐕 🐈 🐇</div>
   </div>
 
   <!-- Error State -->
@@ -785,5 +787,11 @@
   loadPlaces();
 </script>
 
+<script>
+  const btn = document.getElementById('mobileMenuBtn');
+  if (btn) btn.addEventListener('click', () => {
+    document.getElementById('mobileMenu').classList.toggle('hidden');
+  });
+</script>
 </body>
 </html>

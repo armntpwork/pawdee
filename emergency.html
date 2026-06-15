@@ -50,50 +50,63 @@
         <a href="register-business.html" class="text-gray-600 hover:text-brand-orange transition-colors font-medium text-sm">สำหรับธุรกิจ</a>
       </div>
       <div id="navAuth"></div>
+      <button id="mobileMenuBtn" class="md:hidden p-2 rounded-lg hover:bg-red-50 ml-2">
+  <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+</button>
     </div>
   </div>
+<div id="mobileMenu" class="hidden md:hidden border-t border-red-100 bg-white px-4 py-4 space-y-3">
+  <a href="places.html" class="block text-gray-700 hover:text-brand-orange font-medium py-1">🗺️ สถานที่ Pet-Friendly</a>
+  <a href="sitters.html" class="block text-gray-700 hover:text-brand-orange font-medium py-1">🧑 พี่เลี้ยงสัตว์</a>
+  <a href="emergency.html" class="block text-red-500 font-semibold py-1">🚨 คลินิกฉุกเฉิน</a>
+  <a href="register-business.html" class="block text-gray-700 hover:text-brand-orange font-medium py-1">🏪 สำหรับธุรกิจ</a>
+</div>
 </nav>
 
 <!-- Emergency Hero -->
-<section class="pt-24 pb-8 bg-gradient-to-b from-red-50 to-brand-cream">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+<section class="pt-24 pb-8 bg-gradient-to-b from-red-50 to-brand-cream relative overflow-hidden">
+  <!-- Soft decoration -->
+  <div class="absolute top-16 right-4 sm:right-16 text-6xl sm:text-8xl opacity-10 pointer-events-none select-none">🐾</div>
+  <div class="absolute bottom-4 left-4 sm:left-16 text-5xl sm:text-7xl opacity-10 pointer-events-none select-none">❤️</div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
     <div class="flex items-center justify-center gap-2 mb-3">
       <div class="pulse-dot"></div>
       <span class="text-red-500 font-semibold text-sm">ให้บริการ 24 ชั่วโมง</span>
     </div>
-    <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-3">
+    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-3">
       <span class="text-red-500">🚨 ฉุกเฉิน</span> สัตว์เลี้ยง
     </h1>
-    <p class="text-gray-500 mb-6 max-w-xl mx-auto">หาโรงพยาบาลสัตว์และคลินิก 24 ชั่วโมงใกล้ที่สุด กรณีฉุกเฉินให้โทรล่วงหน้าก่อนนำสัตว์เลี้ยงไป</p>
+    <p class="text-gray-500 mb-6 max-w-xl mx-auto text-sm sm:text-base">หาโรงพยาบาลสัตว์และคลินิก 24 ชั่วโมงใกล้ที่สุด กรณีฉุกเฉินให้โทรล่วงหน้าก่อนนำสัตว์เลี้ยงไป</p>
 
-    <!-- Emergency tip -->
-    <div class="bg-red-50 border border-red-200 rounded-2xl p-4 max-w-2xl mx-auto mb-6 text-left">
+    <!-- Emergency tip - improved -->
+    <div class="bg-white border-2 border-red-200 rounded-3xl p-4 sm:p-5 max-w-2xl mx-auto mb-6 text-left shadow-sm">
       <div class="flex gap-3">
-        <span class="text-2xl flex-shrink-0">⚠️</span>
+        <div class="w-10 h-10 bg-red-100 rounded-2xl flex items-center justify-center text-xl flex-shrink-0">⚠️</div>
         <div>
-          <div class="font-bold text-red-700 mb-1">สัญญาณฉุกเฉินที่ต้องพาไปหาหมอทันที</div>
+          <div class="font-bold text-red-700 mb-2">สัญญาณฉุกเฉินที่ต้องพาไปหาหมอทันที</div>
           <div class="text-sm text-red-600 grid grid-cols-1 sm:grid-cols-2 gap-1">
-            <span>• หยุดหายใจหรือหายใจลำบาก</span>
-            <span>• ชัก หมดสติ ล้มลง</span>
-            <span>• เลือดออกมาก บาดแผลลึก</span>
-            <span>• กินยา/สารพิษเข้าไป</span>
-            <span>• ท้องบวมโตผิดปกติ</span>
-            <span>• ปัสสาวะไม่ออกนานกว่า 12 ชม.</span>
+            <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 bg-red-400 rounded-full flex-shrink-0"></span>หยุดหายใจหรือหายใจลำบาก</span>
+            <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 bg-red-400 rounded-full flex-shrink-0"></span>ชัก หมดสติ ล้มลง</span>
+            <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 bg-red-400 rounded-full flex-shrink-0"></span>เลือดออกมาก บาดแผลลึก</span>
+            <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 bg-red-400 rounded-full flex-shrink-0"></span>กินยา/สารพิษเข้าไป</span>
+            <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 bg-red-400 rounded-full flex-shrink-0"></span>ท้องบวมโตผิดปกติ</span>
+            <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 bg-red-400 rounded-full flex-shrink-0"></span>ปัสสาวะไม่ออกนานกว่า 12 ชม.</span>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Location + Search -->
-    <div class="max-w-2xl mx-auto flex gap-3">
+    <div class="max-w-2xl mx-auto flex gap-2 sm:gap-3">
       <div class="relative flex-1">
         <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-gray-400">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
         </div>
         <input id="searchInput" type="text" placeholder="ค้นหาชื่อโรงพยาบาล หรือเขต..."
-          class="w-full pl-12 pr-4 py-4 rounded-2xl border-2 border-red-200 bg-white shadow-sm focus:outline-none focus:border-red-400 transition-colors"/>
+          class="w-full pl-12 pr-4 py-3.5 sm:py-4 rounded-2xl border-2 border-red-200 bg-white shadow-sm focus:outline-none focus:border-red-400 transition-colors text-sm sm:text-base"/>
       </div>
-      <button id="locateBtn" class="bg-red-500 text-white px-5 py-4 rounded-2xl font-semibold hover:bg-red-600 transition-all shadow-md flex items-center gap-2 flex-shrink-0">
+      <button id="locateBtn" class="bg-red-500 text-white px-4 sm:px-5 py-3.5 sm:py-4 rounded-2xl font-semibold hover:bg-red-600 transition-all shadow-md flex items-center gap-2 flex-shrink-0">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
         <span class="hidden sm:inline">ใกล้ฉัน</span>
       </button>
@@ -235,29 +248,32 @@ function renderCards(list) {
 
   grid.innerHTML = list.map(v => {
     const hoursBadge = v.is24h
-      ? '<span class="open-24 text-xs font-bold px-2.5 py-1 rounded-full">🕐 24 ชั่วโมง</span>'
-      : '<span class="open-now text-xs font-bold px-2.5 py-1 rounded-full">เช้า–เย็น</span>';
-    const specs = v.specialties.map(s => `<span class="text-xs bg-red-50 text-red-600 px-2 py-0.5 rounded-lg">${s}</span>`).join('');
+      ? '<span class="open-24 text-xs font-bold px-3 py-1 rounded-full flex-shrink-0">🕐 24 ชม.</span>'
+      : '<span class="open-now text-xs font-bold px-3 py-1 rounded-full flex-shrink-0">เช้า–เย็น</span>';
+    const specs = v.specialties.map(s => `<span class="text-xs bg-red-50 text-red-600 px-2.5 py-1 rounded-full font-medium">${s}</span>`).join('');
     return `
-      <div class="card-hover bg-white rounded-3xl p-5 shadow-sm border border-gray-100">
-        <div class="flex items-start justify-between gap-2 mb-3">
-          <div class="font-bold text-gray-900 leading-tight">${v.name}</div>
+      <div class="card-hover bg-white rounded-3xl p-5 shadow-sm border border-gray-100 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-20 h-20 ${v.is24h ? 'bg-red-50' : 'bg-orange-50'} rounded-full -translate-y-6 translate-x-6 pointer-events-none"></div>
+        <div class="flex items-start justify-between gap-2 mb-3 relative">
+          <div>
+            <div class="font-bold text-gray-900 leading-tight mb-1">${v.name}</div>
+            <div class="text-xs text-gray-500">📍 ${v.area}</div>
+          </div>
           ${hoursBadge}
         </div>
-        <div class="text-sm text-gray-500 mb-1">📍 ${v.area}</div>
-        <div class="text-sm text-gray-500 mb-3 text-xs leading-relaxed">${v.address}</div>
-        <div class="flex flex-wrap gap-1 mb-4">${specs}</div>
+        <div class="text-xs text-gray-400 mb-3 leading-relaxed">${v.address}</div>
+        <div class="flex flex-wrap gap-1.5 mb-4">${specs}</div>
         <div class="flex items-center gap-2 mb-4">
-          <span class="text-yellow-400">★</span>
+          <span class="text-yellow-400 text-sm">★</span>
           <span class="font-bold text-sm">${v.rating}</span>
-          ${v.emergency ? '<span class="ml-auto bg-red-100 text-red-600 text-xs font-bold px-2 py-0.5 rounded-full">ฉุกเฉิน ✓</span>' : ''}
+          ${v.emergency ? '<span class="ml-auto bg-red-50 text-red-500 text-xs font-bold px-2.5 py-1 rounded-full border border-red-200">✓ ฉุกเฉิน</span>' : ''}
         </div>
         <div class="grid grid-cols-2 gap-2">
-          <a href="tel:${v.phone}" class="bg-red-500 text-white py-2.5 rounded-xl text-sm font-bold text-center hover:bg-red-600 transition-all">
+          <a href="tel:${v.phone}" class="bg-red-500 text-white py-3 rounded-2xl text-sm font-bold text-center hover:bg-red-600 transition-all shadow-sm">
             📞 โทรเลย
           </a>
           <a href="https://www.google.com/maps/search/?api=1&query=${v.lat},${v.lng}" target="_blank"
-            class="bg-gray-100 text-gray-700 py-2.5 rounded-xl text-sm font-bold text-center hover:bg-gray-200 transition-all">
+            class="bg-gray-100 text-gray-700 py-3 rounded-2xl text-sm font-bold text-center hover:bg-gray-200 transition-all">
             🗺️ นำทาง
           </a>
         </div>
@@ -316,6 +332,12 @@ document.getElementById('locateBtn').addEventListener('click', () => {
     btn.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg><span class="hidden sm:inline">ใกล้ฉัน</span>`;
   });
 });
+</script>
+<script>
+  const menuBtn = document.getElementById('mobileMenuBtn');
+  if (menuBtn) menuBtn.addEventListener('click', () => {
+    document.getElementById('mobileMenu').classList.toggle('hidden');
+  });
 </script>
 </body>
 </html>

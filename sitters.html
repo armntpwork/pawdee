@@ -44,8 +44,17 @@
         <a href="register-business.html" class="text-gray-600 hover:text-brand-orange transition-colors font-medium text-sm">สำหรับธุรกิจ</a>
       </div>
       <div id="navAuth"></div>
+      <button id="mobileMenuBtn" class="md:hidden p-2 rounded-lg hover:bg-orange-50 ml-2">
+  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+</button>
     </div>
   </div>
+<div id="mobileMenu" class="hidden md:hidden border-t border-orange-100 bg-white px-4 py-4 space-y-3">
+  <a href="places.html" class="block text-gray-700 hover:text-brand-orange font-medium py-1">🗺️ สถานที่ Pet-Friendly</a>
+  <a href="sitters.html" class="block text-brand-orange font-semibold py-1">🧑 พี่เลี้ยงสัตว์</a>
+  <a href="emergency.html" class="block text-gray-700 hover:text-red-500 font-medium py-1">🚨 คลินิกฉุกเฉิน</a>
+  <a href="register-business.html" class="block text-gray-700 hover:text-brand-orange font-medium py-1">🏪 สำหรับธุรกิจ</a>
+</div>
 </nav>
 
 <!-- Hero Coming Soon -->
@@ -160,39 +169,54 @@
       </div>
     </div>
 
+    <!-- Animal mini strip -->
+<div class="flex justify-center gap-4 text-4xl mb-8 opacity-80">
+  <span style="animation:bounce 2s infinite">🐶</span>
+  <span style="animation:bounce 2s 0.3s infinite">🐈</span>
+  <span style="animation:bounce 2s 0.6s infinite">🐇</span>
+  <span style="animation:bounce 2s 0.9s infinite">🐹</span>
+  <span style="animation:bounce 2s 1.2s infinite">🦜</span>
+</div>
+
     <!-- Features -->
     <h2 class="text-2xl font-extrabold text-gray-900 mb-8">สิ่งที่กำลังพัฒนา</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-20">
-      <div class="feature-card bg-white rounded-3xl p-6 shadow-sm border border-gray-100 text-left">
-        <div class="w-12 h-12 bg-green-100 rounded-2xl flex items-center justify-center text-2xl mb-4">✅</div>
-        <h3 class="font-bold text-gray-900 mb-2">ตรวจสอบประวัติทุกคน</h3>
-        <p class="text-sm text-gray-500 leading-relaxed">ตรวจสอบบัตรประชาชน ประวัติอาชญากรรม และประสบการณ์ก่อนรับเป็นพี่เลี้ยงในแพลตฟอร์ม</p>
-      </div>
-      <div class="feature-card bg-white rounded-3xl p-6 shadow-sm border border-gray-100 text-left">
-        <div class="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center text-2xl mb-4">📸</div>
-        <h3 class="font-bold text-gray-900 mb-2">รูปและวิดีโออัปเดตเรียลไทม์</h3>
-        <p class="text-sm text-gray-500 leading-relaxed">พี่เลี้ยงส่งรูป/คลิปน้องให้คุณตลอดวัน ไม่ต้องกังวลห่วงน้องที่บ้าน</p>
-      </div>
-      <div class="feature-card bg-white rounded-3xl p-6 shadow-sm border border-gray-100 text-left">
-        <div class="w-12 h-12 bg-orange-100 rounded-2xl flex items-center justify-center text-2xl mb-4">🛡️</div>
-        <h3 class="font-bold text-gray-900 mb-2">โปรไฟล์ครบ ข้อมูลชัดเจน</h3>
-        <p class="text-sm text-gray-500 leading-relaxed">ดูประสบการณ์ รีวิว พื้นที่บริการ และราคาของพี่เลี้ยงแต่ละคนได้ครบในที่เดียว</p>
-      </div>
-      <div class="feature-card bg-white rounded-3xl p-6 shadow-sm border border-gray-100 text-left">
-        <div class="w-12 h-12 bg-purple-100 rounded-2xl flex items-center justify-center text-2xl mb-4">⭐</div>
-        <h3 class="font-bold text-gray-900 mb-2">รีวิวจากคนจริง</h3>
-        <p class="text-sm text-gray-500 leading-relaxed">รีวิวทุกอันผ่านการยืนยันว่าเคยใช้บริการจริง เชื่อถือได้ ไม่มีรีวิวปลอม</p>
-      </div>
-      <div class="feature-card bg-white rounded-3xl p-6 shadow-sm border border-gray-100 text-left">
-        <div class="w-12 h-12 bg-yellow-100 rounded-2xl flex items-center justify-center text-2xl mb-4">📞</div>
-        <h3 class="font-bold text-gray-900 mb-2">ติดต่อตรง ไม่มีคนกลาง</h3>
-        <p class="text-sm text-gray-500 leading-relaxed">ติดต่อพี่เลี้ยงได้โดยตรง ตกลงราคาและนัดหมายกันเอง สะดวก ยืดหยุ่น ตามใจคุณ</p>
-      </div>
-      <div class="feature-card bg-white rounded-3xl p-6 shadow-sm border border-gray-100 text-left">
-        <div class="w-12 h-12 bg-red-100 rounded-2xl flex items-center justify-center text-2xl mb-4">🆘</div>
-        <h3 class="font-bold text-gray-900 mb-2">ฉุกเฉิน 24 ชั่วโมง</h3>
-        <p class="text-sm text-gray-500 leading-relaxed">มีปัญหากลางดึก? ทีมงาน PawDee พร้อมช่วยตลอด 24 ชม. และเชื่อมต่อคลินิกฉุกเฉินใกล้บ้าน</p>
-      </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-20">
+  <div class="feature-card bg-white rounded-3xl p-6 shadow-sm border border-green-100 text-left relative overflow-hidden">
+    <div class="absolute top-0 right-0 w-16 h-16 bg-green-50 rounded-full -translate-y-4 translate-x-4"></div>
+    <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl mb-4" style="background:linear-gradient(135deg,#BBF7D0,#86EFAC)">✅</div>
+    <h3 class="font-bold text-gray-900 mb-2">ตรวจสอบประวัติทุกคน</h3>
+    <p class="text-sm text-gray-500 leading-relaxed">ตรวจสอบบัตรประชาชน ประวัติอาชญากรรม และประสบการณ์ก่อนรับเป็นพี่เลี้ยงในแพลตฟอร์ม</p>
+  </div>
+  <div class="feature-card bg-white rounded-3xl p-6 shadow-sm border border-blue-100 text-left relative overflow-hidden">
+    <div class="absolute top-0 right-0 w-16 h-16 bg-blue-50 rounded-full -translate-y-4 translate-x-4"></div>
+    <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl mb-4" style="background:linear-gradient(135deg,#BFDBFE,#93C5FD)">📸</div>
+    <h3 class="font-bold text-gray-900 mb-2">รูปและวิดีโออัปเดตเรียลไทม์</h3>
+    <p class="text-sm text-gray-500 leading-relaxed">พี่เลี้ยงส่งรูป/คลิปน้องให้คุณตลอดวัน ไม่ต้องกังวลห่วงน้องที่บ้าน</p>
+  </div>
+  <div class="feature-card bg-white rounded-3xl p-6 shadow-sm border border-orange-100 text-left relative overflow-hidden">
+    <div class="absolute top-0 right-0 w-16 h-16 bg-orange-50 rounded-full -translate-y-4 translate-x-4"></div>
+    <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl mb-4" style="background:linear-gradient(135deg,#FED7AA,#FDBA74)">🛡️</div>
+    <h3 class="font-bold text-gray-900 mb-2">โปรไฟล์ครบ ข้อมูลชัดเจน</h3>
+    <p class="text-sm text-gray-500 leading-relaxed">ดูประสบการณ์ รีวิว พื้นที่บริการ และราคาของพี่เลี้ยงแต่ละคนได้ครบในที่เดียว</p>
+  </div>
+  <div class="feature-card bg-white rounded-3xl p-6 shadow-sm border border-yellow-100 text-left relative overflow-hidden">
+    <div class="absolute top-0 right-0 w-16 h-16 bg-yellow-50 rounded-full -translate-y-4 translate-x-4"></div>
+    <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl mb-4" style="background:linear-gradient(135deg,#FEF08A,#FDE047)">⭐</div>
+    <h3 class="font-bold text-gray-900 mb-2">รีวิวจากคนจริง</h3>
+    <p class="text-sm text-gray-500 leading-relaxed">รีวิวทุกอันผ่านการยืนยันว่าเคยใช้บริการจริง เชื่อถือได้ ไม่มีรีวิวปลอม</p>
+  </div>
+  <div class="feature-card bg-white rounded-3xl p-6 shadow-sm border border-purple-100 text-left relative overflow-hidden">
+    <div class="absolute top-0 right-0 w-16 h-16 bg-purple-50 rounded-full -translate-y-4 translate-x-4"></div>
+    <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl mb-4" style="background:linear-gradient(135deg,#E9D5FF,#C4B5FD)">📞</div>
+    <h3 class="font-bold text-gray-900 mb-2">ติดต่อตรง ไม่มีคนกลาง</h3>
+    <p class="text-sm text-gray-500 leading-relaxed">ติดต่อพี่เลี้ยงได้โดยตรง ตกลงราคาและนัดหมายกันเอง สะดวก ยืดหยุ่น ตามใจคุณ</p>
+  </div>
+  <div class="feature-card bg-white rounded-3xl p-6 shadow-sm border border-red-100 text-left relative overflow-hidden">
+    <div class="absolute top-0 right-0 w-16 h-16 bg-red-50 rounded-full -translate-y-4 translate-x-4"></div>
+    <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl mb-4" style="background:linear-gradient(135deg,#FECACA,#FCA5A5)">🆘</div>
+    <h3 class="font-bold text-gray-900 mb-2">ฉุกเฉิน 24 ชั่วโมง</h3>
+    <p class="text-sm text-gray-500 leading-relaxed">มีปัญหากลางดึก? ทีมงาน PawDee พร้อมช่วยตลอด 24 ชม. และเชื่อมต่อคลินิกฉุกเฉินใกล้บ้าน</p>
+  </div>
     </div>
 
     <!-- CTA อยากเป็นพี่เลี้ยง -->
@@ -293,6 +317,12 @@ document.getElementById('sitterForm').addEventListener('submit', async e => {
   document.getElementById('sitterForm').classList.add('hidden');
   document.getElementById('sitterSuccess').classList.remove('hidden');
 });
+</script>
+<script>
+  const btn = document.getElementById('mobileMenuBtn');
+  if (btn) btn.addEventListener('click', () => {
+    document.getElementById('mobileMenu').classList.toggle('hidden');
+  });
 </script>
 </body>
 </html>
