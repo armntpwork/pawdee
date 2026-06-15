@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>PawDee — ค้นหาสถานที่ Pet-Friendly</title>
   <link rel="icon" href="Pawdee Logo.png" type="image/png"/>
+  <link rel="manifest" href="/manifest.json"/>
   <meta name="description" content="ค้นหาร้านอาหาร คาเฟ่ โรงแรม และคลินิกที่รับสัตว์เลี้ยงทั่วไทย"/>
   <meta property="og:type" content="website"/>
   <meta property="og:url" content="https://pawdee.vercel.app/places"/>
@@ -47,6 +48,11 @@
     .badge-shop     { background:#FFF8E1; color:#F57F17; }
     .filter-btn { transition: all 0.2s; }
     .filter-btn.active { background: #F97316; color: white; border-color: #F97316; }
+    .pet-filter-btn { transition: all 0.2s; }
+    .pet-filter-btn.active { background: #7C3AED; color: white; border-color: #7C3AED; }
+    .review-tag-label { display:inline-flex; align-items:center; gap:0.25rem; font-size:0.7rem; font-weight:600; padding:0.3rem 0.65rem; border-radius:9999px; border:1.5px solid #E5E7EB; color:#6B7280; cursor:pointer; transition:all 0.15s; user-select:none; }
+    .review-tag-label.selected { background:#FFF7ED; color:#EA580C; border-color:#F97316; }
+    .review-tag-label input { display:none; }
     #map { height: 600px; border-radius: 1.5rem; z-index: 0; }
     .leaflet-popup-content-wrapper { border-radius: 1rem; font-family: 'Kanit', sans-serif; }
     .map-popup-btn { background:#F97316; color:white; border:none; border-radius:0.5rem; padding:0.4rem 0.8rem; font-family:'Kanit',sans-serif; font-size:0.8rem; font-weight:600; cursor:pointer; width:100%; margin-top:0.5rem; }
@@ -117,6 +123,14 @@
         class="w-full pl-12 pr-4 py-4 rounded-2xl border-2 border-orange-200 bg-white shadow-md focus:outline-none focus:border-brand-orange transition-colors text-gray-800 placeholder-gray-400 text-sm sm:text-base"/>
     </div>
 
+    <!-- Nearby Button -->
+    <div class="flex justify-center mt-3 mb-2">
+      <button id="nearbyBtn" class="inline-flex items-center gap-2 bg-white border-2 border-orange-200 hover:border-brand-orange text-gray-600 hover:text-brand-orange px-5 py-2.5 rounded-2xl text-sm font-semibold shadow-sm transition-all">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        <span id="nearbyBtnText">หาร้านใกล้ฉัน</span>
+      </button>
+    </div>
+
     <!-- Quick stats pills -->
     <div class="flex flex-wrap items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-500">
       <span class="bg-amber-50 text-amber-700 px-3 py-1 rounded-full font-medium">☕ คาเฟ่</span>
@@ -161,6 +175,16 @@
   </div>
 </div>
 
+<!-- Pet Attribute Filters -->
+<div class="bg-white/80 backdrop-blur border-b border-gray-100">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 flex items-center gap-2 overflow-x-auto scrollbar-hide">
+    <span class="text-xs text-gray-400 font-medium flex-shrink-0">กรองเพิ่ม:</span>
+    <button class="pet-filter-btn flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-semibold border-2 border-gray-200 text-gray-600 hover:border-purple-400 hover:text-purple-600" data-attr="largeDogOk">🐕 รับพันธุ์ใหญ่</button>
+    <button class="pet-filter-btn flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-semibold border-2 border-gray-200 text-gray-600 hover:border-purple-400 hover:text-purple-600" data-attr="indoorSeating">🏠 นั่งในร้านได้</button>
+    <button class="pet-filter-btn flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-semibold border-2 border-gray-200 text-gray-600 hover:border-purple-400 hover:text-purple-600" data-attr="noCarrierNeeded">🚫 ไม่ต้องใส่กรง</button>
+  </div>
+</div>
+
 <!-- Main Content -->
 <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
@@ -194,6 +218,7 @@
         <option value="rating">⭐ คะแนนสูงสุด</option>
         <option value="reviewCount">💬 รีวิวมากสุด</option>
         <option value="name">🔤 ชื่อ ก-ฮ</option>
+        <option value="distance" id="sortDistanceOption" disabled>📍 ใกล้ที่สุด</option>
       </select>
       <!-- View Toggle -->
       <div class="flex border-2 border-gray-200 rounded-xl overflow-hidden">
@@ -321,6 +346,8 @@
 
       <div id="modalPets" class="mb-3 flex flex-wrap gap-2"></div>
       <div id="modalWeight" class="hidden mb-3 text-xs text-gray-500"></div>
+      <!-- Tag Aggregate Stats -->
+      <div id="modalTagStats" class="hidden mb-3"></div>
       <!-- Social Links -->
       <div id="modalLinks" class="hidden border-t border-gray-100 pt-3 mt-1 flex flex-wrap gap-2"></div>
 
@@ -342,6 +369,17 @@
               <button type="button" data-star="3" class="star-btn text-3xl leading-none text-gray-300 transition-colors hover:scale-110">★</button>
               <button type="button" data-star="4" class="star-btn text-3xl leading-none text-gray-300 transition-colors hover:scale-110">★</button>
               <button type="button" data-star="5" class="star-btn text-3xl leading-none text-gray-300 transition-colors hover:scale-110">★</button>
+            </div>
+            <div class="mb-3">
+              <p class="text-xs text-gray-400 mb-2">ประสบการณ์กับสัตว์เลี้ยง <span class="text-gray-300">(เลือกได้หลายข้อ)</span></p>
+              <div class="flex flex-wrap gap-1.5" id="reviewTagPicker">
+                <label class="review-tag-label"><input type="checkbox" value="petFriendlyStaff"/>👋 พนักงานเป็นมิตร</label>
+                <label class="review-tag-label"><input type="checkbox" value="waterBowl"/>💧 มีถาดน้ำ/อาหาร</label>
+                <label class="review-tag-label"><input type="checkbox" value="indoorOk"/>🪑 นั่งในร้านได้</label>
+                <label class="review-tag-label"><input type="checkbox" value="spacious"/>🌿 พื้นที่กว้าง</label>
+                <label class="review-tag-label"><input type="checkbox" value="clean"/>🧹 สะอาด</label>
+                <label class="review-tag-label"><input type="checkbox" value="easyParking"/>🅿️ ที่จอดสะดวก</label>
+              </div>
             </div>
             <textarea id="reviewComment" rows="3"
               placeholder="เล่าประสบการณ์ของคุณ... (ไม่บังคับ)"
@@ -475,17 +513,37 @@
   let searchQuery = '';
   let sortBy      = 'rating';
   let usingDemo   = false;
+  let userLocation = null;
+  let nearbyMode   = false;
+  const activePetFilters = new Set();
+
+  const REVIEW_TAGS = {
+    petFriendlyStaff: '👋 พนักงานเป็นมิตร',
+    waterBowl:        '💧 มีถาดน้ำ/อาหาร',
+    indoorOk:         '🪑 นั่งในร้านได้',
+    spacious:         '🌿 พื้นที่กว้าง',
+    clean:            '🧹 สะอาด',
+    easyParking:      '🅿️ ที่จอดสะดวก',
+  };
+
+  function haversineKm(lat1, lng1, lat2, lng2) {
+    const R = 6371, toRad = d => d * Math.PI / 180;
+    const dLat = toRad(lat2 - lat1), dLng = toRad(lng2 - lng1);
+    const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng/2)**2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  }
+  function fmtDist(km) { return km < 1 ? `${Math.round(km*1000)} ม.` : `${km.toFixed(1)} กม.`; }
 
   // ── Demo data (shown when Firebase not configured) ─────────────
   const DEMO_PLACES = [
-    { id:'d1', name:'Hound & Ground Coffee', type:'cafe', address:'ถ.เอกมัย แขวงคลองตันเหนือ', district:'วัฒนา', city:'กรุงเทพฯ', allowedPets:['dog','cat'], maxWeightKg:null, needCarrier:false, rating:4.8, reviewCount:142, phone:'02-123-4567', openHours:'จ-ศ 08:00-20:00', imageUrl:'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=400&q=80', logoUrl:'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=100&q=80', verified:true, featured:true, tier:'premium' },
-    { id:'d2', name:'Paw Paradise Hotel', type:'hotel', address:'ถ.สุขุมวิท 39', district:'วัฒนา', city:'กรุงเทพฯ', allowedPets:['dog','cat','rabbit'], maxWeightKg:20, needCarrier:false, rating:4.9, reviewCount:87, phone:'02-987-6543', openHours:'เปิด 24 ชั่วโมง', imageUrl:'https://images.unsplash.com/photo-1551882547-ff40c63fe2fa?w=400&q=80', logoUrl:'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=100&q=80', verified:true, featured:true, tier:'basic' },
-    { id:'d3', name:'คลินิกสัตวแพทย์ เพื่อนรัก 24 ชม.', type:'clinic', address:'ถ.ลาดพร้าว 101', district:'ลาดพร้าว', city:'กรุงเทพฯ', allowedPets:['dog','cat','rabbit'], maxWeightKg:null, needCarrier:false, rating:4.7, reviewCount:312, phone:'02-555-0809', openHours:'เปิด 24 ชั่วโมง', imageUrl:'https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def?w=400&q=80', verified:true, featured:true, emergency24hr:true },
-    { id:'d4', name:'The Bark & Brew', type:'restaurant', address:'ถ.อารีย์สัมพันธ์', district:'พญาไท', city:'กรุงเทพฯ', allowedPets:['dog'], maxWeightKg:15, needCarrier:false, rating:4.5, reviewCount:98, phone:'02-246-1111', openHours:'ทุกวัน 11:00-22:00', imageUrl:'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400&q=80', verified:true, featured:false },
-    { id:'d5', name:'Furry Friends Spa', type:'grooming', address:'ซ.ทองหล่อ 13', district:'วัฒนา', city:'กรุงเทพฯ', allowedPets:['dog','cat'], maxWeightKg:null, needCarrier:false, rating:4.6, reviewCount:204, phone:'086-333-4444', openHours:'จ-ศ 09:00-19:00', imageUrl:'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&q=80', verified:true, featured:false },
-    { id:'d6', name:'Meow Garden Café', type:'cafe', address:'ถ.นิมมานเหมินท์', district:'สุเทพ', city:'เชียงใหม่', allowedPets:['cat'], maxWeightKg:null, needCarrier:false, rating:4.9, reviewCount:521, phone:'053-211-222', openHours:'ทุกวัน 10:00-21:00', imageUrl:'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=400&q=80', verified:true, featured:true },
-    { id:'d7', name:'PetSmart Superstore รัชดา', type:'shop', address:'ถ.รัชดาภิเษก', district:'ห้วยขวาง', city:'กรุงเทพฯ', allowedPets:['dog','cat','rabbit'], maxWeightKg:null, needCarrier:true, rating:4.2, reviewCount:89, phone:'02-513-0000', openHours:'ทุกวัน 10:00-22:00', imageUrl:'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=400&q=80', verified:true, featured:false },
-    { id:'d8', name:'บ้านสัตว์แพทย์ฉุกเฉิน 24 ชม. สาทร', type:'clinic', address:'ถ.สาทรใต้', district:'สาทร', city:'กรุงเทพฯ', allowedPets:['dog','cat'], maxWeightKg:null, needCarrier:false, rating:4.8, reviewCount:445, phone:'02-287-0222', openHours:'เปิด 24 ชั่วโมง', imageUrl:'https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def?w=400&q=80', verified:true, featured:true, emergency24hr:true },
+    { id:'d1', name:'Hound & Ground Coffee', type:'cafe', address:'ถ.เอกมัย แขวงคลองตันเหนือ', district:'วัฒนา', city:'กรุงเทพฯ', allowedPets:['dog','cat'], maxWeightKg:null, needCarrier:false, indoorSeating:true, rating:4.8, reviewCount:142, phone:'02-123-4567', openHours:'จ-ศ 08:00-20:00', imageUrl:'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=400&q=80', logoUrl:'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=100&q=80', verified:true, featured:true, tier:'premium', lat:13.7210, lng:100.5857 },
+    { id:'d2', name:'Paw Paradise Hotel', type:'hotel', address:'ถ.สุขุมวิท 39', district:'วัฒนา', city:'กรุงเทพฯ', allowedPets:['dog','cat','rabbit'], maxWeightKg:20, needCarrier:false, indoorSeating:true, rating:4.9, reviewCount:87, phone:'02-987-6543', openHours:'เปิด 24 ชั่วโมง', imageUrl:'https://images.unsplash.com/photo-1551882547-ff40c63fe2fa?w=400&q=80', logoUrl:'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=100&q=80', verified:true, featured:true, tier:'basic', lat:13.7357, lng:100.5689 },
+    { id:'d3', name:'คลินิกสัตวแพทย์ เพื่อนรัก 24 ชม.', type:'clinic', address:'ถ.ลาดพร้าว 101', district:'ลาดพร้าว', city:'กรุงเทพฯ', allowedPets:['dog','cat','rabbit'], maxWeightKg:null, needCarrier:false, indoorSeating:true, rating:4.7, reviewCount:312, phone:'02-555-0809', openHours:'เปิด 24 ชั่วโมง', imageUrl:'https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def?w=400&q=80', verified:true, featured:true, emergency24hr:true, lat:13.8028, lng:100.5698 },
+    { id:'d4', name:'The Bark & Brew', type:'restaurant', address:'ถ.อารีย์สัมพันธ์', district:'พญาไท', city:'กรุงเทพฯ', allowedPets:['dog'], maxWeightKg:15, needCarrier:false, indoorSeating:false, rating:4.5, reviewCount:98, phone:'02-246-1111', openHours:'ทุกวัน 11:00-22:00', imageUrl:'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400&q=80', verified:true, featured:false, lat:13.7740, lng:100.5434 },
+    { id:'d5', name:'Furry Friends Spa', type:'grooming', address:'ซ.ทองหล่อ 13', district:'วัฒนา', city:'กรุงเทพฯ', allowedPets:['dog','cat'], maxWeightKg:null, needCarrier:false, indoorSeating:true, rating:4.6, reviewCount:204, phone:'086-333-4444', openHours:'จ-ศ 09:00-19:00', imageUrl:'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&q=80', verified:true, featured:false, lat:13.7297, lng:100.5801 },
+    { id:'d6', name:'Meow Garden Café', type:'cafe', address:'ถ.นิมมานเหมินท์', district:'สุเทพ', city:'เชียงใหม่', allowedPets:['cat'], maxWeightKg:null, needCarrier:false, indoorSeating:true, rating:4.9, reviewCount:521, phone:'053-211-222', openHours:'ทุกวัน 10:00-21:00', imageUrl:'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=400&q=80', verified:true, featured:true, lat:18.7969, lng:98.9689 },
+    { id:'d7', name:'PetSmart Superstore รัชดา', type:'shop', address:'ถ.รัชดาภิเษก', district:'ห้วยขวาง', city:'กรุงเทพฯ', allowedPets:['dog','cat','rabbit'], maxWeightKg:null, needCarrier:true, indoorSeating:false, rating:4.2, reviewCount:89, phone:'02-513-0000', openHours:'ทุกวัน 10:00-22:00', imageUrl:'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=400&q=80', verified:true, featured:false, lat:13.7765, lng:100.5722 },
+    { id:'d8', name:'บ้านสัตว์แพทย์ฉุกเฉิน 24 ชม. สาทร', type:'clinic', address:'ถ.สาทรใต้', district:'สาทร', city:'กรุงเทพฯ', allowedPets:['dog','cat'], maxWeightKg:null, needCarrier:false, indoorSeating:true, rating:4.8, reviewCount:445, phone:'02-287-0222', openHours:'เปิด 24 ชั่วโมง', imageUrl:'https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def?w=400&q=80', verified:true, featured:true, emergency24hr:true, lat:13.7234, lng:100.5238 },
   ];
 
   // ── Build card HTML ───────────────────────────────────────────
@@ -494,6 +552,15 @@
     const petIcons = (place.allowedPets || []).map(p => PET_ICONS[p] || '🐾').join(' ');
     const weightTag = place.maxWeightKg
       ? `<span class="text-xs text-gray-400">น้ำหนักไม่เกิน ${place.maxWeightKg} กก.</span>`
+      : '';
+    const distTag = (userLocation && place._distKm != null && place._distKm !== Infinity)
+      ? `<span class="inline-flex items-center gap-1 text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">📍 ${fmtDist(place._distKm)}</span>`
+      : '';
+    const amenityTags = [];
+    if (place.indoorSeating) amenityTags.push('🏠 ในร้าน');
+    if (!place.needCarrier && (place.allowedPets||[]).includes('dog') && (place.maxWeightKg == null || place.maxWeightKg >= 20)) amenityTags.push('🐕 พันธุ์ใหญ่ได้');
+    const amenityHtml = amenityTags.length
+      ? `<div class="flex flex-wrap gap-1 mt-1">${amenityTags.map(t=>`<span class="text-[10px] font-semibold bg-purple-50 text-purple-600 px-2 py-0.5 rounded-full">${t}</span>`).join('')}</div>`
       : '';
     const emergency = place.emergency24hr
       ? `<div class="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-lg">🚨 24 ชม.</div>`
@@ -551,6 +618,8 @@
           <div class="text-xs text-gray-500 mb-1">🕐 ${place.openHours}</div>
           <div class="text-sm mb-1">${petIcons}</div>
           ${weightTag}
+          ${amenityHtml}
+          ${distTag}
           <div class="flex-1"></div>
           <div class="flex gap-2 mt-4">
             ${place.phone ? `
@@ -575,12 +644,24 @@
                               || (p.district || '').toLowerCase().includes(q)
                               || (p.city    || '').toLowerCase().includes(q)
                               || (p.address || '').toLowerCase().includes(q);
-      return matchType && matchSearch;
+      if (!matchType || !matchSearch) return false;
+      if (activePetFilters.has('largeDogOk') && p.maxWeightKg != null && p.maxWeightKg < 20) return false;
+      if (activePetFilters.has('indoorSeating') && !p.indoorSeating) return false;
+      if (activePetFilters.has('noCarrierNeeded') && p.needCarrier) return false;
+      return true;
     });
 
-    // Sort — tier boost ก่อน แล้วค่อย sort ตาม user เลือก
+    // คำนวณระยะทางถ้ามี userLocation
+    if (userLocation) {
+      filtered.forEach(p => {
+        p._distKm = (p.lat && p.lng) ? haversineKm(userLocation.lat, userLocation.lng, p.lat, p.lng) : Infinity;
+      });
+    }
+
+    // Sort — distance mode ไม่ใส่ tier boost, mode อื่น tier boost ก่อน
     const TIER_WEIGHT = { premium: 3, basic: 2, free: 1 };
     filtered.sort((a, b) => {
+      if (sortBy === 'distance') return (a._distKm ?? Infinity) - (b._distKm ?? Infinity);
       const tierDiff = (TIER_WEIGHT[b.tier] || 1) - (TIER_WEIGHT[a.tier] || 1);
       if (tierDiff !== 0) return tierDiff;
       if (sortBy === 'rating')      return b.rating - a.rating;
@@ -682,6 +763,59 @@
   document.getElementById('sortSelect').addEventListener('change', e => {
     sortBy = e.target.value;
     render();
+  });
+
+  // ── Nearby Button ─────────────────────────────────────────────
+  document.getElementById('nearbyBtn').addEventListener('click', () => {
+    const btn = document.getElementById('nearbyBtn');
+    const txt = document.getElementById('nearbyBtnText');
+    if (nearbyMode) {
+      nearbyMode = false; userLocation = null;
+      txt.textContent = 'หาร้านใกล้ฉัน';
+      btn.classList.remove('border-brand-orange','text-brand-orange','bg-orange-50');
+      document.getElementById('sortDistanceOption').disabled = true;
+      if (sortBy === 'distance') { sortBy = 'rating'; document.getElementById('sortSelect').value = 'rating'; }
+      render(); return;
+    }
+    if (!navigator.geolocation) { alert('เบราว์เซอร์นี้ไม่รองรับ GPS ครับ'); return; }
+    txt.textContent = '⏳ กำลังระบุตำแหน่ง...';
+    btn.disabled = true;
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        userLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        nearbyMode = true;
+        txt.textContent = '✅ ใกล้ฉัน (แตะเพื่อปิด)';
+        btn.classList.add('border-brand-orange','text-brand-orange','bg-orange-50');
+        btn.disabled = false;
+        document.getElementById('sortDistanceOption').disabled = false;
+        sortBy = 'distance'; document.getElementById('sortSelect').value = 'distance';
+        render();
+      },
+      err => {
+        txt.textContent = 'หาร้านใกล้ฉัน'; btn.disabled = false;
+        if (err.code === 1) alert('กรุณาอนุญาตให้เข้าถึงตำแหน่งในเบราว์เซอร์ก่อนนะครับ 🙏');
+        else alert('ไม่สามารถระบุตำแหน่งได้ ลองอีกครั้งครับ');
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+    );
+  });
+
+  // ── Pet Attribute Filters ─────────────────────────────────────
+  document.querySelectorAll('.pet-filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const attr = btn.dataset.attr;
+      if (activePetFilters.has(attr)) { activePetFilters.delete(attr); btn.classList.remove('active'); }
+      else                            { activePetFilters.add(attr);    btn.classList.add('active');    }
+      render();
+    });
+  });
+
+  // ── Review Tag Picker ─────────────────────────────────────────
+  document.getElementById('reviewTagPicker').addEventListener('click', e => {
+    const label = e.target.closest('.review-tag-label');
+    if (!label) return;
+    label.classList.toggle('selected');
+    label.querySelector('input').checked = label.classList.contains('selected');
   });
 
   // ── Map (Leaflet) ─────────────────────────────────────────────
@@ -823,9 +957,25 @@
                 <span class="text-sm text-brand-orange tracking-tight">${'★'.repeat(r.rating)}<span class="text-gray-200">${'★'.repeat(5 - r.rating)}</span></span>
               </div>
               ${r.comment ? `<p class="text-xs text-gray-600 leading-relaxed">${r.comment}</p>` : ''}
+              ${r.tags && r.tags.length ? `<div class="flex flex-wrap gap-1 mt-1">${r.tags.map(t=>`<span class="text-[10px] font-semibold bg-orange-50 text-orange-500 px-1.5 py-0.5 rounded-full">${REVIEW_TAGS[t]||t}</span>`).join('')}</div>` : ''}
               <p class="text-[10px] text-gray-300 mt-0.5">${r.createdAt?.toDate ? r.createdAt.toDate().toLocaleDateString('th-TH', { year:'numeric', month:'short', day:'numeric' }) : ''}</p>
             </div>
           </div>`).join('');
+
+      // Aggregate tag stats
+      const tagCounts = {};
+      reviews.forEach(r => { (r.tags||[]).forEach(t => { tagCounts[t] = (tagCounts[t]||0)+1; }); });
+      const topTags = Object.entries(tagCounts).sort((a,b) => b[1]-a[1]);
+      const tagStatsEl = document.getElementById('modalTagStats');
+      if (topTags.length >= 1) {
+        tagStatsEl.innerHTML = `<div class="bg-orange-50 rounded-2xl p-3">
+          <p class="text-xs text-gray-500 font-semibold mb-2">📊 สิ่งที่ผู้เข้าชมพูดถึง</p>
+          <div class="flex flex-wrap gap-1.5">${topTags.map(([t,c])=>`<span class="inline-flex items-center gap-1 text-xs font-semibold bg-white text-orange-700 border border-orange-200 px-2.5 py-1 rounded-full">${REVIEW_TAGS[t]||t}<span class="text-orange-400 font-normal">${c}</span></span>`).join('')}</div>
+        </div>`;
+        tagStatsEl.classList.remove('hidden');
+      } else {
+        tagStatsEl.classList.add('hidden');
+      }
       }
 
       const alreadyReviewed = currentUser ? reviews.some(r => r.userId === currentUser.uid) : false;
@@ -849,6 +999,7 @@
     if (!currentUser) { alert('กรุณาเข้าสู่ระบบก่อน'); return; }
     if (!selectedRating) { alert('กรุณาเลือกคะแนน ⭐'); return; }
     const comment = document.getElementById('reviewComment').value.trim();
+    const tags = [...document.querySelectorAll('#reviewTagPicker input:checked')].map(i => i.value);
     const btn = document.getElementById('submitReviewBtn');
     btn.disabled = true;
     btn.textContent = '⏳ กำลังส่ง...';
@@ -860,6 +1011,7 @@
         userPhotoURL: currentUser.photoURL || null,
         rating:       selectedRating,
         comment,
+        tags,
         createdAt:    serverTimestamp(),
       });
       // คำนวณคะแนนเฉลี่ยใหม่
@@ -872,6 +1024,10 @@
       if (local) { local.rating = avg; local.reviewCount = ratings.length; }
       document.getElementById('modalRating').textContent  = avg.toFixed(1);
       document.getElementById('modalReviews').textContent = `${ratings.length.toLocaleString()} รีวิว`;
+      // รีเซ็ต tag picker
+      document.querySelectorAll('#reviewTagPicker .review-tag-label').forEach(l => {
+        l.classList.remove('selected'); l.querySelector('input').checked = false;
+      });
       await loadReviews(currentPlaceId);
     } catch (e) {
       alert('เกิดข้อผิดพลาด กรุณาลองใหม่');
@@ -933,11 +1089,24 @@
     const emergency = document.getElementById('modal24h');
     place.emergency24hr ? emergency.classList.remove('hidden') : emergency.classList.add('hidden');
 
-    // สัตว์ที่รับ
+    // รีเซ็ต tag stats
+    document.getElementById('modalTagStats').classList.add('hidden');
+
+    // สัตว์ที่รับ + amenity chips
     const petsEl = document.getElementById('modalPets');
     petsEl.innerHTML = (place.allowedPets || []).map(p =>
       `<span class="inline-flex items-center gap-1 bg-orange-50 text-orange-700 text-xs font-semibold px-3 py-1.5 rounded-full">${PET_ICONS[p] || '🐾'} ${p === 'dog' ? 'สุนัข' : p === 'cat' ? 'แมว' : p === 'rabbit' ? 'กระต่าย' : p === 'bird' ? 'นก' : p === 'fish' ? 'ปลา' : 'สัตว์อื่นๆ'}</span>`
     ).join('');
+    // Amenity chips (ข้อมูลที่ Google ไม่มี)
+    const amenities = [];
+    if (place.indoorSeating) amenities.push('🏠 นั่งในร้านได้');
+    if (!place.needCarrier)  amenities.push('🚫 ไม่ต้องใส่กรง');
+    if ((place.allowedPets||[]).includes('dog') && (place.maxWeightKg == null || place.maxWeightKg >= 20)) amenities.push('🐕 รับพันธุ์ใหญ่');
+    if (amenities.length) {
+      petsEl.innerHTML += amenities.map(a =>
+        `<span class="inline-flex items-center gap-1 bg-purple-50 text-purple-700 text-xs font-semibold px-3 py-1.5 rounded-full">${a}</span>`
+      ).join('');
+    }
 
     const weightEl = document.getElementById('modalWeight');
     if (place.maxWeightKg) {
@@ -1063,5 +1232,6 @@
     document.getElementById('mobileMenu').classList.toggle('hidden');
   });
 </script>
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js").catch(()=>{});}</script>
 </body>
 </html>

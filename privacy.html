@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>PawDee — นโยบายความเป็นส่วนตัว</title>
   <link rel="icon" href="Pawdee Logo.png" type="image/png"/>
+  <link rel="manifest" href="/manifest.json"/>
   <meta name="description" content="นโยบายความเป็นส่วนตัวของ PawDee — วิธีที่เราเก็บรวบรวมและปกป้องข้อมูลของคุณ"/>
   <meta property="og:type" content="website"/>
   <meta property="og:url" content="https://pawdee.vercel.app/privacy"/>
@@ -164,5 +165,6 @@
   <a href="terms.html" class="hover:text-brand-orange transition-colors mx-2">เงื่อนไขการใช้งาน</a>
 </footer>
 
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js").catch(()=>{});}</script>
 </body>
 </html>

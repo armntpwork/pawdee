@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>PawDee — พี่เลี้ยงสัตว์เลี้ยง เปิดตัวเร็วๆ นี้</title>
   <link rel="icon" href="Pawdee Logo.png" type="image/png"/>
+  <link rel="manifest" href="/manifest.json"/>
   <meta name="description" content="ระบบพี่เลี้ยงสัตว์เลี้ยงที่ผ่านการตรวจสอบ กำลังจะเปิดตัวเร็วๆ นี้"/>
   <meta property="og:type" content="website"/>
   <meta property="og:url" content="https://pawdee.vercel.app/sitters"/>
@@ -335,5 +336,6 @@ document.getElementById('sitterForm').addEventListener('submit', async e => {
     document.getElementById('mobileMenu').classList.toggle('hidden');
   });
 </script>
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js").catch(()=>{});}</script>
 </body>
 </html>

@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>PawDee — แพลตฟอร์มครบวงจรสำหรับทาสหมาทาสแมว</title>
   <link rel="icon" href="Pawdee Logo.png" type="image/png"/>
+  <link rel="manifest" href="/manifest.json"/>
   <meta name="description" content="PawDee รวมทุกอย่างที่เจ้าของสัตว์เลี้ยงต้องการ ค้นหาพี่เลี้ยงสัตว์, ร้าน Pet-Friendly, คลินิก 24 ชั่วโมง ในที่เดียว"/>
   <meta property="og:type" content="website"/>
   <meta property="og:url" content="https://pawdee.vercel.app/"/>
@@ -783,5 +784,6 @@
   });
 </script>
 
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js").catch(()=>{});}</script>
 </body>
 </html>
