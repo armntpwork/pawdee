@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PawDee — นโยบายความเป็นส่วนตัว</title>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { brand: { orange:'#F97316','orange-deep':'#EA580C',cream:'#FFFBEB' } },
+          fontFamily: { sans: ['Kanit','ui-sans-serif'] }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { font-family:'Kanit',sans-serif; }
+    .nav-glass { background:rgba(255,255,255,0.92); backdrop-filter:blur(12px); }
+    .prose h2 { font-size:1.15rem; font-weight:700; color:#1f2937; margin-top:2rem; margin-bottom:0.5rem; padding-bottom:0.4rem; border-bottom:2px solid #FEE5CC; }
+    .prose h3 { font-size:0.95rem; font-weight:600; color:#374151; margin-top:1.25rem; margin-bottom:0.25rem; }
+    .prose p  { font-size:0.875rem; color:#4b5563; line-height:1.8; margin-bottom:0.75rem; }
+    .prose ul { list-style:disc; padding-left:1.25rem; font-size:0.875rem; color:#4b5563; line-height:1.8; margin-bottom:0.75rem; }
+    .prose li { margin-bottom:0.2rem; }
+    .prose a  { color:#F97316; text-decoration:underline; }
+  </style>
+</head>
+<body class="bg-brand-cream antialiased">
+
+<!-- Navbar -->
+<nav class="nav-glass fixed top-0 left-0 right-0 z-50 border-b border-orange-100">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      <a href="index.html" class="flex items-center gap-2">
+        <img src="Pawdee Logo.png" alt="PawDee" class="h-8 w-auto"/>
+        <span class="text-xl font-bold text-gray-900">Paw<span class="text-brand-orange">Dee</span></span>
+      </a>
+      <a href="index.html" class="text-sm text-gray-500 hover:text-brand-orange transition-colors">← กลับหน้าหลัก</a>
+    </div>
+  </div>
+</nav>
+
+<main class="pt-24 pb-20">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6">
+
+    <!-- Header -->
+    <div class="bg-white rounded-3xl p-8 shadow-sm border border-orange-100 mb-8">
+      <div class="text-4xl mb-3">🔐</div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-2">นโยบายความเป็นส่วนตัว</h1>
+      <p class="text-sm text-gray-500">อัปเดตล่าสุด: มิถุนายน 2569 (2026)</p>
+      <p class="text-sm text-gray-500 mt-1">บังคับใช้กับแพลตฟอร์ม PawDee ทั้งหมด รวมถึง pawdee.com และแอปพลิเคชัน</p>
+    </div>
+
+    <!-- Content -->
+    <div class="bg-white rounded-3xl p-8 shadow-sm border border-orange-100 prose">
+
+      <p>PawDee ("เรา", "บริษัท") ให้ความสำคัญกับความเป็นส่วนตัวของคุณ ("ผู้ใช้") อย่างสูงสุด นโยบายนี้อธิบายว่าเราเก็บรวบรวม ใช้ และปกป้องข้อมูลส่วนตัวของคุณอย่างไร</p>
+
+      <h2>1. ข้อมูลที่เราเก็บรวบรวม</h2>
+
+      <h3>ข้อมูลที่คุณให้โดยตรง</h3>
+      <ul>
+        <li>ชื่อ-นามสกุล และอีเมลที่ใช้สมัครสมาชิก</li>
+        <li>เบอร์โทรศัพท์ (ถ้ากรอก)</li>
+        <li>ข้อมูลธุรกิจที่ลงทะเบียน ได้แก่ ชื่อร้าน ที่อยู่ ประเภท เวลาทำการ</li>
+        <li>รูปภาพปกและโลโก้ร้านที่อัปโหลด</li>
+        <li>อีเมลที่กรอกใน Waitlist</li>
+      </ul>
+
+      <h3>ข้อมูลที่เก็บโดยอัตโนมัติ</h3>
+      <ul>
+        <li>ข้อมูลการเข้าใช้งาน (IP address, browser, อุปกรณ์)</li>
+        <li>หน้าที่เยี่ยมชมและระยะเวลาใช้งาน</li>
+        <li>ข้อมูล cookies และ local storage เพื่อการทำงานของระบบ</li>
+      </ul>
+
+      <h3>ข้อมูลจากบัญชีภายนอก</h3>
+      <ul>
+        <li>เมื่อ Login ผ่าน Google เราได้รับชื่อ อีเมล และรูปโปรไฟล์จาก Google เท่านั้น ตามที่คุณอนุญาต</li>
+      </ul>
+
+      <h2>2. วัตถุประสงค์การใช้ข้อมูล</h2>
+      <p>เราใช้ข้อมูลของคุณเพื่อวัตถุประสงค์ดังต่อไปนี้เท่านั้น:</p>
+      <ul>
+        <li>ให้บริการแพลตฟอร์ม ค้นหาสถานที่ และฟีเจอร์ต่าง ๆ</li>
+        <li>ตรวจสอบและอนุมัติการลงทะเบียนธุรกิจ</li>
+        <li>แจ้งผลการสมัคร ข่าวสาร และอัปเดตสำคัญ (เฉพาะเมื่อคุณยินยอม)</li>
+        <li>ปรับปรุงคุณภาพบริการและพัฒนาฟีเจอร์ใหม่</li>
+        <li>ป้องกันการใช้งานในทางที่ผิดหรือผิดกฎหมาย</li>
+      </ul>
+
+      <h2>3. การเปิดเผยข้อมูลให้บุคคลที่สาม</h2>
+      <p>เรา <strong>ไม่ขาย ไม่ให้เช่า และไม่แลกเปลี่ยน</strong> ข้อมูลส่วนตัวของคุณกับบุคคลภายนอกเพื่อวัตถุประสงค์ทางการตลาด</p>
+      <p>เราอาจเปิดเผยข้อมูลในกรณีต่อไปนี้:</p>
+      <ul>
+        <li><strong>ผู้ให้บริการโครงสร้างพื้นฐาน</strong> — Firebase (Google) สำหรับจัดเก็บข้อมูลและยืนยันตัวตน</li>
+        <li><strong>บริการส่งอีเมล</strong> — ระบบส่งอีเมลแจ้งเตือนผ่าน Make.com Webhook</li>
+        <li><strong>ข้อกำหนดทางกฎหมาย</strong> — เมื่อได้รับคำสั่งจากหน่วยงานรัฐที่มีอำนาจตามกฎหมาย</li>
+      </ul>
+
+      <h2>4. ระยะเวลาการเก็บข้อมูล</h2>
+      <ul>
+        <li>ข้อมูลบัญชีผู้ใช้: จนกว่าคุณจะขอลบบัญชี</li>
+        <li>ข้อมูลธุรกิจที่ถูกปฏิเสธ: ลบออกหลัง 90 วัน</li>
+        <li>อีเมล Waitlist: จนกว่าคุณจะยกเลิกหรือขอถอน</li>
+      </ul>
+
+      <h2>5. สิทธิของคุณ</h2>
+      <p>ในฐานะผู้ใช้บริการ คุณมีสิทธิ์:</p>
+      <ul>
+        <li><strong>เข้าถึง</strong> ข้อมูลส่วนตัวที่เราเก็บเกี่ยวกับคุณ</li>
+        <li><strong>แก้ไข</strong> ข้อมูลที่ไม่ถูกต้องผ่านหน้าโปรไฟล์</li>
+        <li><strong>ลบ</strong> บัญชีและข้อมูลของคุณ โดยติดต่อเราโดยตรง</li>
+        <li><strong>ถอนความยินยอม</strong> การรับอีเมลได้ทุกเมื่อ</li>
+        <li><strong>ร้องเรียน</strong> ต่อสำนักงาน PDPA หากเห็นว่าสิทธิ์ถูกละเมิด</li>
+      </ul>
+
+      <h2>6. ความปลอดภัยของข้อมูล</h2>
+      <p>เราใช้บริการ Firebase ของ Google ซึ่งผ่านมาตรฐานความปลอดภัย ISO 27001, SOC 1/2/3 ข้อมูลทั้งหมดเข้ารหัสในระหว่างส่ง (TLS) และในที่เก็บ (AES-256)</p>
+      <p>รหัสผ่านถูก hash ด้วย Firebase Authentication และเราไม่เก็บรหัสผ่านในรูปแบบ plain text</p>
+
+      <h2>7. Cookies และการติดตาม</h2>
+      <p>เราใช้ Cookies เพื่อ:</p>
+      <ul>
+        <li>รักษาสถานะ Login ของคุณ (จำเป็น ไม่สามารถปิดได้)</li>
+        <li>จดจำการตั้งค่าของคุณ (เช่น ภาษา)</li>
+      </ul>
+      <p>เราไม่ใช้ Cookies ติดตามพฤติกรรมเพื่อโฆษณาจากบุคคลที่สาม</p>
+
+      <h2>8. เด็กและผู้เยาว์</h2>
+      <p>บริการของเราไม่ได้มุ่งเป้าไปยังบุคคลอายุต่ำกว่า 13 ปี หากพบว่าได้เก็บข้อมูลของเด็กโดยไม่ได้รับความยินยอมจากผู้ปกครอง เราจะลบข้อมูลนั้นทันที</p>
+
+      <h2>9. การเปลี่ยนแปลงนโยบาย</h2>
+      <p>เราอาจอัปเดตนโยบายนี้เป็นครั้งคราว เมื่อมีการเปลี่ยนแปลงสำคัญเราจะแจ้งให้ทราบผ่านอีเมลหรือประกาศบนแพลตฟอร์ม การใช้บริการต่อเนื่องหลังจากวันที่มีผลบังคับถือว่าคุณยอมรับนโยบายใหม่</p>
+
+      <h2>10. ติดต่อเรา</h2>
+      <p>หากมีคำถามหรือต้องการใช้สิทธิ์ตาม PDPA กรุณาติดต่อ:</p>
+      <ul>
+        <li>📧 อีเมล: <a href="mailto:armntp.work@gmail.com">armntp.work@gmail.com</a></li>
+        <li>📱 LINE OA: <a href="https://line.me/R/ti/p/@237mvbgf" target="_blank" rel="noopener">@237mvbgf</a></li>
+        <li>📍 กรุงเทพมหานคร, ประเทศไทย</li>
+      </ul>
+      <p>เราจะตอบกลับภายใน 30 วันนับจากวันที่ได้รับคำร้อง</p>
+
+    </div>
+  </div>
+</main>
+
+<footer class="bg-gray-900 text-gray-400 py-8 text-center text-sm">
+  <span class="text-brand-orange font-bold">PawDee</span> © 2026 ·
+  <a href="privacy.html" class="hover:text-brand-orange transition-colors mx-2">นโยบายความเป็นส่วนตัว</a>·
+  <a href="terms.html" class="hover:text-brand-orange transition-colors mx-2">เงื่อนไขการใช้งาน</a>
+</footer>
+
+</body>
+</html>
