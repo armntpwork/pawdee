@@ -297,15 +297,65 @@ window.openModal = function(id) {
   const d = allDocs.find(x => x.id === id);
   if (!d) return;
   document.getElementById('modalTitle').textContent = d.name || 'ไม่มีชื่อ';
-  document.getElementById('modalBody').innerHTML = Object.entries({
-    'ประเภท': d.type, 'ที่อยู่': d.address, 'เมือง': d.city, 'จังหวัด': d.province,
-    'โทรศัพท์': d.phone, 'เว็บไซต์': d.website, 'Facebook': d.facebook,
-    'สัตว์ที่รับ': Array.isArray(d.pets) ? d.pets.join(', ') : d.pets,
-    'บริการ': Array.isArray(d.services) ? d.services.join(', ') : d.services,
-    'เปิด-ปิด': d.hours, 'ราคา': d.priceRange, 'รายละเอียด': d.description,
-    'ชื่อผู้ติดต่อ': d.contactName, 'อีเมลผู้ติดต่อ': d.contactEmail, 'สถานะ': d.status
-  }).filter(([,v]) => v).map(([k,v]) => `<div class="flex gap-2"><span class="font-semibold text-gray-600 w-32 flex-shrink-0">${k}:</span><span>${v}</span></div>`).join('');
+
+  const currentTier = d.tier || 'free';
+  const tierBtn = (t, label, activeClasses, inactiveClasses) =>
+    `<button onclick="setTier('${id}','${t}')" data-tier="${t}"
+      class="tier-btn flex-1 py-2 rounded-xl text-xs font-bold border-2 transition-all ${currentTier === t ? activeClasses : inactiveClasses}">
+      ${label}
+    </button>`;
+
+  document.getElementById('modalBody').innerHTML =
+    Object.entries({
+      'ประเภท': d.type, 'ที่อยู่': d.address, 'เมือง': d.city, 'จังหวัด': d.province,
+      'โทรศัพท์': d.phone, 'เว็บไซต์': d.website, 'Facebook': d.facebook,
+      'สัตว์ที่รับ': Array.isArray(d.pets) ? d.pets.join(', ') : d.pets,
+      'บริการ': Array.isArray(d.services) ? d.services.join(', ') : d.services,
+      'เปิด-ปิด': d.hours, 'ราคา': d.priceRange, 'รายละเอียด': d.description,
+      'ชื่อผู้ติดต่อ': d.contactName, 'อีเมลผู้ติดต่อ': d.contactEmail, 'สถานะ': d.status
+    }).filter(([,v]) => v)
+    .map(([k,v]) => `<div class="flex gap-2"><span class="font-semibold text-gray-600 w-32 flex-shrink-0">${k}:</span><span>${v}</span></div>`)
+    .join('')
+    + `
+    ${d.logoUrl ? `<div class="flex gap-2 items-center"><span class="font-semibold text-gray-600 w-32 flex-shrink-0">โลโก้:</span><img src="${d.logoUrl}" class="w-10 h-10 rounded-xl object-cover border border-gray-200"/></div>` : ''}
+    <div class="border-t border-gray-100 pt-4 mt-2">
+      <div class="text-sm font-semibold text-gray-700 mb-2">🏆 Tier สมาชิก</div>
+      <div class="flex gap-2">
+        ${tierBtn('free',    '🆓 Free',    'border-gray-400 bg-gray-100 text-gray-700', 'border-gray-200 text-gray-400 hover:border-gray-300')}
+        ${tierBtn('basic',   '🟠 Basic',   'border-brand-orange bg-orange-50 text-brand-orange', 'border-gray-200 text-gray-400 hover:border-orange-300')}
+        ${tierBtn('premium', '⭐ Premium', 'border-yellow-400 bg-yellow-50 text-yellow-700', 'border-gray-200 text-gray-400 hover:border-yellow-300')}
+      </div>
+    </div>`;
+
   document.getElementById('modal').classList.remove('hidden');
+};
+
+window.setTier = async function(id, tier) {
+  await updateDoc(doc(db, 'pending_places', id), { tier, updatedAt: serverTimestamp() });
+  // ถ้า approved แล้ว อัปเดต places collection ด้วย
+  const d = allDocs.find(x => x.id === id);
+  if (d) {
+    d.tier = tier;
+    if (d.status === 'approved' && d.name) {
+      const snap = await getDocs(query(collection(db, 'places'), where('name', '==', d.name)));
+      for (const p of snap.docs) await updateDoc(doc(db, 'places', p.id), { tier });
+    }
+  }
+  // อัปเดต UI ปุ่ม tier ใน modal
+  document.querySelectorAll('.tier-btn').forEach(btn => {
+    const t = btn.dataset.tier;
+    const activeMap = {
+      free:    'border-gray-400 bg-gray-100 text-gray-700',
+      basic:   'border-brand-orange bg-orange-50 text-brand-orange',
+      premium: 'border-yellow-400 bg-yellow-50 text-yellow-700',
+    };
+    const inactiveMap = {
+      free:    'border-gray-200 text-gray-400 hover:border-gray-300',
+      basic:   'border-gray-200 text-gray-400 hover:border-orange-300',
+      premium: 'border-gray-200 text-gray-400 hover:border-yellow-300',
+    };
+    btn.className = `tier-btn flex-1 py-2 rounded-xl text-xs font-bold border-2 transition-all ${t === tier ? activeMap[t] : inactiveMap[t]}`;
+  });
 };
 
 window.quickAction = async function(id, status) {
@@ -357,6 +407,10 @@ async function copyToPlaces(d) {
     pets: d.pets || [], services: d.services || [], hours: d.hours || '',
     priceRange: d.priceRange || '฿', description: d.description || '',
     rating: 0, reviews: 0, lat: 13.7563, lng: 100.5018,
+    imageUrl: d.imageUrl || null,
+    logoUrl: d.logoUrl || null,
+    tier: d.tier || 'free',
+    verified: true,
     createdAt: serverTimestamp()
   };
   await addDoc(collection(db, 'places'), placeData);

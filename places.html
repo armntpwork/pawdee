@@ -41,6 +41,10 @@
     .map-popup-btn { background:#F97316; color:white; border:none; border-radius:0.5rem; padding:0.4rem 0.8rem; font-family:'Kanit',sans-serif; font-size:0.8rem; font-weight:600; cursor:pointer; width:100%; margin-top:0.5rem; }
     .view-btn.active { background:#F97316; color:white; border-color:#F97316; }
     .paw-bg { background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23F97316' fill-opacity='0.04'%3E%3Cellipse cx='15' cy='10' rx='4' ry='5'/%3E%3Cellipse cx='30' cy='8' rx='4' ry='5'/%3E%3Cellipse cx='45' cy='10' rx='4' ry='5'/%3E%3Cellipse cx='30' cy='35' rx='12' ry='14'/%3E%3C/g%3E%3C/svg%3E"); }
+    /* Tier logo frames */
+    .logo-frame-free    { border:3px solid white; box-shadow:0 2px 8px rgba(0,0,0,0.18); }
+    .logo-frame-basic   { border:3px solid #F97316; box-shadow:0 2px 10px rgba(249,115,22,0.35); }
+    .logo-frame-premium { border:3px solid #FBBF24; box-shadow:0 0 14px rgba(251,191,36,0.55); }
   </style>
 </head>
 <body class="bg-brand-cream text-gray-800 antialiased">
@@ -282,7 +286,7 @@
       <button id="modalClose" class="absolute top-3 right-3 bg-white/90 backdrop-blur rounded-full w-9 h-9 flex items-center justify-center text-gray-700 hover:bg-white shadow-md text-lg">✕</button>
     </div>
     <!-- Content -->
-    <div class="overflow-y-auto p-5 flex-1">
+    <div id="modalContent" class="overflow-y-auto p-5 flex-1">
       <div class="flex items-start justify-between gap-3 mb-3">
         <span id="modalBadge" class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full"></span>
         <span id="modalVerified" class="hidden inline-flex items-center gap-1 text-xs text-green-600 font-medium">
@@ -420,8 +424,8 @@
 
   // ── Demo data (shown when Firebase not configured) ─────────────
   const DEMO_PLACES = [
-    { id:'d1', name:'Hound & Ground Coffee', type:'cafe', address:'ถ.เอกมัย แขวงคลองตันเหนือ', district:'วัฒนา', city:'กรุงเทพฯ', allowedPets:['dog','cat'], maxWeightKg:null, needCarrier:false, rating:4.8, reviewCount:142, phone:'02-123-4567', openHours:'จ-ศ 08:00-20:00', imageUrl:'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=400&q=80', verified:true, featured:true },
-    { id:'d2', name:'Paw Paradise Hotel', type:'hotel', address:'ถ.สุขุมวิท 39', district:'วัฒนา', city:'กรุงเทพฯ', allowedPets:['dog','cat','rabbit'], maxWeightKg:20, needCarrier:false, rating:4.9, reviewCount:87, phone:'02-987-6543', openHours:'เปิด 24 ชั่วโมง', imageUrl:'https://images.unsplash.com/photo-1551882547-ff40c63fe2fa?w=400&q=80', verified:true, featured:true },
+    { id:'d1', name:'Hound & Ground Coffee', type:'cafe', address:'ถ.เอกมัย แขวงคลองตันเหนือ', district:'วัฒนา', city:'กรุงเทพฯ', allowedPets:['dog','cat'], maxWeightKg:null, needCarrier:false, rating:4.8, reviewCount:142, phone:'02-123-4567', openHours:'จ-ศ 08:00-20:00', imageUrl:'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=400&q=80', logoUrl:'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=100&q=80', verified:true, featured:true, tier:'premium' },
+    { id:'d2', name:'Paw Paradise Hotel', type:'hotel', address:'ถ.สุขุมวิท 39', district:'วัฒนา', city:'กรุงเทพฯ', allowedPets:['dog','cat','rabbit'], maxWeightKg:20, needCarrier:false, rating:4.9, reviewCount:87, phone:'02-987-6543', openHours:'เปิด 24 ชั่วโมง', imageUrl:'https://images.unsplash.com/photo-1551882547-ff40c63fe2fa?w=400&q=80', logoUrl:'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=100&q=80', verified:true, featured:true, tier:'basic' },
     { id:'d3', name:'คลินิกสัตวแพทย์ เพื่อนรัก 24 ชม.', type:'clinic', address:'ถ.ลาดพร้าว 101', district:'ลาดพร้าว', city:'กรุงเทพฯ', allowedPets:['dog','cat','rabbit'], maxWeightKg:null, needCarrier:false, rating:4.7, reviewCount:312, phone:'02-555-0809', openHours:'เปิด 24 ชั่วโมง', imageUrl:'https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def?w=400&q=80', verified:true, featured:true, emergency24hr:true },
     { id:'d4', name:'The Bark & Brew', type:'restaurant', address:'ถ.อารีย์สัมพันธ์', district:'พญาไท', city:'กรุงเทพฯ', allowedPets:['dog'], maxWeightKg:15, needCarrier:false, rating:4.5, reviewCount:98, phone:'02-246-1111', openHours:'ทุกวัน 11:00-22:00', imageUrl:'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400&q=80', verified:true, featured:false },
     { id:'d5', name:'Furry Friends Spa', type:'grooming', address:'ซ.ทองหล่อ 13', district:'วัฒนา', city:'กรุงเทพฯ', allowedPets:['dog','cat'], maxWeightKg:null, needCarrier:false, rating:4.6, reviewCount:204, phone:'086-333-4444', openHours:'จ-ศ 09:00-19:00', imageUrl:'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&q=80', verified:true, featured:false },
@@ -433,7 +437,6 @@
   // ── Build card HTML ───────────────────────────────────────────
   function buildCard(place) {
     const t = TYPE_LABELS[place.type] || { label: place.type, icon: '📍', cls: '' };
-    const stars = '⭐'.repeat(Math.round(place.rating));
     const petIcons = (place.allowedPets || []).map(p => PET_ICONS[p] || '🐾').join(' ');
     const weightTag = place.maxWeightKg
       ? `<span class="text-xs text-gray-400">น้ำหนักไม่เกิน ${place.maxWeightKg} กก.</span>`
@@ -448,6 +451,21 @@
       ? `<div class="absolute top-2 right-2 bg-amber-400 text-white text-xs font-bold px-2 py-1 rounded-lg">Demo</div>`
       : '';
 
+    // Tier
+    const tier = place.tier || 'free';
+    const tierBadge = tier === 'premium'
+      ? `<div class="absolute top-2 right-2 text-xs font-bold px-2.5 py-1 rounded-xl shadow-sm" style="background:linear-gradient(135deg,#F59E0B,#D97706);color:white;">⭐ Premium</div>`
+      : tier === 'basic'
+      ? `<div class="absolute top-2 right-2 bg-brand-orange text-white text-xs font-bold px-2.5 py-1 rounded-xl shadow-sm">✓ Basic</div>`
+      : '';
+    const logoHtml = place.logoUrl
+      ? `<div class="absolute -bottom-5 left-3 z-10">
+           <div class="logo-frame-${tier} w-11 h-11 rounded-full overflow-hidden bg-white">
+             <img src="${place.logoUrl}" alt="${place.name} logo" class="w-full h-full object-cover" loading="lazy"/>
+           </div>
+         </div>`
+      : '';
+
     return `
       <article class="card-hover bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 flex flex-col">
         <div class="relative h-44 bg-gray-100 overflow-hidden">
@@ -459,9 +477,10 @@
             onerror="this.src='https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&q=80'"
           />
           ${emergency}
-          ${demoTag}
+          ${usingDemo ? '' : tierBadge}
+          ${logoHtml}
         </div>
-        <div class="p-4 flex flex-col flex-1">
+        <div class="${place.logoUrl ? 'pt-7' : 'pt-0'} p-4 flex flex-col flex-1">
           <div class="flex items-start justify-between gap-2 mb-2">
             <span class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full ${t.cls}">
               ${t.icon} ${t.label}
@@ -692,8 +711,36 @@
   function showDetailModal(place) {
     const t = TYPE_LABELS[place.type] || { label: place.type, icon: '📍', cls: '' };
 
-    document.getElementById('modalImg').src   = place.imageUrl || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&q=80';
-    document.getElementById('modalImg').alt   = place.name;
+    document.getElementById('modalImg').src = place.imageUrl || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&q=80';
+    document.getElementById('modalImg').alt = place.name;
+
+    // Logo overlay ใน modal
+    const tier = place.tier || 'free';
+    let existingLogo = document.getElementById('modalLogoOverlay');
+    if (existingLogo) existingLogo.remove();
+    const modalContent = document.getElementById('modalContent');
+    if (place.logoUrl) {
+      const logoDiv = document.createElement('div');
+      logoDiv.id = 'modalLogoOverlay';
+      logoDiv.className = 'absolute -bottom-6 left-5 z-10';
+      logoDiv.innerHTML = `<div class="logo-frame-${tier} w-14 h-14 rounded-2xl overflow-hidden bg-white"><img src="${place.logoUrl}" class="w-full h-full object-cover"/></div>`;
+      document.querySelector('#placeModal .relative.h-52').appendChild(logoDiv);
+      modalContent.style.paddingTop = '2rem';
+    } else {
+      modalContent.style.paddingTop = '';
+    }
+    // Tier badge ใน modal header
+    let existingTierBadge = document.getElementById('modalTierBadge');
+    if (existingTierBadge) existingTierBadge.remove();
+    if (tier !== 'free') {
+      const badge = document.createElement('div');
+      badge.id = 'modalTierBadge';
+      badge.className = 'absolute top-3 left-3';
+      badge.innerHTML = tier === 'premium'
+        ? `<span class="text-xs font-bold px-2.5 py-1 rounded-xl shadow" style="background:linear-gradient(135deg,#F59E0B,#D97706);color:white;">⭐ Premium</span>`
+        : `<span class="text-xs font-bold px-2.5 py-1 rounded-xl shadow bg-brand-orange text-white">✓ Basic</span>`;
+      document.querySelector('#placeModal .relative.h-52').appendChild(badge);
+    }
     document.getElementById('modalName').textContent    = place.name;
     document.getElementById('modalAddress').textContent = `📍 ${place.address || ''}, ${place.district || ''}, ${place.city || ''}`;
     document.getElementById('modalRating').textContent  = place.rating?.toFixed(1) || '-';
