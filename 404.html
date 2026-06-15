@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PawDee — 404 ไม่พบหน้านี้</title>
+  <meta name="robots" content="noindex"/>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { brand: { orange:'#F97316','orange-deep':'#EA580C',cream:'#FFFBEB' } },
+          fontFamily: { sans: ['Kanit','ui-sans-serif'] }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { font-family:'Kanit',sans-serif; }
+    .nav-glass { background:rgba(255,255,255,0.92); backdrop-filter:blur(12px); }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+    @keyframes wiggle { 0%,100%{transform:rotate(-6deg)} 50%{transform:rotate(6deg)} }
+    .float { animation: float 3s ease-in-out infinite; }
+    .wiggle { animation: wiggle 1.4s ease-in-out infinite; }
+    @keyframes bounce-in { 0%{opacity:0;transform:scale(.7)} 70%{transform:scale(1.05)} 100%{opacity:1;transform:scale(1)} }
+    .bounce-in { animation: bounce-in 0.6s cubic-bezier(.36,.07,.19,.97) both; }
+  </style>
+</head>
+<body class="bg-brand-cream antialiased min-h-screen flex flex-col">
+
+<!-- Navbar -->
+<nav class="nav-glass fixed top-0 left-0 right-0 z-50 border-b border-orange-100">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      <a href="index.html" class="flex items-center gap-2">
+        <img src="Pawdee Logo.png" alt="PawDee" class="h-8 w-auto"/>
+        <span class="text-xl font-bold text-gray-900">Paw<span class="text-brand-orange">Dee</span></span>
+      </a>
+      <a href="index.html" class="text-sm text-gray-500 hover:text-brand-orange transition-colors">← กลับหน้าหลัก</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Main -->
+<main class="flex-1 flex items-center justify-center px-4 pt-20 pb-16">
+  <div class="text-center max-w-md mx-auto">
+
+    <!-- Animals -->
+    <div class="flex justify-center items-end gap-4 mb-6">
+      <span class="text-5xl float" style="animation-delay:0s">🐕</span>
+      <span class="text-7xl bounce-in" style="animation-delay:.1s">🐾</span>
+      <span class="text-5xl float" style="animation-delay:.4s">🐈</span>
+    </div>
+
+    <!-- 404 number -->
+    <div class="relative inline-block mb-4">
+      <span class="text-[120px] font-extrabold leading-none select-none"
+            style="background:linear-gradient(135deg,#F97316,#FBBF24);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">
+        404
+      </span>
+      <span class="absolute -top-2 -right-6 text-3xl wiggle">😿</span>
+    </div>
+
+    <h1 class="text-2xl font-bold text-gray-800 mb-2">หลงทางแล้วน้องๆ!</h1>
+    <p class="text-gray-500 text-sm leading-relaxed mb-8">
+      ไม่พบหน้าที่คุณกำลังหาอยู่<br/>
+      อาจถูกย้าย ลบ หรือพิมพ์ URL ผิดก็ได้นะ 🤔
+    </p>
+
+    <!-- Actions -->
+    <div class="flex flex-col sm:flex-row gap-3 justify-center">
+      <a href="index.html"
+         class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl font-semibold text-white text-sm shadow-md transition-all hover:shadow-lg hover:-translate-y-0.5"
+         style="background:linear-gradient(135deg,#F97316,#EA580C)">
+        🏠 กลับหน้าหลัก
+      </a>
+      <a href="places.html"
+         class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl font-semibold text-brand-orange bg-white border-2 border-orange-200 text-sm shadow-sm hover:border-brand-orange transition-all hover:-translate-y-0.5">
+        🗺️ ค้นหาสถานที่
+      </a>
+    </div>
+
+    <!-- Quick links -->
+    <div class="mt-10 pt-8 border-t border-orange-100">
+      <p class="text-xs text-gray-400 mb-4">หรือไปที่หน้าเหล่านี้เลย</p>
+      <div class="flex flex-wrap justify-center gap-2">
+        <a href="sitters.html" class="text-xs px-3 py-1.5 rounded-full bg-white border border-gray-200 text-gray-600 hover:border-brand-orange hover:text-brand-orange transition-colors">🧑 พี่เลี้ยงสัตว์</a>
+        <a href="emergency.html" class="text-xs px-3 py-1.5 rounded-full bg-white border border-gray-200 text-gray-600 hover:border-red-400 hover:text-red-500 transition-colors">🚨 คลินิกฉุกเฉิน</a>
+        <a href="register-business.html" class="text-xs px-3 py-1.5 rounded-full bg-white border border-gray-200 text-gray-600 hover:border-brand-orange hover:text-brand-orange transition-colors">🏪 ลงทะเบียนร้าน</a>
+        <a href="login.html" class="text-xs px-3 py-1.5 rounded-full bg-white border border-gray-200 text-gray-600 hover:border-brand-orange hover:text-brand-orange transition-colors">👤 เข้าสู่ระบบ</a>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer class="bg-gray-900 text-gray-400 py-6 text-center text-sm">
+  <span class="text-brand-orange font-bold">PawDee</span> © 2026 ·
+  <a href="privacy.html" class="hover:text-brand-orange transition-colors mx-2">นโยบายความเป็นส่วนตัว</a>·
+  <a href="terms.html" class="hover:text-brand-orange transition-colors mx-2">เงื่อนไขการใช้งาน</a>
+</footer>
+
+</body>
+</html>
