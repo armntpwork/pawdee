@@ -3,18 +3,18 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>PawDee — แพลตฟอร์มครบวงจรสำหรับทาสหมาทาสแมว</title>
+  <title>PawDee — ศูนย์กลางข้อมูล รีวิว และชุมชนสำหรับเจ้าของสัตว์เลี้ยงในไทย</title>
   <link rel="icon" href="Pawdee Logo.png" type="image/png"/>
   <link rel="manifest" href="/manifest.json"/>
   <link rel="apple-touch-icon" href="/icon-512.png"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
   <meta name="apple-mobile-web-app-title" content="PawDee"/>
-  <meta name="description" content="PawDee รวมทุกอย่างที่เจ้าของสัตว์เลี้ยงต้องการ ค้นหาพี่เลี้ยงสัตว์, ร้าน Pet-Friendly, คลินิก 24 ชั่วโมง ในที่เดียว"/>
+  <meta name="description" content="PawDee ค้นหาร้าน Pet-Friendly, คอนโดเลี้ยงสัตว์ได้, คลินิกสัตว์ 24 ชม. พร้อมรีวิวจากเจ้าของจริง — ข้อมูลที่ Google Maps ไม่มี"/>
   <meta property="og:type" content="website"/>
   <meta property="og:url" content="https://pawdee.vercel.app/"/>
-  <meta property="og:title" content="PawDee — แพลตฟอร์มครบวงจรสำหรับทาสหมาทาสแมว"/>
-  <meta property="og:description" content="PawDee รวมทุกอย่างที่เจ้าของสัตว์เลี้ยงต้องการ ค้นหาพี่เลี้ยงสัตว์, ร้าน Pet-Friendly, คลินิก 24 ชั่วโมง ในที่เดียว"/>
+  <meta property="og:title" content="PawDee — ศูนย์กลางข้อมูล รีวิว และชุมชนสำหรับเจ้าของสัตว์เลี้ยงในไทย"/>
+  <meta property="og:description" content="PawDee ค้นหาร้าน Pet-Friendly, คอนโดเลี้ยงสัตว์ได้, คลินิกสัตว์ 24 ชม. พร้อมรีวิวจากเจ้าของจริง — ข้อมูลที่ Google Maps ไม่มี"/>
   <meta property="og:image" content="https://pawdee.vercel.app/animals-hero.png.png"/>
   <meta property="og:image:width" content="1200"/>
   <meta property="og:image:height" content="630"/>
@@ -198,7 +198,8 @@
 
         <p class="text-lg text-gray-600 font-light leading-relaxed mb-8 max-w-lg mx-auto lg:mx-0">
           <strong class="text-gray-800 font-semibold">รับพันธุ์ใหญ่ได้ไหม? นั่งในร้านได้เลยหรือต้องใส่กรง?</strong><br/>
-          Google Maps ไม่มีคำตอบ — PawDee มี พร้อมรีวิวจากเจ้าของสัตว์เลี้ยงจริงๆ ไม่ใช่แค่คนผ่านมา
+          Google Maps ไม่มีคำตอบ — PawDee มี พร้อมรีวิวจากเจ้าของสัตว์เลี้ยงจริงๆ ไม่ใช่แค่คนผ่านมา<br/>
+          <span class="text-gray-500 text-base mt-2 inline-block">ข้อมูลที่แม่นยำขึ้นทุกวัน เพราะทาสหมาทาสแมวทั่วไทยช่วยกันรีวิวและอัปเดต</span>
         </p>
 
         <!-- CTA Buttons -->
@@ -369,42 +370,27 @@
       </h2>
     </div>
 
-    <div class="grid md:grid-cols-3 gap-8">
+    <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
 
-      <!-- Feature 1 -->
-      <div class="feature-card bg-white rounded-3xl p-8 shadow-sm border border-orange-100 relative overflow-hidden">
-        <div class="absolute top-0 right-0 w-24 h-24 bg-orange-50 rounded-full -translate-y-8 translate-x-8 pointer-events-none"></div>
-        <div class="w-20 h-20 rounded-3xl flex items-center justify-center text-4xl mb-6 relative" style="background: linear-gradient(135deg,#FED7AA,#FDBA74);">🐶</div>
-        <h3 class="text-xl font-bold text-gray-900 mb-3">Verified Pet Sitter</h3>
-        <p class="text-gray-500 text-sm leading-relaxed mb-6">
-          จับคู่คนรับฝากเลี้ยงและ Dog Walker ที่ผ่านการ verify แล้ว พร้อมรับอัปเดตรูป/วิดีโอน้องรายวัน
-        </p>
-        <ul class="space-y-2.5">
-          <li class="flex items-center gap-2 text-sm text-gray-700"><span class="w-5 h-5 bg-orange-100 text-brand-orange rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">✓</span> โปรไฟล์ + รีวิวจริง</li>
-          <li class="flex items-center gap-2 text-sm text-gray-700"><span class="w-5 h-5 bg-orange-100 text-brand-orange rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">✓</span> อัปเดตวิดีโอรายวัน</li>
-          <li class="flex items-center gap-2 text-sm text-gray-700"><span class="w-5 h-5 bg-orange-100 text-brand-orange rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">✓</span> ติดต่อพี่เลี้ยงได้โดยตรง</li>
-        </ul>
-      </div>
-
-      <!-- Feature 2 -->
+      <!-- Feature 1: Pet-Friendly Map & Directory -->
       <div class="feature-card bg-white rounded-3xl p-8 shadow-sm border border-green-100 relative overflow-hidden">
         <div class="absolute top-0 right-0 w-24 h-24 bg-green-50 rounded-full -translate-y-8 translate-x-8 pointer-events-none"></div>
-        <div class="w-20 h-20 rounded-3xl flex items-center justify-center text-4xl mb-6 relative" style="background: linear-gradient(135deg,#BBF7D0,#86EFAC);">🐈</div>
-        <h3 class="text-xl font-bold text-gray-900 mb-3">Pet-Friendly Map</h3>
+        <div class="w-20 h-20 rounded-3xl flex items-center justify-center text-4xl mb-6 relative" style="background: linear-gradient(135deg,#BBF7D0,#86EFAC);">🗺️</div>
+        <h3 class="text-xl font-bold text-gray-900 mb-3">Pet-Friendly Directory</h3>
         <p class="text-gray-500 text-sm leading-relaxed mb-6">
-          แผนที่รวมร้านอาหาร คาเฟ่ โรงแรม และคอนโดที่อนุญาตให้พาน้องเข้า พร้อมรายละเอียดครบ
+          ค้นหาสถานที่ Pet-Friendly ทุกประเภท — ร้านอาหาร คาเฟ่ โรงแรม กรูมมิ่ง <strong class="text-gray-700">และคอนโด/หมู่บ้านที่อนุญาตให้เลี้ยงสัตว์</strong> พร้อมข้อมูลที่ Google Maps ไม่มี
         </p>
         <ul class="space-y-2.5">
-          <li class="flex items-center gap-2 text-sm text-gray-700"><span class="w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">✓</span> ข้อมูลอัปเดตจากชุมชน</li>
-          <li class="flex items-center gap-2 text-sm text-gray-700"><span class="w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">✓</span> กรองตามขนาดสัตว์</li>
-          <li class="flex items-center gap-2 text-sm text-gray-700"><span class="w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">✓</span> รวมที่พักและอสังหาฯ</li>
+          <li class="flex items-center gap-2 text-sm text-gray-700"><span class="w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">✓</span> รับพันธุ์ใหญ่ได้ไหม? นั่งในได้ไหม? ต้องใส่กรงไหม?</li>
+          <li class="flex items-center gap-2 text-sm text-gray-700"><span class="w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">✓</span> คอนโด-หมู่บ้านที่เลี้ยงสัตว์ได้จริง</li>
+          <li class="flex items-center gap-2 text-sm text-gray-700"><span class="w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">✓</span> รีวิวจากเจ้าของสัตว์จริงๆ อัปเดตจากชุมชน</li>
         </ul>
       </div>
 
-      <!-- Feature 3 -->
+      <!-- Feature 2: Emergency Vet Finder -->
       <div class="feature-card bg-white rounded-3xl p-8 shadow-sm border border-red-100 relative overflow-hidden">
         <div class="absolute top-0 right-0 w-24 h-24 bg-red-50 rounded-full -translate-y-8 translate-x-8 pointer-events-none"></div>
-        <div class="w-20 h-20 rounded-3xl flex items-center justify-center text-4xl mb-6 relative" style="background: linear-gradient(135deg,#FECACA,#FCA5A5);">🐇</div>
+        <div class="w-20 h-20 rounded-3xl flex items-center justify-center text-4xl mb-6 relative" style="background: linear-gradient(135deg,#FECACA,#FCA5A5);">🚨</div>
         <h3 class="text-xl font-bold text-gray-900 mb-3">Emergency Vet Finder</h3>
         <p class="text-gray-500 text-sm leading-relaxed mb-6">
           ค้นหาคลินิกสัตว์แพทย์ที่เปิด 24 ชั่วโมงใกล้บ้าน พร้อมเช็กคิวว่างแบบเรียลไทม์
@@ -421,6 +407,7 @@
     <div class="mt-8 bg-white/60 backdrop-blur rounded-3xl p-8 border border-orange-100">
       <p class="text-sm font-semibold text-gray-500 mb-4 text-center">กำลังพัฒนาเพิ่มเติม 🛠️</p>
       <div class="flex flex-wrap gap-3 justify-center">
+        <span class="bg-orange-50 text-orange-700 px-4 py-2 rounded-full text-sm font-medium border border-orange-200">🐶 พี่เลี้ยงสัตว์ในชุมชน</span>
         <span class="bg-orange-50 text-orange-700 px-4 py-2 rounded-full text-sm font-medium border border-orange-200">🛍️ Pet Shop Online</span>
         <span class="bg-orange-50 text-orange-700 px-4 py-2 rounded-full text-sm font-medium border border-orange-200">💊 สมุดบันทึกสุขภาพ</span>
         <span class="bg-orange-50 text-orange-700 px-4 py-2 rounded-full text-sm font-medium border border-orange-200">👥 Community Forum</span>
@@ -485,38 +472,37 @@
   <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
 
     <div class="text-center mb-4">
-      <span class="inline-block bg-white/20 text-white text-xs font-bold px-3 py-1 rounded-full tracking-wider uppercase mb-5">เป้าหมายร่วมกัน · ภายใน 1 ปี</span>
-      <h2 class="text-3xl sm:text-4xl font-bold text-white">ร่วมสร้างชุมชนนี้<br/>ด้วยกัน</h2>
+      <span class="inline-block bg-white/20 text-white text-xs font-bold px-3 py-1 rounded-full tracking-wider uppercase mb-5">เป้าหมาย 6 เดือนแรก</span>
+      <h2 class="text-3xl sm:text-4xl font-bold text-white">ร่วมสร้างฐานข้อมูลนี้<br/>ด้วยกัน</h2>
       <p class="text-orange-100 mt-3 max-w-md mx-auto leading-relaxed">
-        PawDee ยังเล็กอยู่ แต่มันจะใหญ่ขึ้นได้เพราะคนอย่างคุณ<br/>
-        นี่คือสิ่งที่เราอยากถึงด้วยกัน
+        ทุกรีวิวและทุกการอัปเดตจากคุณ<br/>ทำให้ข้อมูลของ PawDee แม่นยำขึ้นสำหรับทุกคน
       </p>
     </div>
 
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 text-center text-white mt-10">
       <div class="bg-white/10 backdrop-blur rounded-3xl p-6 hover:bg-white/20 transition-colors">
-        <div class="text-3xl mb-3">🐾</div>
-        <div class="text-4xl font-extrabold mb-1">1,000</div>
-        <div class="text-orange-100 text-xs font-semibold uppercase tracking-wide mt-1 mb-2">เจ้าของสัตว์เลี้ยง</div>
-        <div class="text-white/60 text-xs">คนที่แชร์ประสบการณ์<br/>และรีวิวจริง</div>
+        <div class="text-3xl mb-3">📍</div>
+        <div class="text-4xl font-extrabold mb-1">5,000</div>
+        <div class="text-orange-100 text-xs font-semibold uppercase tracking-wide mt-1 mb-2">สถานที่ Pet-Friendly</div>
+        <div class="text-white/60 text-xs">ร้านอาหาร คาเฟ่ โรงแรม<br/>คลินิก และที่พัก</div>
       </div>
       <div class="bg-white/10 backdrop-blur rounded-3xl p-6 hover:bg-white/20 transition-colors">
-        <div class="text-3xl mb-3">🏪</div>
-        <div class="text-4xl font-extrabold mb-1">100</div>
-        <div class="text-orange-100 text-xs font-semibold uppercase tracking-wide mt-1 mb-2">ร้านและสถานที่</div>
-        <div class="text-white/60 text-xs">ที่มีข้อมูล Pet-Friendly<br/>ครบถ้วนและถูกต้อง</div>
+        <div class="text-3xl mb-3">🏠</div>
+        <div class="text-4xl font-extrabold mb-1">~500</div>
+        <div class="text-orange-100 text-xs font-semibold uppercase tracking-wide mt-1 mb-2">คอนโดและที่พัก</div>
+        <div class="text-white/60 text-xs">ที่เลี้ยงสัตว์ได้จริง<br/>พร้อมเงื่อนไขชัดเจน</div>
       </div>
       <div class="bg-white/10 backdrop-blur rounded-3xl p-6 hover:bg-white/20 transition-colors">
         <div class="text-3xl mb-3">🏥</div>
-        <div class="text-4xl font-extrabold mb-1">50</div>
+        <div class="text-4xl font-extrabold mb-1">~500</div>
         <div class="text-orange-100 text-xs font-semibold uppercase tracking-wide mt-1 mb-2">คลินิกสัตวแพทย์</div>
         <div class="text-white/60 text-xs">รวมคลินิก 24 ชม.<br/>พร้อมข้อมูลฉุกเฉิน</div>
       </div>
       <div class="bg-white/10 backdrop-blur rounded-3xl p-6 hover:bg-white/20 transition-colors">
-        <div class="text-3xl mb-3">🧑</div>
-        <div class="text-4xl font-extrabold mb-1">20</div>
-        <div class="text-orange-100 text-xs font-semibold uppercase tracking-wide mt-1 mb-2">พี่เลี้ยงสัตว์</div>
-        <div class="text-white/60 text-xs">ที่ผ่านการ verify<br/>และไว้วางใจได้</div>
+        <div class="text-3xl mb-3">⭐</div>
+        <div class="text-4xl font-extrabold mb-1">รีวิว</div>
+        <div class="text-orange-100 text-xs font-semibold uppercase tracking-wide mt-1 mb-2">จากเจ้าของจริง</div>
+        <div class="text-white/60 text-xs">ข้อมูลที่ดีขึ้นทุกวัน<br/>เพราะคุณช่วยกัน</div>
       </div>
     </div>
 
