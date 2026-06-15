@@ -25,6 +25,13 @@
     .checkbox-pet { display:none; }
     .checkbox-pet + label { display:inline-flex; align-items:center; gap:0.5rem; padding:0.5rem 1rem; border-radius:9999px; border:2px solid #e5e7eb; font-size:0.875rem; cursor:pointer; transition:all 0.2s; }
     .checkbox-pet:checked + label { background:#FFFBEB; border-color:#F97316; color:#F97316; font-weight:600; }
+
+    /* Cover image upload */
+    .upload-zone { border:2px dashed #e5e7eb; border-radius:1rem; padding:2rem 1rem; text-align:center; cursor:pointer; transition:all 0.2s; background:#fafafa; }
+    .upload-zone:hover, .upload-zone.drag-over { border-color:#F97316; background:#FFFBEB; }
+    .upload-zone.has-image { border-style:solid; border-color:#F97316; padding:0; overflow:hidden; }
+    .upload-progress { height:4px; background:#f3f4f6; border-radius:9999px; overflow:hidden; margin-top:0.75rem; }
+    .upload-progress-bar { height:100%; background:#F97316; border-radius:9999px; transition:width 0.3s; width:0%; }
   </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -172,9 +179,30 @@
           </label>
         </div>
         <div class="sm:col-span-2">
-          <label class="block text-sm font-medium text-gray-700 mb-1">ลิงก์รูปภาพหน้าร้าน</label>
-          <input type="url" name="imageUrl" placeholder="https://..." class="input-field"/>
-          <p class="text-xs text-gray-400 mt-1">แนะนำ: อัปโหลดรูปที่ Imgbb.com หรือ Google Drive แล้ว copy link</p>
+          <label class="block text-sm font-medium text-gray-700 mb-2">ภาพปกหน้าร้าน</label>
+
+          <!-- Upload Zone -->
+          <div id="uploadZone" class="upload-zone" onclick="document.getElementById('coverImageInput').click()">
+            <div id="uploadPlaceholder">
+              <div class="text-4xl mb-2">🖼️</div>
+              <p class="font-medium text-gray-700 text-sm">คลิกหรือลากรูปมาวางที่นี่</p>
+              <p class="text-xs text-gray-400 mt-1">JPG, PNG, WEBP — ขนาดไม่เกิน 5 MB</p>
+            </div>
+            <img id="coverPreview" class="hidden w-full object-cover rounded-xl" style="max-height:220px;" alt="preview"/>
+          </div>
+
+          <!-- File info + remove -->
+          <div id="fileInfo" class="hidden flex items-center justify-between mt-2 px-1">
+            <span id="fileName" class="text-xs text-gray-500 truncate max-w-xs"></span>
+            <button type="button" id="removeImage" class="text-xs text-red-400 hover:text-red-600 font-medium ml-3 shrink-0">✕ ลบรูป</button>
+          </div>
+
+          <!-- Upload progress (shown during submit) -->
+          <div id="uploadProgressWrap" class="hidden upload-progress mt-2">
+            <div id="uploadProgressBar" class="upload-progress-bar"></div>
+          </div>
+
+          <input type="file" id="coverImageInput" accept="image/*" class="hidden"/>
         </div>
         <div class="sm:col-span-2">
           <label class="block text-sm font-medium text-gray-700 mb-1">รายละเอียดเพิ่มเติม / เงื่อนไขพิเศษ</label>
@@ -212,10 +240,79 @@
 <script type="module">
   import { onAuthChange, getCurrentUser } from './js/auth.js';
   import { initNavAuth } from './js/auth.js';
-  import { db } from './js/firebase-config.js';
+  import { db, app } from './js/firebase-config.js';
   import { collection, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+  import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js';
 
   initNavAuth();
+
+  // ─── Cover image upload widget ───────────────────────────────────────────
+  const storage       = getStorage(app);
+  const fileInput     = document.getElementById('coverImageInput');
+  const uploadZone    = document.getElementById('uploadZone');
+  const placeholder   = document.getElementById('uploadPlaceholder');
+  const preview       = document.getElementById('coverPreview');
+  const fileInfo      = document.getElementById('fileInfo');
+  const fileNameEl    = document.getElementById('fileName');
+  const removeBtn     = document.getElementById('removeImage');
+  let selectedFile    = null;
+
+  function showPreview(file) {
+    if (!file || !file.type.startsWith('image/')) return;
+    if (file.size > 5 * 1024 * 1024) {
+      alert('⚠️ ไฟล์ใหญ่เกิน 5 MB กรุณาเลือกใหม่');
+      return;
+    }
+    selectedFile = file;
+    const url = URL.createObjectURL(file);
+    preview.src = url;
+    preview.classList.remove('hidden');
+    placeholder.classList.add('hidden');
+    uploadZone.classList.add('has-image');
+    fileNameEl.textContent = `${file.name} (${(file.size/1024).toFixed(0)} KB)`;
+    fileInfo.classList.remove('hidden');
+  }
+
+  function clearImage() {
+    selectedFile = null;
+    fileInput.value = '';
+    preview.src = '';
+    preview.classList.add('hidden');
+    placeholder.classList.remove('hidden');
+    uploadZone.classList.remove('has-image');
+    fileInfo.classList.add('hidden');
+  }
+
+  fileInput.addEventListener('change', e => showPreview(e.target.files[0]));
+  removeBtn.addEventListener('click', e => { e.stopPropagation(); clearImage(); });
+
+  uploadZone.addEventListener('dragover',  e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+  uploadZone.addEventListener('dragleave', ()  => uploadZone.classList.remove('drag-over'));
+  uploadZone.addEventListener('drop', e => {
+    e.preventDefault();
+    uploadZone.classList.remove('drag-over');
+    showPreview(e.dataTransfer.files[0]);
+  });
+
+  async function uploadCoverImage(uid) {
+    if (!selectedFile) return null;
+    const ext      = selectedFile.name.split('.').pop();
+    const path     = `business-covers/${uid}/${Date.now()}.${ext}`;
+    const storageRef = ref(storage, path);
+    const progressWrap = document.getElementById('uploadProgressWrap');
+    const progressBar  = document.getElementById('uploadProgressBar');
+    progressWrap.classList.remove('hidden');
+
+    return new Promise((resolve, reject) => {
+      const task = uploadBytesResumable(storageRef, selectedFile);
+      task.on('state_changed',
+        snap => { progressBar.style.width = `${(snap.bytesTransferred/snap.totalBytes*100).toFixed(0)}%`; },
+        reject,
+        async () => { resolve(await getDownloadURL(task.snapshot.ref)); }
+      );
+    });
+  }
+  // ─────────────────────────────────────────────────────────────────────────
 
   onAuthChange(user => {
     if (!user) {
@@ -253,6 +350,22 @@
 
     const user = getCurrentUser();
 
+    // อัปโหลดรูปก่อน (ถ้ามี)
+    let imageUrl = null;
+    if (selectedFile) {
+      try {
+        btn.textContent = '⏳ กำลังอัปโหลดรูป...';
+        imageUrl = await uploadCoverImage(user?.uid || 'anonymous');
+      } catch (uploadErr) {
+        errDiv.textContent = `❌ อัปโหลดรูปไม่สำเร็จ: ${uploadErr.message}`;
+        errDiv.classList.remove('hidden');
+        btn.disabled = false;
+        btn.textContent = 'ส่งข้อมูลเพื่อรอการอนุมัติ →';
+        return;
+      }
+    }
+    btn.textContent = '⏳ กำลังบันทึกข้อมูล...';
+
     const data = {
       name:          fd.get('name'),
       type:          fd.get('type'),
@@ -265,7 +378,7 @@
       maxWeightKg:   fd.get('maxWeightKg') ? Number(fd.get('maxWeightKg')) : null,
       needCarrier:   fd.get('needCarrier') === 'true',
       emergency24hr: fd.get('emergency24hr') === 'true',
-      imageUrl:      fd.get('imageUrl') || null,
+      imageUrl:      imageUrl,
       description:   fd.get('description') || null,
       contactName:   fd.get('contactName'),
       contactEmail:  fd.get('contactEmail'),
