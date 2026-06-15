@@ -26,9 +26,10 @@
     .badge-pending  { background:#FEF3C7; color:#92400E; }
     .badge-approved { background:#D1FAE5; color:#065F46; }
     .badge-rejected { background:#FEE2E2; color:#991B1B; }
+    .paw-bg { background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23F97316' fill-opacity='0.04'%3E%3Cellipse cx='15' cy='10' rx='4' ry='5'/%3E%3Cellipse cx='30' cy='8' rx='4' ry='5'/%3E%3Cellipse cx='45' cy='10' rx='4' ry='5'/%3E%3Cellipse cx='30' cy='35' rx='12' ry='14'/%3E%3C/g%3E%3C/svg%3E"); }
   </style>
 </head>
-<body class="bg-brand-cream text-gray-800 antialiased">
+<body class="bg-brand-cream paw-bg text-gray-800 antialiased">
 
 <!-- Navbar -->
 <nav class="nav-glass fixed top-0 left-0 right-0 z-50 border-b border-orange-100">
@@ -44,34 +45,44 @@
         <a href="emergency.html" class="hover:text-brand-orange transition-colors">คลินิกฉุกเฉิน</a>
       </div>
       <div id="navAuth"></div>
+      <button id="mobileMenuBtn" class="md:hidden p-2 rounded-lg hover:bg-orange-50 ml-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
     </div>
+  </div>
+  <div id="mobileMenu" class="hidden md:hidden border-t border-orange-100 bg-white px-4 py-4 space-y-3">
+    <a href="places.html" class="block text-gray-700 hover:text-brand-orange font-medium py-1">🗺️ สถานที่ Pet-Friendly</a>
+    <a href="sitters.html" class="block text-gray-700 hover:text-brand-orange font-medium py-1">🧑 พี่เลี้ยงสัตว์</a>
+    <a href="emergency.html" class="block text-gray-700 hover:text-red-500 font-medium py-1">🚨 คลินิกฉุกเฉิน</a>
   </div>
 </nav>
 
 <main class="pt-20 pb-16">
   <!-- Not logged in -->
-  <div id="notLoggedIn" class="hidden max-w-md mx-auto px-4 py-24 text-center">
-    <div class="text-6xl mb-4">🔐</div>
+  <div id="notLoggedIn" class="hidden max-w-md mx-auto px-4 py-20 text-center">
+    <div class="text-7xl mb-4">🐾</div>
     <h2 class="text-2xl font-bold text-gray-900 mb-2">กรุณาเข้าสู่ระบบก่อน</h2>
     <p class="text-gray-500 mb-6">เพื่อดูโปรไฟล์และการตั้งค่าของคุณ</p>
-    <a href="login.html?next=profile.html" class="bg-brand-orange text-white px-8 py-3 rounded-xl font-bold hover:bg-brand-orange-deep transition-all shadow-lg inline-block">
+    <a href="login.html?next=profile.html" class="bg-brand-orange text-white px-8 py-3.5 rounded-2xl font-bold hover:bg-brand-orange-deep transition-all shadow-lg inline-block">
       เข้าสู่ระบบ
     </a>
+    <div class="mt-8 text-3xl opacity-40 space-x-3">🐕 🐈 🐇 🐹</div>
   </div>
 
   <!-- Profile content -->
   <div id="profileContent" class="hidden max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Profile Header -->
-    <div class="bg-gradient-to-r from-orange-500 to-orange-400 rounded-3xl p-8 mb-8 text-white relative overflow-hidden">
-      <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-32 translate-x-32"></div>
+    <div class="bg-gradient-to-r from-orange-500 to-amber-400 rounded-3xl p-6 sm:p-8 mb-8 text-white relative overflow-hidden">
+      <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-32 translate-x-32 pointer-events-none"></div>
+      <div class="absolute bottom-0 left-1/2 text-6xl sm:text-8xl opacity-10 pointer-events-none select-none">🐾</div>
       <div class="relative flex flex-col sm:flex-row items-center sm:items-start gap-6">
         <div id="avatarLarge" class="w-24 h-24 rounded-3xl bg-white/20 flex items-center justify-center text-4xl font-bold border-4 border-white/30 flex-shrink-0"></div>
         <div class="text-center sm:text-left">
           <h1 id="userName" class="text-3xl font-extrabold mb-1"></h1>
           <p id="userEmail" class="text-orange-100 mb-4"></p>
           <div class="flex flex-wrap gap-2 justify-center sm:justify-start">
-            <span class="bg-white/20 px-3 py-1 rounded-xl text-sm font-medium">สมาชิก PawDee</span>
-            <span id="memberSince" class="bg-white/20 px-3 py-1 rounded-xl text-sm font-medium"></span>
+            <span class="bg-white/20 px-3 py-1 rounded-2xl text-sm font-medium">🐾 สมาชิก PawDee</span>
+            <span id="memberSince" class="bg-white/20 px-3 py-1 rounded-2xl text-sm font-medium"></span>
           </div>
         </div>
       </div>
@@ -160,8 +171,16 @@
 
 <!-- Footer minimal -->
 <footer class="bg-gray-900 text-gray-400 py-8 text-center text-sm">
-  <span class="text-brand-orange font-bold">PawDee</span> © 2025 · แพลตฟอร์มครบวงจรสำหรับทาสหมาทาสแมว
+  <div class="text-xl mb-2">🐾</div>
+  <span class="text-brand-orange font-bold">PawDee</span> © 2025 · แพลตฟอร์มครบวงจรสำหรับ 🐕 🐈 🐇
 </footer>
+
+<script>
+  const btn = document.getElementById('mobileMenuBtn');
+  if (btn) btn.addEventListener('click', () => {
+    document.getElementById('mobileMenu').classList.toggle('hidden');
+  });
+</script>
 
 <script type="module">
 import { onAuthChange, signOut, initNavAuth } from './js/auth.js';
@@ -236,13 +255,13 @@ async function loadMyPlaces(uid) {
       const statusTh = d.status === 'approved' ? 'อนุมัติแล้ว' : d.status === 'rejected' ? 'ถูกปฏิเสธ' : 'รอการอนุมัติ';
       const date = d.createdAt?.toDate ? d.createdAt.toDate().toLocaleDateString('th-TH') : '';
       return `
-        <div class="flex items-start justify-between p-4 border border-gray-100 rounded-2xl hover:border-orange-200 transition-colors">
-          <div>
-            <div class="font-bold text-gray-900">${d.name || 'ไม่มีชื่อ'}</div>
-            <div class="text-sm text-gray-500">${d.address || ''}</div>
-            <div class="text-xs text-gray-400 mt-1">${date}</div>
+        <div class="flex items-start justify-between p-4 sm:p-5 border-2 border-gray-100 rounded-2xl hover:border-orange-200 hover:shadow-sm transition-all bg-white">
+          <div class="flex-1 min-w-0">
+            <div class="font-bold text-gray-900 mb-0.5">${d.name || 'ไม่มีชื่อ'}</div>
+            <div class="text-sm text-gray-500 truncate">${d.address || ''}</div>
+            <div class="text-xs text-gray-400 mt-1.5">📅 ${date}</div>
           </div>
-          <span class="text-xs font-bold px-3 py-1 rounded-full flex-shrink-0 ml-3 ${statusCls}">${statusTh}</span>
+          <span class="text-xs font-bold px-3 py-1.5 rounded-full flex-shrink-0 ml-3 ${statusCls}">${statusTh}</span>
         </div>`;
     }).join('');
   } catch (e) {

@@ -19,7 +19,8 @@
   <style>
     * { font-family:'Kanit',sans-serif; }
     .nav-glass { background:rgba(255,255,255,0.92); backdrop-filter:blur(12px); }
-    .stat-card { background:white; border-radius:1.5rem; padding:1.5rem; box-shadow:0 4px 20px rgba(0,0,0,0.06); }
+    .stat-card { background:white; border-radius:1.5rem; padding:1.25rem 1.5rem; box-shadow:0 4px 20px rgba(0,0,0,0.06); transition:transform 0.15s,box-shadow 0.15s; }
+    .stat-card:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,0.1); }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased">
@@ -35,7 +36,16 @@
         <span class="bg-brand-orange text-white text-xs font-bold px-2.5 py-1 rounded-lg">ADMIN</span>
       </div>
       <div id="navAuth"></div>
+      <button id="mobileMenuBtn" class="md:hidden p-2 rounded-lg hover:bg-orange-50 ml-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
     </div>
+  </div>
+  <div id="mobileMenu" class="hidden md:hidden border-t border-gray-100 bg-white px-4 py-4 space-y-3">
+    <a href="places.html" class="block text-gray-700 hover:text-brand-orange font-medium py-1">🗺️ สถานที่ Pet-Friendly</a>
+    <a href="sitters.html" class="block text-gray-700 hover:text-brand-orange font-medium py-1">🧑 พี่เลี้ยงสัตว์</a>
+    <a href="emergency.html" class="block text-gray-700 hover:text-red-500 font-medium py-1">🚨 คลินิกฉุกเฉิน</a>
+    <a href="index.html" class="block text-gray-700 hover:text-brand-orange font-medium py-1">🏠 หน้าหลัก</a>
   </div>
 </nav>
 
@@ -50,32 +60,40 @@
 
   <!-- Admin content -->
   <div id="adminContent" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="mb-8">
-      <h1 class="text-3xl font-extrabold text-gray-900">Admin Dashboard</h1>
-      <p class="text-gray-500 mt-1">จัดการสถานที่และผู้ใช้งานของ PawDee</p>
+    <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div>
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900">🐾 Admin Dashboard</h1>
+        <p class="text-gray-500 mt-1 text-sm">จัดการสถานที่และผู้ใช้งานของ PawDee</p>
+      </div>
+      <div class="text-2xl opacity-60 select-none">🐕 🐈 🐇</div>
     </div>
 
     <!-- Stats -->
-    <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+    <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 mb-8">
       <div class="stat-card text-center">
-        <div id="statPending" class="text-3xl font-extrabold text-yellow-500">—</div>
-        <div class="text-sm text-gray-500 mt-1">รอการอนุมัติ</div>
+        <div class="text-2xl mb-1">⏳</div>
+        <div id="statPending" class="text-2xl sm:text-3xl font-extrabold text-yellow-500">—</div>
+        <div class="text-xs sm:text-sm text-gray-500 mt-1">รอการอนุมัติ</div>
       </div>
       <div class="stat-card text-center">
-        <div id="statApproved" class="text-3xl font-extrabold text-green-500">—</div>
-        <div class="text-sm text-gray-500 mt-1">อนุมัติแล้ว</div>
+        <div class="text-2xl mb-1">✅</div>
+        <div id="statApproved" class="text-2xl sm:text-3xl font-extrabold text-green-500">—</div>
+        <div class="text-xs sm:text-sm text-gray-500 mt-1">อนุมัติแล้ว</div>
       </div>
       <div class="stat-card text-center">
-        <div id="statPlaces" class="text-3xl font-extrabold text-brand-orange">—</div>
-        <div class="text-sm text-gray-500 mt-1">สถานที่ทั้งหมด</div>
+        <div class="text-2xl mb-1">🏪</div>
+        <div id="statPlaces" class="text-2xl sm:text-3xl font-extrabold text-brand-orange">—</div>
+        <div class="text-xs sm:text-sm text-gray-500 mt-1">สถานที่ทั้งหมด</div>
       </div>
       <div class="stat-card text-center">
-        <div id="statRejected" class="text-3xl font-extrabold text-red-400">—</div>
-        <div class="text-sm text-gray-500 mt-1">ถูกปฏิเสธ</div>
+        <div class="text-2xl mb-1">❌</div>
+        <div id="statRejected" class="text-2xl sm:text-3xl font-extrabold text-red-400">—</div>
+        <div class="text-xs sm:text-sm text-gray-500 mt-1">ถูกปฏิเสธ</div>
       </div>
-      <div class="stat-card text-center cursor-pointer hover:border-2 hover:border-brand-orange transition-all" id="waitlistStatCard">
-        <div id="statWaitlist" class="text-3xl font-extrabold text-purple-500">—</div>
-        <div class="text-sm text-gray-500 mt-1">Waitlist 📋</div>
+      <div class="stat-card text-center cursor-pointer col-span-2 lg:col-span-1" id="waitlistStatCard">
+        <div class="text-2xl mb-1">📋</div>
+        <div id="statWaitlist" class="text-2xl sm:text-3xl font-extrabold text-purple-500">—</div>
+        <div class="text-xs sm:text-sm text-gray-500 mt-1">Waitlist</div>
       </div>
     </div>
 
@@ -169,6 +187,13 @@
     </div>
   </div>
 </div>
+
+<script>
+  const mBtn = document.getElementById('mobileMenuBtn');
+  if (mBtn) mBtn.addEventListener('click', () => {
+    document.getElementById('mobileMenu').classList.toggle('hidden');
+  });
+</script>
 
 <script type="module">
 import { onAuthChange, initNavAuth } from './js/auth.js';
