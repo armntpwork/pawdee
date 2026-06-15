@@ -4,6 +4,7 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>PawDee — ค้นหาสถานที่ Pet-Friendly</title>
+  <link rel="icon" href="Pawdee Logo.png" type="image/png"/>
   <meta name="description" content="ค้นหาร้านอาหาร คาเฟ่ โรงแรม และคลินิกที่รับสัตว์เลี้ยงทั่วไทย"/>
   <meta property="og:type" content="website"/>
   <meta property="og:url" content="https://pawdee.vercel.app/places"/>
@@ -360,13 +361,17 @@
       </div>
     </div>
     <!-- Actions -->
-    <div class="p-4 border-t border-gray-100 flex gap-3 flex-shrink-0">
-      <a id="modalPhone" href="#" class="hidden flex-1 text-center bg-orange-50 text-brand-orange border border-orange-200 py-3 rounded-2xl font-semibold hover:bg-orange-100 transition-colors">
+    <div class="p-4 border-t border-gray-100 flex gap-2 flex-shrink-0">
+      <a id="modalPhone" href="#" class="hidden flex-1 text-center bg-orange-50 text-brand-orange border border-orange-200 py-3 rounded-2xl font-semibold hover:bg-orange-100 transition-colors text-sm">
         📞 โทรหาร้าน
       </a>
-      <a id="modalMap" href="#" target="_blank" class="flex-1 text-center bg-brand-orange text-white py-3 rounded-2xl font-semibold hover:bg-brand-orange-deep transition-colors">
+      <a id="modalMap" href="#" target="_blank" class="flex-1 text-center bg-brand-orange text-white py-3 rounded-2xl font-semibold hover:bg-orange-600 transition-colors text-sm">
         🗺️ ดูแผนที่
       </a>
+      <button id="modalShare" title="แชร์ร้านนี้"
+        class="w-12 h-12 flex items-center justify-center bg-gray-100 hover:bg-orange-50 hover:text-brand-orange text-gray-500 rounded-2xl transition-colors flex-shrink-0 text-lg">
+        📤
+      </button>
     </div>
   </div>
 </div>
@@ -989,11 +994,45 @@
   function closeModal() {
     modal.classList.add('hidden');
     document.body.style.overflow = '';
+    // ลบ ?id= ออกจาก URL เมื่อปิด modal
+    const url = new URL(location.href);
+    if (url.searchParams.has('id')) {
+      url.searchParams.delete('id');
+      history.replaceState(null, '', url.toString());
+    }
   }
 
   document.getElementById('modalClose').addEventListener('click', closeModal);
   document.getElementById('modalBackdrop').addEventListener('click', closeModal);
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  // Share button
+  document.getElementById('modalShare').addEventListener('click', async () => {
+    const place = allPlaces.find(p => p.id === currentPlaceId);
+    if (!place) return;
+    const shareUrl = `${location.origin}${location.pathname}?id=${currentPlaceId}`;
+    const shareData = {
+      title: `${place.name} — PawDee 🐾`,
+      text: `ค้นพบ "${place.name}" สถานที่ Pet-Friendly บน PawDee`,
+      url: shareUrl,
+    };
+    const btn = document.getElementById('modalShare');
+    try {
+      if (navigator.share && navigator.canShare?.(shareData)) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(shareUrl);
+        btn.textContent = '✅';
+        setTimeout(() => { btn.textContent = '📤'; }, 2000);
+      }
+    } catch (e) {
+      if (e.name !== 'AbortError') {
+        await navigator.clipboard.writeText(shareUrl).catch(() => {});
+        btn.textContent = '✅';
+        setTimeout(() => { btn.textContent = '📤'; }, 2000);
+      }
+    }
+  });
 
   // Event delegation บน grid
   document.getElementById('placesGrid').addEventListener('click', e => {
@@ -1004,7 +1043,18 @@
   });
 
   // ── Init ──────────────────────────────────────────────────────
-  loadPlaces();
+  // Deep link: ?id=placeId เปิด modal อัตโนมัติ
+  const deepLinkId = new URLSearchParams(location.search).get('id');
+
+  const _origLoadPlaces = loadPlaces;
+  async function loadPlacesWithDeepLink() {
+    await _origLoadPlaces();
+    if (deepLinkId) {
+      const place = allPlaces.find(p => p.id === deepLinkId);
+      if (place) showDetailModal(place);
+    }
+  }
+  loadPlacesWithDeepLink();
 </script>
 
 <script>
