@@ -524,8 +524,11 @@
       return matchType && matchSearch;
     });
 
-    // Sort
+    // Sort — tier boost ก่อน แล้วค่อย sort ตาม user เลือก
+    const TIER_WEIGHT = { premium: 3, basic: 2, free: 1 };
     filtered.sort((a, b) => {
+      const tierDiff = (TIER_WEIGHT[b.tier] || 1) - (TIER_WEIGHT[a.tier] || 1);
+      if (tierDiff !== 0) return tierDiff;
       if (sortBy === 'rating')      return b.rating - a.rating;
       if (sortBy === 'reviewCount') return b.reviewCount - a.reviewCount;
       if (sortBy === 'name')        return a.name.localeCompare(b.name, 'th');
