@@ -178,6 +178,15 @@
     </div>
   </div>
 
+  <!-- Pre-fill Banner (แสดงเฉพาะเมื่อมี URL params) -->
+  <div id="prefillBanner" class="hidden mb-5 bg-blue-50 border border-blue-200 rounded-2xl p-4 flex items-start gap-3">
+    <span class="text-xl flex-shrink-0 mt-0.5">✅</span>
+    <div>
+      <p class="text-sm font-semibold text-blue-800">เราเตรียมข้อมูลร้านของคุณไว้แล้ว</p>
+      <p class="text-xs text-blue-600 mt-0.5">กรุณาตรวจสอบความถูกต้องก่อนส่ง — แก้ไขได้ทุก field</p>
+    </div>
+  </div>
+
   <!-- Inline Auth Banner -->
   <div id="authRequired" class="hidden mb-5 bg-amber-50 border border-amber-200 rounded-2xl p-5 text-center">
     <div class="text-3xl mb-2">🔐</div>
@@ -541,11 +550,63 @@
     try { sessionStorage.removeItem(STORAGE_KEY); } catch (_) {}
   }
 
+  // ── URL Pre-fill ──────────────────────────────────────────────────────────
+  const VALID_TYPES = ['cafe','restaurant','hotel','clinic','grooming','shop','condo','park','other'];
+
+  function applyUrlPrefill(hadSession) {
+    const params = new URLSearchParams(window.location.search);
+    const prefillFields = ['name','type','phone','address','district','city','lat','lng'];
+    const hasParams = prefillFields.some(f => params.has(f));
+    if (!hasParams) return;
+
+    // Show banner regardless (context: this is a pre-filled outreach link)
+    document.getElementById('prefillBanner').classList.remove('hidden');
+
+    // Don't overwrite if user already had session data (they've edited before)
+    if (hadSession) return;
+
+    const form = document.getElementById('bizForm');
+
+    // Text fields — safe assignment via .value (no innerHTML, XSS-safe)
+    ['name','phone','address','district','city'].forEach(name => {
+      const val = params.get(name);
+      if (val) {
+        const el = form.querySelector(`[name="${name}"]`);
+        if (el) el.value = val;
+      }
+    });
+
+    // type: only accept known option values, fallback to empty
+    const typeVal = params.get('type');
+    if (typeVal && VALID_TYPES.includes(typeVal)) {
+      const el = form.querySelector('[name="type"]');
+      if (el) el.value = typeVal;
+    }
+
+    // lat/lng: validate numeric before setting
+    ['lat','lng'].forEach(name => {
+      const val = params.get(name);
+      if (val !== null && !isNaN(parseFloat(val))) {
+        const el = form.querySelector(`[name="${name}"]`);
+        if (el) el.value = val;
+      }
+    });
+
+    // Persist pre-filled values to sessionStorage
+    saveFormData();
+  }
+
+  // Check BEFORE restoreFormData so we know if user had prior session
+  const hadSession = !!sessionStorage.getItem(STORAGE_KEY);
+
   // Restore on page load, then start listening for changes
   restoreFormData();
   const bizForm = document.getElementById('bizForm');
   bizForm.addEventListener('input',  saveFormData);
   bizForm.addEventListener('change', saveFormData);
+
+  // Apply URL pre-fill (respects sessionStorage priority)
+  applyUrlPrefill(hadSession);
 
   // ── Step navigation ──────────────────────────────────────────────────────
   const stepLabels = { 1:'ข้อมูลสถานที่', 2:'รายละเอียดเพิ่มเติม', 3:'ข้อมูลติดต่อ' };
