@@ -492,6 +492,61 @@
 
   initNavAuth();
 
+  // ── sessionStorage persistence ─────────────────────────────────────────────
+  const STORAGE_KEY = 'pawdee_biz_form';
+
+  function saveFormData() {
+    const form = document.getElementById('bizForm');
+    if (!form) return;
+    const data = {};
+    // Text / select / textarea / number / tel / email / url fields
+    form.querySelectorAll('input:not([type=file]):not([type=checkbox]), select, textarea').forEach(el => {
+      if (el.name) data[el.name] = el.value;
+    });
+    // Checkbox: pets (multi-value array)
+    data.pets = [...form.querySelectorAll('input[name=pets]:checked')].map(el => el.value);
+    // Checkbox: single booleans
+    ['needCarrier', 'indoorSeating', 'emergency24hr'].forEach(name => {
+      const el = form.querySelector(`input[name=${name}]`);
+      if (el) data[name] = el.checked;
+    });
+    try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (_) {}
+  }
+
+  function restoreFormData() {
+    let saved;
+    try {
+      const raw = sessionStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      saved = JSON.parse(raw);
+    } catch (_) { return; }
+    const form = document.getElementById('bizForm');
+    if (!form) return;
+    // Text / select / textarea / number / tel / email / url
+    form.querySelectorAll('input:not([type=file]):not([type=checkbox]), select, textarea').forEach(el => {
+      if (el.name && saved[el.name] !== undefined && saved[el.name] !== '') el.value = saved[el.name];
+    });
+    // pets checkboxes
+    if (Array.isArray(saved.pets)) {
+      form.querySelectorAll('input[name=pets]').forEach(el => { el.checked = saved.pets.includes(el.value); });
+    }
+    // boolean checkboxes
+    ['needCarrier', 'indoorSeating', 'emergency24hr'].forEach(name => {
+      const el = form.querySelector(`input[name=${name}]`);
+      if (el && saved[name] !== undefined) el.checked = !!saved[name];
+    });
+  }
+
+  function clearFormData() {
+    try { sessionStorage.removeItem(STORAGE_KEY); } catch (_) {}
+  }
+
+  // Restore on page load, then start listening for changes
+  restoreFormData();
+  const bizForm = document.getElementById('bizForm');
+  bizForm.addEventListener('input',  saveFormData);
+  bizForm.addEventListener('change', saveFormData);
+
   // ── Step navigation ──────────────────────────────────────────────────────
   const stepLabels = { 1:'ข้อมูลสถานที่', 2:'รายละเอียดเพิ่มเติม', 3:'ข้อมูลติดต่อ' };
 
@@ -798,6 +853,7 @@
         })
       }).catch(() => {}); // ไม่ block ถ้า webhook ล้มเหลว
 
+      clearFormData();
       document.getElementById('bizForm').classList.add('hidden');
       document.getElementById('progressArea').classList.add('hidden');
       document.getElementById('successState').classList.remove('hidden');
