@@ -50,12 +50,19 @@
 </nav>
 
 <main class="pt-20 pb-16">
+  <!-- Loading state (shown while auth is being verified — prevents flash of admin UI) -->
+  <div id="loadingState" class="hidden max-w-md mx-auto px-4 py-32 text-center">
+    <div class="w-10 h-10 border-4 border-brand-orange border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+    <p class="text-gray-400 text-sm">กำลังตรวจสอบสิทธิ์...</p>
+  </div>
+
   <!-- Access denied -->
   <div id="accessDenied" class="hidden max-w-md mx-auto px-4 py-24 text-center">
     <div class="text-6xl mb-4">🚫</div>
     <h2 class="text-2xl font-bold text-gray-900 mb-2">ไม่มีสิทธิ์เข้าถึง</h2>
-    <p class="text-gray-500 mb-6">หน้านี้สำหรับ Admin เท่านั้น กรุณาเข้าสู่ระบบด้วยบัญชี Admin</p>
-    <a href="index.html" class="text-brand-orange font-semibold hover:underline">← กลับหน้าหลัก</a>
+    <p class="text-gray-500 mb-2">หน้านี้สำหรับ Admin เท่านั้น</p>
+    <p class="text-sm text-gray-400 mb-6">กลับหน้าหลักใน <span id="accessDeniedCountdown">3</span> วินาที...</p>
+    <a href="index.html" class="text-brand-orange font-semibold hover:underline">← กลับหน้าหลักเดี๋ยวนี้</a>
   </div>
 
   <!-- Admin content -->
@@ -198,10 +205,9 @@
 <script type="module">
 import { onAuthChange, initNavAuth } from './js/auth.js';
 
-// Admin UIDs — เพิ่ม UID ของ admin ที่นี่
-const ADMIN_UIDS = ['WxfVPrYFlVfUMgI4DLqPqTL1LYy2'];
-
 initNavAuth();
+// แสดง loading ทันที — ป้องกัน flash ของ admin UI ก่อนเช็ค auth เสร็จ
+document.getElementById('loadingState').classList.remove('hidden');
 
 let db, collection, query, getDocs, doc, updateDoc, addDoc, deleteDoc, serverTimestamp, orderBy, where;
 let currentFilter = 'pending';
@@ -209,10 +215,33 @@ let allDocs = [];
 let currentDocId = null;
 
 onAuthChange(async user => {
-  if (!user || !ADMIN_UIDS.includes(user.uid)) {
-    document.getElementById('accessDenied').classList.remove('hidden');
+  if (!user) {
+    // ไม่ได้ login → redirect ไปหน้า login พร้อม ?next= เพื่อกลับมาหลัง login
+    window.location.href = 'login.html?next=admin.html';
     return;
   }
+
+  // ตรวจสอบ collection 'admins' — ตรงกับ isAdmin() ใน Firestore rules
+  // (non-admin จะได้ permission-denied error เมื่อ query → ถือว่าไม่ใช่ admin)
+  try {
+    const { db: _db } = await import('./js/firebase-config.js');
+    const { doc: _doc, getDoc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    const adminSnap = await getDoc(_doc(_db, 'admins', user.uid));
+    if (!adminSnap.exists()) throw new Error('not-admin');
+  } catch (_) {
+    document.getElementById('loadingState').classList.add('hidden');
+    document.getElementById('accessDenied').classList.remove('hidden');
+    // Auto-redirect ไปหน้าหลักหลัง 3 วินาที
+    let s = 3;
+    const el = document.getElementById('accessDeniedCountdown');
+    const timer = setInterval(() => {
+      s--; if (el) el.textContent = s;
+      if (s <= 0) { clearInterval(timer); window.location.href = 'index.html'; }
+    }, 1000);
+    return;
+  }
+
+  document.getElementById('loadingState').classList.add('hidden');
   document.getElementById('adminContent').classList.remove('hidden');
   await initFirestore();
   loadApplications('pending');

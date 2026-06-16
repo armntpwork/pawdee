@@ -1,0 +1,32 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // ── ภาพปกหน้าร้าน (business-covers/{uid}/filename) ─────────
+    // อ่านได้ทุกคน (ใช้แสดงบน place card / place.html)
+    // เขียนได้เฉพาะ user ที่ login แล้ว และ uid ต้องตรงกับ path
+    // จำกัดขนาดไม่เกิน 5 MB และต้องเป็น image เท่านั้น
+    match /business-covers/{uid}/{filename} {
+      allow read: if true;
+      allow write: if request.auth != null
+                   && request.auth.uid == uid
+                   && request.resource.size <= 5 * 1024 * 1024
+                   && request.resource.contentType.matches('image/.*');
+    }
+
+    // ── โลโก้ร้าน (business-logos/{uid}/filename) ──────────────
+    // เงื่อนไขเดียวกัน แต่จำกัดขนาดไม่เกิน 2 MB
+    match /business-logos/{uid}/{filename} {
+      allow read: if true;
+      allow write: if request.auth != null
+                   && request.auth.uid == uid
+                   && request.resource.size <= 2 * 1024 * 1024
+                   && request.resource.contentType.matches('image/.*');
+    }
+
+    // ── ทุก path อื่น: ปิดสนิท ──────────────────────────────────
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
