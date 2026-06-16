@@ -628,8 +628,11 @@
           <div class="flex items-center gap-2 text-sm mb-1">
             <span class="text-yellow-500">⭐</span>
             <span class="font-semibold">${place.rating.toFixed(1)}</span>
-            <span class="text-gray-400 text-xs">(${place.reviewCount} รีวิว)</span>
+            <span class="text-gray-400 text-xs">(${place.reviewCount > 0 ? place.reviewCount + ' รีวิว' : 'ยังไม่มีรีวิว'})</span>
           </div>
+          ${place.reviewCount > 0
+            ? '<div class="text-xs text-orange-600 font-medium mb-1">💬 รีวิวโดยเจ้าของสัตว์เลี้ยงจริง</div>'
+            : '<div class="text-xs text-gray-400 mb-1">💬 เป็นคนแรกที่รีวิว!</div>'}
           <div class="text-xs text-gray-500 mb-1">🕐 ${place.openHours}</div>
           <div class="text-sm mb-1">${petIcons}</div>
           ${weightTag}

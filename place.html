@@ -195,9 +195,10 @@
               <p class="text-sm">กำลังโหลดรีวิว...</p>
             </div>
           </div>
-          <div id="writeReviewCta" class="hidden mt-4 pt-4 border-t border-gray-100 text-center">
-            <a href="places.html" class="inline-flex items-center gap-2 text-brand-orange font-semibold text-sm hover:underline">
-              เขียนรีวิวผ่านหน้าค้นหา →
+          <div id="writeReviewCta" class="hidden mt-4 pt-4 border-t border-gray-100">
+            <p class="text-xs text-gray-400 mb-2 text-center">เคยไปกับน้องแล้ว? ช่วยเจ้าของสัตว์คนอื่นด้วยรีวิวของคุณ</p>
+            <a id="writeReviewLink" href="places.html" class="flex items-center justify-center gap-2 bg-orange-50 text-brand-orange border border-orange-200 py-2.5 px-4 rounded-2xl font-semibold text-sm hover:bg-orange-100 transition-colors w-full">
+              ✍️ เขียนรีวิวสถานที่นี้
             </a>
           </div>
         </div>
@@ -584,6 +585,7 @@ function renderReviews(reviews) {
         <div class="text-3xl mb-2">🌟</div>
         <p class="text-sm">ยังไม่มีรีวิว เป็นคนแรกที่รีวิวสถานที่นี้!</p>
       </div>`;
+    document.getElementById('writeReviewLink').href = `places.html?id=${placeId}`;
     document.getElementById('writeReviewCta').classList.remove('hidden');
     return;
   }

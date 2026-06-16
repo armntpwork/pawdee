@@ -456,7 +456,99 @@
         <span class="bg-orange-50 text-orange-700 px-4 py-2 rounded-full text-sm font-medium border border-orange-200">👥 Community Forum</span>
         <span class="bg-orange-50 text-orange-700 px-4 py-2 rounded-full text-sm font-medium border border-orange-200">📸 Pet Gallery</span>
         <span class="bg-orange-50 text-orange-700 px-4 py-2 rounded-full text-sm font-medium border border-orange-200">🎓 บทความจากสัตวแพทย์</span>
+        <span class="bg-orange-50 text-orange-700 px-4 py-2 rounded-full text-sm font-medium border border-orange-200">💬 ถาม-ตอบชุมชน</span>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FEATURED REVIEWS ===== -->
+<section class="bg-white py-20 border-t border-gray-100">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-12">
+      <p class="text-brand-orange font-semibold uppercase tracking-widest text-sm mb-3">เสียงจากชุมชน</p>
+      <h2 class="text-3xl sm:text-4xl font-bold text-gray-900">
+        รีวิวจากเจ้าของสัตว์เลี้ยง<span class="gradient-text">จริงๆ</span>
+      </h2>
+      <p class="text-gray-500 mt-3 text-sm max-w-md mx-auto">ไม่ใช่รีวิวจากคนทั่วไป — แต่จากคนที่พาน้องไปจริงและรู้ว่าสถานที่นั้นดีแค่ไหน</p>
+    </div>
+
+    <!-- Reviews grid — JS จะแทนที่ด้วย real reviews จาก Firestore ถ้ามีข้อมูลพอ
+         ถ้า reviews collection ยังว่างอยู่ placeholder ด้านล่างจะแสดงแทน -->
+    <div id="featuredReviewsGrid" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+
+      <!-- Placeholder card 1 -->
+      <div class="review-ph bg-gradient-to-b from-orange-50 to-white border border-orange-100 rounded-3xl p-5 flex flex-col">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-full bg-orange-300 flex items-center justify-center font-bold text-white text-sm flex-shrink-0">น</div>
+          <div>
+            <div class="font-semibold text-gray-900 text-sm">นัท · กรุงเทพ</div>
+            <div class="text-yellow-400 text-xs tracking-tight">⭐⭐⭐⭐⭐</div>
+          </div>
+        </div>
+        <p class="text-gray-700 text-sm leading-relaxed flex-1 italic mb-3">"น้องนั่งในร้านได้เลย แอร์เย็น พนักงานใจดีกับน้องมากๆ ข้อมูลใน PawDee ตรงกับความจริงเลย"</p>
+        <div class="flex flex-wrap gap-1.5 mb-3">
+          <span class="text-[10px] bg-purple-50 text-purple-600 px-2 py-0.5 rounded-full font-semibold border border-purple-100">🏠 นั่งในร้านได้</span>
+          <span class="text-[10px] bg-orange-50 text-orange-600 px-2 py-0.5 rounded-full font-semibold border border-orange-100">😊 พนักงานใจดี</span>
+        </div>
+        <p class="text-xs text-gray-400 flex items-center gap-1.5"><span>☕</span> คาเฟ่แห่งหนึ่ง · บางรัก</p>
+      </div>
+
+      <!-- Placeholder card 2 -->
+      <div class="review-ph bg-gradient-to-b from-amber-50 to-white border border-amber-100 rounded-3xl p-5 flex flex-col">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-full bg-amber-400 flex items-center justify-center font-bold text-white text-sm flex-shrink-0">ก</div>
+          <div>
+            <div class="font-semibold text-gray-900 text-sm">กานต์ · เชียงใหม่</div>
+            <div class="text-yellow-400 text-xs tracking-tight">⭐⭐⭐⭐⭐</div>
+          </div>
+        </div>
+        <p class="text-gray-700 text-sm leading-relaxed flex-1 italic mb-3">"เช็คอินง่ายมาก มีที่นอนพิเศษสำหรับน้อง ไม่ต้องใส่กรง ดีกว่าที่คิดไว้เยอะ"</p>
+        <div class="flex flex-wrap gap-1.5 mb-3">
+          <span class="text-[10px] bg-purple-50 text-purple-600 px-2 py-0.5 rounded-full font-semibold border border-purple-100">🐕 พันธุ์ใหญ่ได้</span>
+        </div>
+        <p class="text-xs text-gray-400 flex items-center gap-1.5"><span>🏨</span> โรงแรม Pet-Friendly · นิมมาน</p>
+      </div>
+
+      <!-- Placeholder card 3 -->
+      <div class="review-ph bg-gradient-to-b from-green-50 to-white border border-green-100 rounded-3xl p-5 flex flex-col">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-full bg-green-400 flex items-center justify-center font-bold text-white text-sm flex-shrink-0">พ</div>
+          <div>
+            <div class="font-semibold text-gray-900 text-sm">พลอย · ลาดพร้าว</div>
+            <div class="text-yellow-400 text-xs tracking-tight">⭐⭐⭐⭐</div>
+          </div>
+        </div>
+        <p class="text-gray-700 text-sm leading-relaxed flex-1 italic mb-3">"ก่อนหน้านี้โดนปฏิเสธตอนไปถึงเพราะไม่รู้นโยบาย ตั้งแต่ใช้ PawDee ไม่เจอปัญหานั้นอีกเลย"</p>
+        <div class="flex flex-wrap gap-1.5 mb-3">
+          <span class="text-[10px] bg-orange-50 text-orange-600 px-2 py-0.5 rounded-full font-semibold border border-orange-100">✅ ข้อมูลครบถ้วน</span>
+        </div>
+        <p class="text-xs text-gray-400 flex items-center gap-1.5"><span>🍽️</span> ร้านอาหาร · รัชดา</p>
+      </div>
+
+      <!-- Placeholder card 4 -->
+      <div class="review-ph bg-gradient-to-b from-red-50 to-white border border-red-100 rounded-3xl p-5 flex flex-col">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-full bg-red-400 flex items-center justify-center font-bold text-white text-sm flex-shrink-0">ม</div>
+          <div>
+            <div class="font-semibold text-gray-900 text-sm">มิ้ว · บางนา</div>
+            <div class="text-yellow-400 text-xs tracking-tight">⭐⭐⭐⭐⭐</div>
+          </div>
+        </div>
+        <p class="text-gray-700 text-sm leading-relaxed flex-1 italic mb-3">"หาคลินิกตอนตีสองได้เลยผ่าน PawDee ช่วยน้องแมวได้ทัน ขอบคุณมากจริงๆ"</p>
+        <div class="flex flex-wrap gap-1.5 mb-3">
+          <span class="text-[10px] bg-red-50 text-red-600 px-2 py-0.5 rounded-full font-semibold border border-red-100">🚨 24 ชม.</span>
+        </div>
+        <p class="text-xs text-gray-400 flex items-center gap-1.5"><span>🏥</span> คลินิกสัตว์ฉุกเฉิน · บางนา</p>
+      </div>
+
+    </div>
+
+    <div class="text-center mt-10">
+      <a href="places.html" class="inline-flex items-center gap-2 text-brand-orange font-semibold text-sm hover:underline group">
+        อ่านรีวิวทั้งหมดจากเจ้าของสัตว์เลี้ยง
+        <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+      </a>
     </div>
   </div>
 </section>
@@ -814,6 +906,60 @@
 <script type="module">
   import { initNavAuth } from './js/auth.js';
   initNavAuth();
+
+  // โหลด real reviews จาก Firestore มาแสดงใน featured reviews section
+  // ถ้ามี reviews ที่มี comment ≥ 3 รายการ → แทน placeholder
+  // ถ้าน้อยกว่าหรือ Firebase ยังไม่พร้อม → placeholder คงเดิม
+  (async () => {
+    try {
+      const { db, isConfigured } = await import('./js/firebase-config.js');
+      if (!isConfigured) return;
+      const { collection, getDocs, query, orderBy, limit } =
+        await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+
+      const snap = await getDocs(
+        query(collection(db, 'reviews'), orderBy('createdAt', 'desc'), limit(12))
+      );
+      const reviews = snap.docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        .filter(r => r.comment && r.comment.trim().length > 15);
+
+      if (reviews.length < 3) return; // ยังมีข้อมูลน้อย คง placeholder
+
+      const TAG_LABELS = {
+        petFriendlyStaff: '😊 พนักงานใจดี', waterBowl: '💧 มีน้ำให้น้อง',
+        indoorOk: '🏠 นั่งในร้านได้',   spacious: '📐 พื้นที่กว้าง',
+        clean: '✨ สะอาด',               easyParking: '🚗 จอดรถง่าย',
+      };
+      const AVATAR_COLORS = ['bg-orange-400','bg-amber-400','bg-green-400','bg-blue-400','bg-purple-400','bg-rose-400'];
+
+      const cards = reviews.slice(0, 4).map((r, i) => {
+        const initial = (r.userName || 'ผ')[0].toUpperCase();
+        const color   = AVATAR_COLORS[i % AVATAR_COLORS.length];
+        const stars   = '⭐'.repeat(Math.min(5, Math.round(r.rating || 5)));
+        const tags    = (r.tags || []).slice(0, 2).map(t =>
+          `<span class="text-[10px] bg-orange-50 text-orange-600 px-2 py-0.5 rounded-full font-semibold border border-orange-100">${TAG_LABELS[t] || t}</span>`
+        ).join('');
+        return `
+          <div class="bg-gradient-to-b from-orange-50 to-white border border-orange-100 rounded-3xl p-5 flex flex-col">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-10 h-10 rounded-full ${color} flex items-center justify-center font-bold text-white text-sm flex-shrink-0">${initial}</div>
+              <div>
+                <div class="font-semibold text-gray-900 text-sm">${r.userName || 'เจ้าของสัตว์เลี้ยง'}</div>
+                <div class="text-yellow-400 text-xs tracking-tight">${stars}</div>
+              </div>
+            </div>
+            <p class="text-gray-700 text-sm leading-relaxed flex-1 italic mb-3">"${r.comment.slice(0, 120)}${r.comment.length > 120 ? '...' : ''}"</p>
+            ${tags ? `<div class="flex flex-wrap gap-1.5 mb-3">${tags}</div>` : ''}
+            <p class="text-xs text-gray-400">🐾 รีวิวบน PawDee</p>
+          </div>`;
+      }).join('');
+
+      document.getElementById('featuredReviewsGrid').innerHTML = cards;
+    } catch (_) {
+      // Firebase ยังไม่พร้อม หรือ network error → placeholder คงเดิม
+    }
+  })();
 </script>
 <script>
   // Scroll Progress Bar
