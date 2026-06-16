@@ -38,11 +38,10 @@
     .input-field { width:100%; padding:0.75rem 1rem; border-radius:0.75rem; border:2px solid #e5e7eb; background:white; outline:none; transition:border-color 0.2s; font-size:0.875rem; color:#1f2937; }
     .input-field:focus { border-color:#F97316; }
     .input-field::placeholder { color:#9ca3af; }
-    .section-card { background:white; border-radius:1.5rem; padding:1.5rem; margin-bottom:1.5rem; box-shadow:0 1px 3px rgba(0,0,0,0.06); border:1px solid #f3f4f6; }
+    .section-card { background:white; border-radius:1.25rem; padding:1.25rem; margin-bottom:1rem; box-shadow:0 1px 3px rgba(0,0,0,0.06); border:1px solid #f3f4f6; }
     .checkbox-pet { display:none; }
     .checkbox-pet + label { display:inline-flex; align-items:center; gap:0.5rem; padding:0.5rem 1rem; border-radius:9999px; border:2px solid #e5e7eb; font-size:0.875rem; cursor:pointer; transition:all 0.2s; }
     .checkbox-pet:checked + label { background:#FFFBEB; border-color:#F97316; color:#F97316; font-weight:600; }
-
     /* Cover image upload */
     .upload-zone { border:2px dashed #e5e7eb; border-radius:1rem; padding:2rem 1rem; text-align:center; cursor:pointer; transition:all 0.2s; background:#fafafa; }
     .upload-zone:hover, .upload-zone.drag-over { border-color:#F97316; background:#FFFBEB; }
@@ -53,12 +52,29 @@
     .logo-zone { border:2px dashed #e5e7eb; border-radius:0.875rem; text-align:center; cursor:pointer; transition:all 0.2s; background:#fafafa; width:110px; height:110px; display:flex; align-items:center; justify-content:center; flex-shrink:0; overflow:hidden; }
     .logo-zone:hover { border-color:#F97316; background:#FFFBEB; }
     .logo-zone.has-logo { border-style:solid; border-color:#F97316; padding:0; }
+    /* Multi-step progress */
+    .step-dot { width:2.25rem; height:2.25rem; border-radius:9999px; display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:700; transition:all 0.3s; border:2px solid transparent; flex-shrink:0; }
+    .step-dot.active { background:#F97316; color:white; border-color:#F97316; box-shadow:0 0 0 3px #fed7aa; }
+    .step-dot.done { background:#fff7ed; color:#F97316; border-color:#fed7aa; }
+    .step-dot.pending { background:#f3f4f6; color:#9ca3af; border-color:#e5e7eb; }
+    .step-connector { flex:1; height:2px; margin:0 0.375rem; transition:background 0.3s; border-radius:9999px; }
+    .step-connector.active { background:#fed7aa; }
+    .step-connector.pending { background:#e5e7eb; }
+    .step-label { font-size:0.7rem; transition:color 0.3s; }
+    .step-label.active { color:#F97316; font-weight:600; }
+    .step-label.done { color:#F97316; }
+    .step-label.pending { color:#9ca3af; }
+    /* Step panel transition */
+    .step-panel { animation: fadeIn 0.2s ease; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+    /* Optional badge */
+    .optional-badge { font-size:0.7rem; color:#9ca3af; font-weight:400; margin-left:0.375rem; }
   </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
 
 <!-- Navbar -->
-<nav class="nav-glass fixed top-0 left-0 right-0 z-50 border-b border-orange-100">
+<nav class="nav-glass fixed top-0 left-0 right-0 z-50 border-b border-orange-100 bg-white/90 backdrop-blur-sm">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex items-center justify-between h-16">
       <a href="index.html" class="flex items-center gap-2">
@@ -76,185 +92,269 @@
   </div>
 </nav>
 
-<!-- Login Required Banner -->
-<div id="loginRequired" class="hidden max-w-4xl mx-auto px-4 mt-24">
-  <div class="bg-amber-50 border border-amber-200 rounded-2xl p-6 text-center">
-    <div class="text-3xl mb-3">🔒</div>
-    <h3 class="font-bold text-amber-900 mb-2">กรุณาเข้าสู่ระบบก่อน</h3>
-    <p class="text-sm text-amber-700 mb-4">ต้อง Login เพื่อลงทะเบียนธุรกิจ</p>
-    <a href="login.html?next=register-business.html" class="inline-block bg-brand-orange text-white px-6 py-3 rounded-xl font-semibold hover:bg-brand-orange-deep transition-colors">
-      เข้าสู่ระบบ / สมัครสมาชิก
-    </a>
-  </div>
-</div>
+<main class="max-w-2xl mx-auto px-4 pt-24 pb-16">
 
-<!-- Form -->
-<main id="mainForm" class="hidden max-w-4xl mx-auto px-4 py-8 pt-24">
+  <!-- Page header + incentive -->
   <div class="mb-8">
-    <h1 class="text-3xl font-bold text-gray-900 mb-2">🏪 ลงทะเบียนธุรกิจ</h1>
-    <p class="text-gray-500">ให้ทาสหมาทาสแมวหลักหมื่นคนค้นพบธุรกิจของคุณ — <strong>ฟรี ในช่วงเปิดตัว</strong></p>
+    <div class="flex items-center gap-3 mb-1.5">
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">🏪 ลงทะเบียนธุรกิจ</h1>
+      <span class="text-xs bg-green-100 text-green-700 font-semibold px-2.5 py-1 rounded-full whitespace-nowrap">ฟรี</span>
+    </div>
+    <p class="text-gray-500 text-sm mb-5">⏱ ใช้เวลาประมาณ 3-5 นาที — ไม่ต้องกรอกครบทีเดียว ข้ามข้อมูลเสริมได้</p>
+    <div class="grid grid-cols-3 gap-2.5">
+      <div class="bg-orange-50 border border-orange-100 rounded-xl p-3 text-center">
+        <div class="text-xl mb-1">📍</div>
+        <p class="text-xs text-gray-700 font-medium leading-snug">เจ้าของสัตว์เลี้ยงค้นพบร้านคุณ</p>
+      </div>
+      <div class="bg-orange-50 border border-orange-100 rounded-xl p-3 text-center">
+        <div class="text-xl mb-1">✅</div>
+        <p class="text-xs text-gray-700 font-medium leading-snug">ทีมงานช่วยตรวจสอบข้อมูลให้น่าเชื่อถือ</p>
+      </div>
+      <div class="bg-orange-50 border border-orange-100 rounded-xl p-3 text-center">
+        <div class="text-xl mb-1">💬</div>
+        <p class="text-xs text-gray-700 font-medium leading-snug">รับรีวิวจากเจ้าของสัตว์จริงๆ</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Progress indicator -->
+  <div id="progressArea" class="mb-6">
+    <div class="flex items-center justify-center mb-2">
+      <div id="dot1" class="step-dot active">1</div>
+      <div id="line12" class="step-connector pending"></div>
+      <div id="dot2" class="step-dot pending">2</div>
+      <div id="line23" class="step-connector pending"></div>
+      <div id="dot3" class="step-dot pending">3</div>
+    </div>
+    <div class="flex justify-between px-0.5">
+      <span id="label1" class="step-label active">ข้อมูลสถานที่</span>
+      <span id="label2" class="step-label pending">รายละเอียดเพิ่มเติม</span>
+      <span id="label3" class="step-label pending">ข้อมูลติดต่อ</span>
+    </div>
   </div>
 
   <!-- Success State -->
-  <div id="successState" class="hidden bg-green-50 border border-green-200 rounded-3xl p-10 text-center">
+  <div id="successState" class="hidden bg-green-50 border border-green-200 rounded-3xl p-8 text-center">
     <div class="text-5xl mb-4">🎉</div>
-    <h2 class="text-2xl font-bold text-green-800 mb-3">ส่งข้อมูลสำเร็จแล้ว!</h2>
-    <p class="text-green-700 mb-2">ทีมงาน PawDee จะตรวจสอบและอนุมัติภายใน 1-3 วันทำการ</p>
-    <p class="text-sm text-green-600 mb-6">เราจะแจ้งผลไปที่อีเมลของคุณ</p>
+    <h2 class="text-2xl font-bold text-green-800 mb-2">ส่งข้อมูลสำเร็จแล้ว!</h2>
+    <p class="text-green-700 text-sm mb-6">ทีมงาน PawDee ได้รับข้อมูลของคุณแล้ว นี่คือสิ่งที่จะเกิดขึ้นต่อไป</p>
+    <div class="bg-white rounded-2xl p-5 text-left mb-4 space-y-4">
+      <div class="flex gap-3 items-start">
+        <div class="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center text-xs font-bold text-orange-600 flex-shrink-0 mt-0.5">1</div>
+        <div>
+          <p class="font-semibold text-sm text-gray-900">ทีมงานตรวจสอบข้อมูล</p>
+          <p class="text-xs text-gray-500 mt-0.5">ภายใน 1-3 วันทำการ ทีมงานจะตรวจสอบและอาจติดต่อเพื่อยืนยันหรือแนะนำข้อมูลเพิ่มเติม</p>
+        </div>
+      </div>
+      <div class="flex gap-3 items-start">
+        <div class="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center text-xs font-bold text-orange-600 flex-shrink-0 mt-0.5">2</div>
+        <div>
+          <p class="font-semibold text-sm text-gray-900">แจ้งผลทางอีเมล</p>
+          <p class="text-xs text-gray-500 mt-0.5">เราจะแจ้งผลไปที่อีเมลของคุณ พร้อมลิงก์หน้าร้านบน PawDee</p>
+        </div>
+      </div>
+      <div class="flex gap-3 items-start">
+        <div class="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center text-xs font-bold text-orange-600 flex-shrink-0 mt-0.5">3</div>
+        <div>
+          <p class="font-semibold text-sm text-gray-900">ร้านของคุณปรากฏบน PawDee</p>
+          <p class="text-xs text-gray-500 mt-0.5">เจ้าของสัตว์เลี้ยงที่ค้นหาสถานที่ใกล้เคียงจะพบร้านคุณได้ทันที</p>
+        </div>
+      </div>
+    </div>
+    <div class="bg-green-100 rounded-2xl p-4 mb-6 text-left">
+      <p class="text-sm text-green-800">
+        <strong>ติดตามสถานะหรือสอบถามเพิ่มเติม</strong> ได้ทาง LINE OA:
+        <a href="https://line.me/R/ti/p/@237mvbgf" target="_blank" rel="noopener" class="underline font-semibold text-green-700">@237mvbgf</a>
+        — ทีมงานยินดีช่วยเหลือครับ
+      </p>
+    </div>
     <div class="flex gap-3 justify-center">
-      <a href="places.html" class="bg-brand-orange text-white px-6 py-3 rounded-xl font-semibold hover:bg-brand-orange-deep transition-colors">
+      <a href="places.html" class="bg-brand-orange text-white px-6 py-3 rounded-xl font-semibold hover:bg-brand-orange-deep transition-colors text-sm">
         ดูสถานที่ทั้งหมด
       </a>
-      <button onclick="location.reload()" class="border-2 border-gray-200 text-gray-700 px-6 py-3 rounded-xl font-semibold hover:border-brand-orange transition-colors">
+      <button onclick="location.reload()" class="border-2 border-gray-200 text-gray-700 px-6 py-3 rounded-xl font-semibold hover:border-brand-orange transition-colors text-sm">
         ลงทะเบียนอีกแห่ง
       </button>
     </div>
   </div>
 
-  <form id="bizForm" class="hidden">
+  <!-- Inline Auth Banner -->
+  <div id="authRequired" class="hidden mb-5 bg-amber-50 border border-amber-200 rounded-2xl p-5 text-center">
+    <div class="text-3xl mb-2">🔐</div>
+    <h3 class="font-bold text-amber-900 mb-1">เข้าสู่ระบบเพื่อดำเนินการต่อ</h3>
+    <p class="text-sm text-amber-700 mb-4">ข้อมูล Step 1 ที่กรอกไว้จะยังคงอยู่ — เข้าสู่ระบบแล้วกลับมากรอกต่อได้เลย</p>
+    <a href="login.html?next=register-business.html" class="inline-block bg-brand-orange text-white px-6 py-3 rounded-xl font-semibold hover:bg-brand-orange-deep transition-colors text-sm">
+      เข้าสู่ระบบ / สมัครสมาชิก
+    </a>
+  </div>
 
-    <!-- ข้อมูลพื้นฐาน -->
-    <div class="section-card">
-      <h2 class="font-bold text-gray-900 text-lg mb-4 flex items-center gap-2"><span class="w-7 h-7 bg-orange-100 rounded-lg flex items-center justify-center text-sm">1</span> ข้อมูลพื้นฐาน</h2>
-      <div class="grid sm:grid-cols-2 gap-4">
-        <div class="sm:col-span-2">
-          <label class="block text-sm font-medium text-gray-700 mb-1">ชื่อสถานที่ <span class="text-red-500">*</span></label>
-          <input type="text" name="name" required placeholder="เช่น Hound & Ground Coffee" class="input-field"/>
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">ประเภท <span class="text-red-500">*</span></label>
-          <select name="type" required class="input-field">
-            <option value="">-- เลือกประเภท --</option>
-            <option value="cafe">☕ คาเฟ่</option>
-            <option value="restaurant">🍽️ ร้านอาหาร</option>
-            <option value="hotel">🏨 โรงแรม / ที่พัก</option>
-            <option value="clinic">🏥 คลินิกสัตว์</option>
-            <option value="grooming">🛁 อาบน้ำ-ตัดขน</option>
-            <option value="shop">🛍️ Pet Shop</option>
-            <option value="condo">🏠 คอนโด / หมู่บ้าน</option>
-            <option value="park">🌳 สวนสาธารณะ</option>
-            <option value="other">📍 อื่นๆ</option>
-          </select>
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">เบอร์โทรศัพท์</label>
-          <input type="tel" name="phone" placeholder="02-xxx-xxxx หรือ 08x-xxx-xxxx" class="input-field"/>
-        </div>
-        <div class="sm:col-span-2">
-          <label class="block text-sm font-medium text-gray-700 mb-1">ที่อยู่ <span class="text-red-500">*</span></label>
-          <input type="text" name="address" required placeholder="บ้านเลขที่ ถนน ซอย" class="input-field"/>
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">แขวง/เขต <span class="text-red-500">*</span></label>
-          <input type="text" name="district" required placeholder="เช่น วัฒนา" class="input-field"/>
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">จังหวัด <span class="text-red-500">*</span></label>
-          <input type="text" name="city" required placeholder="เช่น กรุงเทพฯ" class="input-field"/>
-        </div>
-        <div class="sm:col-span-2">
-          <label class="block text-sm font-medium text-gray-700 mb-1">เวลาทำการ</label>
-          <input type="text" name="openHours" placeholder="เช่น ทุกวัน 09:00-21:00 หรือ จ-ศ 08:00-20:00" class="input-field"/>
-        </div>
-      </div>
-    </div>
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- FORM (wraps all 3 steps — submit reads all fields at once) -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <form id="bizForm">
 
-    <!-- สัตว์เลี้ยงที่รับ -->
-    <div class="section-card">
-      <h2 class="font-bold text-gray-900 text-lg mb-1 flex items-center gap-2"><span class="w-7 h-7 bg-orange-100 rounded-lg flex items-center justify-center text-sm">2</span> สัตว์เลี้ยงที่รับเข้าได้ <span class="text-red-500">*</span></h2>
-      <p class="text-xs text-gray-500 mb-4">เลือกได้มากกว่า 1</p>
-      <div class="flex flex-wrap gap-2">
-        <input type="checkbox" id="pet-dog"    name="pets" value="dog"    class="checkbox-pet"/><label for="pet-dog">🐕 สุนัข</label>
-        <input type="checkbox" id="pet-cat"    name="pets" value="cat"    class="checkbox-pet"/><label for="pet-cat">🐈 แมว</label>
-        <input type="checkbox" id="pet-rabbit" name="pets" value="rabbit" class="checkbox-pet"/><label for="pet-rabbit">🐇 กระต่าย</label>
-        <input type="checkbox" id="pet-bird"   name="pets" value="bird"   class="checkbox-pet"/><label for="pet-bird">🦜 นก</label>
-        <input type="checkbox" id="pet-fish"   name="pets" value="fish"   class="checkbox-pet"/><label for="pet-fish">🐟 ปลา</label>
-        <input type="checkbox" id="pet-other"  name="pets" value="other"  class="checkbox-pet"/><label for="pet-other">🐾 อื่นๆ</label>
-      </div>
-    </div>
+    <!-- ──────────────────────────────────────────── -->
+    <!-- STEP 1: ข้อมูลสถานที่ (visible to all)       -->
+    <!-- ──────────────────────────────────────────── -->
+    <div id="step1Panel" class="step-panel">
 
-    <!-- รายละเอียดเพิ่มเติม -->
-    <div class="section-card">
-      <h2 class="font-bold text-gray-900 text-lg mb-4 flex items-center gap-2"><span class="w-7 h-7 bg-orange-100 rounded-lg flex items-center justify-center text-sm">3</span> รายละเอียดเพิ่มเติม</h2>
-      <div class="grid sm:grid-cols-2 gap-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">น้ำหนักสูงสุดที่รับ (กก.)</label>
-          <input type="number" name="maxWeightKg" placeholder="ปล่อยว่าง = ไม่จำกัด" min="0" max="100" class="input-field"/>
-        </div>
-        <div class="flex items-end">
-          <label class="flex items-center gap-3 cursor-pointer">
-            <input type="checkbox" name="needCarrier" value="true" class="w-5 h-5 accent-orange-500"/>
-            <div>
-              <div class="text-sm font-medium text-gray-700">ต้องใส่กรง/รถเข็น</div>
-              <div class="text-xs text-gray-400">สัตว์เลี้ยงต้องอยู่ในกรงเมื่อเข้า</div>
-            </div>
-          </label>
-        </div>
-        <div class="flex items-center">
-          <label class="flex items-center gap-3 cursor-pointer">
-            <input type="checkbox" name="emergency24hr" value="true" class="w-5 h-5 accent-orange-500"/>
-            <div>
-              <div class="text-sm font-medium text-gray-700">🚨 เปิด 24 ชั่วโมง</div>
-              <div class="text-xs text-gray-400">สำหรับคลินิกฉุกเฉิน</div>
-            </div>
-          </label>
-        </div>
-        <div class="flex items-center">
-          <label class="flex items-center gap-3 cursor-pointer">
-            <input type="checkbox" name="indoorSeating" value="true" class="w-5 h-5 accent-orange-500"/>
-            <div>
-              <div class="text-sm font-medium text-gray-700">🏠 นั่งในร้านได้</div>
-              <div class="text-xs text-gray-400">สัตว์เลี้ยงเข้าไปนั่งในร้านได้เลย</div>
-            </div>
-          </label>
-        </div>
-
-        <!-- GPS Coordinates -->
-        <div class="sm:col-span-2">
-          <label class="block text-sm font-medium text-gray-700 mb-2">
-            📍 พิกัด GPS
-            <span class="text-gray-400 font-normal text-xs ml-1">(ช่วยให้ฟีเจอร์ "หาใกล้ฉัน" ทำงานได้แม่นยำ)</span>
-          </label>
-          <div class="flex gap-2 items-center flex-wrap">
-            <input type="number" name="lat" id="latInput" placeholder="Latitude เช่น 13.7563" step="any" class="input-field flex-1 min-w-0" style="min-width:140px"/>
-            <input type="number" name="lng" id="lngInput" placeholder="Longitude เช่น 100.5018" step="any" class="input-field flex-1 min-w-0" style="min-width:140px"/>
-            <button type="button" id="gpsAutoBtn" class="flex-shrink-0 flex items-center gap-1.5 bg-orange-50 border-2 border-orange-200 hover:border-brand-orange text-brand-orange text-sm font-semibold px-4 py-3 rounded-xl transition-all">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-              <span id="gpsBtnText">ระบุอัตโนมัติ</span>
-            </button>
+      <!-- ข้อมูลพื้นฐาน -->
+      <div class="section-card">
+        <h2 class="font-bold text-gray-900 text-base mb-4 flex items-center gap-2">
+          📋 ข้อมูลสถานที่
+        </h2>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div class="sm:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-1">ชื่อสถานที่ <span class="text-red-500">*</span></label>
+            <input type="text" name="name" placeholder="เช่น Hound & Ground Coffee" class="input-field"/>
           </div>
-          <p class="text-xs text-gray-400 mt-1.5">หรือหา coordinates ได้จาก <a href="https://maps.google.com" target="_blank" class="text-brand-orange hover:underline">Google Maps</a> → คลิกขวาที่ร้าน → คัดลอกพิกัด</p>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">ประเภท <span class="text-red-500">*</span></label>
+            <select name="type" class="input-field">
+              <option value="">-- เลือกประเภท --</option>
+              <option value="cafe">☕ คาเฟ่</option>
+              <option value="restaurant">🍽️ ร้านอาหาร</option>
+              <option value="hotel">🏨 โรงแรม / ที่พัก</option>
+              <option value="clinic">🏥 คลินิกสัตว์</option>
+              <option value="grooming">🛁 อาบน้ำ-ตัดขน</option>
+              <option value="shop">🛍️ Pet Shop</option>
+              <option value="condo">🏠 คอนโด / หมู่บ้าน</option>
+              <option value="park">🌳 สวนสาธารณะ</option>
+              <option value="other">📍 อื่นๆ</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">เบอร์โทรศัพท์<span class="optional-badge">(ไม่บังคับ)</span></label>
+            <input type="tel" name="phone" placeholder="02-xxx-xxxx หรือ 08x-xxx-xxxx" class="input-field"/>
+          </div>
+          <div class="sm:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-1">ที่อยู่ <span class="text-red-500">*</span></label>
+            <input type="text" name="address" placeholder="บ้านเลขที่ ถนน ซอย" class="input-field"/>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">แขวง/เขต <span class="text-red-500">*</span></label>
+            <input type="text" name="district" placeholder="เช่น วัฒนา" class="input-field"/>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">จังหวัด <span class="text-red-500">*</span></label>
+            <input type="text" name="city" placeholder="เช่น กรุงเทพฯ" class="input-field"/>
+          </div>
+          <div class="sm:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-1">เวลาทำการ<span class="optional-badge">(ไม่บังคับ)</span></label>
+            <input type="text" name="openHours" placeholder="เช่น ทุกวัน 09:00-21:00 หรือ จ-ศ 08:00-20:00" class="input-field"/>
+          </div>
         </div>
+      </div>
 
-        <div class="sm:col-span-2">
+      <!-- สัตว์เลี้ยงที่รับ -->
+      <div class="section-card">
+        <h2 class="font-bold text-gray-900 text-base mb-1 flex items-center gap-1.5">
+          🐾 สัตว์เลี้ยงที่รับเข้าได้ <span class="text-red-500">*</span>
+        </h2>
+        <p class="text-xs text-gray-500 mb-4">เลือกได้มากกว่า 1</p>
+        <div class="flex flex-wrap gap-2">
+          <input type="checkbox" id="pet-dog"    name="pets" value="dog"    class="checkbox-pet"/><label for="pet-dog">🐕 สุนัข</label>
+          <input type="checkbox" id="pet-cat"    name="pets" value="cat"    class="checkbox-pet"/><label for="pet-cat">🐈 แมว</label>
+          <input type="checkbox" id="pet-rabbit" name="pets" value="rabbit" class="checkbox-pet"/><label for="pet-rabbit">🐇 กระต่าย</label>
+          <input type="checkbox" id="pet-bird"   name="pets" value="bird"   class="checkbox-pet"/><label for="pet-bird">🦜 นก</label>
+          <input type="checkbox" id="pet-fish"   name="pets" value="fish"   class="checkbox-pet"/><label for="pet-fish">🐟 ปลา</label>
+          <input type="checkbox" id="pet-other"  name="pets" value="other"  class="checkbox-pet"/><label for="pet-other">🐾 อื่นๆ</label>
+        </div>
+      </div>
+
+      <!-- นโยบายสัตว์เลี้ยง -->
+      <div class="section-card">
+        <h2 class="font-bold text-gray-900 text-base mb-1">
+          📝 นโยบายสัตว์เลี้ยง<span class="optional-badge">(ไม่บังคับ)</span>
+        </h2>
+        <p class="text-xs text-gray-500 mb-4">ช่วยให้ลูกค้าตัดสินใจได้ถูกต้องก่อนมาถึงร้าน</p>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">น้ำหนักสูงสุดที่รับ (กก.)</label>
+            <input type="number" name="maxWeightKg" placeholder="ปล่อยว่าง = ไม่จำกัด" min="0" max="100" class="input-field"/>
+          </div>
+          <div class="flex items-end pb-0.5">
+            <label class="flex items-center gap-3 cursor-pointer">
+              <input type="checkbox" name="needCarrier" value="true" class="w-5 h-5 accent-orange-500 flex-shrink-0"/>
+              <div>
+                <div class="text-sm font-medium text-gray-700">ต้องใส่กรง/รถเข็น</div>
+                <div class="text-xs text-gray-400">สัตว์เลี้ยงต้องอยู่ในกรงเมื่อเข้า</div>
+              </div>
+            </label>
+          </div>
+          <div>
+            <label class="flex items-center gap-3 cursor-pointer">
+              <input type="checkbox" name="indoorSeating" value="true" class="w-5 h-5 accent-orange-500 flex-shrink-0"/>
+              <div>
+                <div class="text-sm font-medium text-gray-700">🏠 นั่งในร้านได้</div>
+                <div class="text-xs text-gray-400">สัตว์เลี้ยงเข้าไปนั่งในร้านได้เลย</div>
+              </div>
+            </label>
+          </div>
+          <div>
+            <label class="flex items-center gap-3 cursor-pointer">
+              <input type="checkbox" name="emergency24hr" value="true" class="w-5 h-5 accent-orange-500 flex-shrink-0"/>
+              <div>
+                <div class="text-sm font-medium text-gray-700">🚨 เปิด 24 ชั่วโมง</div>
+                <div class="text-xs text-gray-400">สำหรับคลินิกฉุกเฉิน</div>
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 1 error -->
+      <div id="step1Error" class="hidden mb-4 p-4 bg-red-50 border border-red-200 rounded-2xl text-sm text-red-700"></div>
+
+      <!-- Step 1 → Step 2 -->
+      <div class="flex justify-end mt-2 mb-1">
+        <button type="button" id="step1Next" class="bg-brand-orange text-white px-7 py-3.5 rounded-2xl font-bold text-sm hover:bg-brand-orange-deep transition-all shadow-md flex items-center gap-2">
+          ถัดไป: รายละเอียดเพิ่มเติม
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+
+    </div>
+    <!-- END STEP 1 -->
+
+    <!-- ──────────────────────────────────────────── -->
+    <!-- STEP 2: รายละเอียดเพิ่มเติม (all optional)  -->
+    <!-- ──────────────────────────────────────────── -->
+    <div id="step2Panel" class="step-panel hidden">
+
+      <div class="bg-blue-50 border border-blue-100 rounded-2xl p-4 mb-4 flex gap-2.5 text-sm text-blue-700">
+        <span class="text-base flex-shrink-0">💡</span>
+        <span>ทุก field ใน step นี้ <strong>ไม่บังคับ</strong> — กด "ถัดไป" ข้ามได้เลย สามารถส่งข้อมูลเพิ่มเติมทางอีเมลได้ภายหลัง</span>
+      </div>
+
+      <!-- ภาพประกอบ -->
+      <div class="section-card">
+        <h2 class="font-bold text-gray-900 text-base mb-4">🖼️ ภาพประกอบ<span class="optional-badge">(ไม่บังคับ)</span></h2>
+
+        <!-- Cover image upload -->
+        <div class="mb-5">
           <label class="block text-sm font-medium text-gray-700 mb-2">ภาพปกหน้าร้าน</label>
-
-          <!-- Upload Zone -->
           <div id="uploadZone" class="upload-zone" onclick="document.getElementById('coverImageInput').click()">
             <div id="uploadPlaceholder">
               <div class="text-4xl mb-2">🖼️</div>
               <p class="font-medium text-gray-700 text-sm">คลิกหรือลากรูปมาวางที่นี่</p>
               <p class="text-xs text-gray-400 mt-1">JPG, PNG, WEBP — ขนาดไม่เกิน 5 MB</p>
             </div>
-            <img id="coverPreview" class="hidden w-full object-cover rounded-xl" style="max-height:220px;" alt="preview"/>
+            <img id="coverPreview" class="hidden w-full object-cover rounded-xl" style="max-height:200px;" alt="preview"/>
           </div>
-
-          <!-- File info + remove -->
           <div id="fileInfo" class="hidden flex items-center justify-between mt-2 px-1">
             <span id="fileName" class="text-xs text-gray-500 truncate max-w-xs"></span>
             <button type="button" id="removeImage" class="text-xs text-red-400 hover:text-red-600 font-medium ml-3 shrink-0">✕ ลบรูป</button>
           </div>
-
-          <!-- Upload progress (shown during submit) -->
           <div id="uploadProgressWrap" class="hidden upload-progress mt-2">
             <div id="uploadProgressBar" class="upload-progress-bar"></div>
           </div>
-
           <input type="file" id="coverImageInput" accept="image/*" class="hidden"/>
         </div>
+
         <!-- Logo upload -->
-        <div class="sm:col-span-2">
-          <label class="block text-sm font-medium text-gray-700 mb-2">โลโก้ร้าน <span class="text-gray-400 font-normal text-xs">(ไม่บังคับ — แสดงบนการ์ดร้านของคุณ)</span></label>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">โลโก้ร้าน</label>
           <div class="flex items-start gap-4">
             <div id="logoZone" class="logo-zone" onclick="document.getElementById('logoInput').click()">
               <div id="logoPlaceholder" class="text-center p-2">
@@ -270,62 +370,117 @@
           </div>
           <input type="file" id="logoInput" accept="image/*" class="hidden"/>
         </div>
+      </div>
 
-        <div class="sm:col-span-2">
+      <!-- ตำแหน่งและรายละเอียด -->
+      <div class="section-card">
+        <h2 class="font-bold text-gray-900 text-base mb-4">📍 ตำแหน่งและรายละเอียด<span class="optional-badge">(ไม่บังคับ)</span></h2>
+
+        <!-- GPS -->
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            พิกัด GPS
+            <span class="text-gray-400 font-normal text-xs ml-1">(ช่วยให้ฟีเจอร์ "หาใกล้ฉัน" ทำงานได้แม่นยำ)</span>
+          </label>
+          <div class="flex gap-2 items-center flex-wrap">
+            <input type="number" name="lat" id="latInput" placeholder="Latitude เช่น 13.7563" step="any" class="input-field flex-1 min-w-0" style="min-width:130px"/>
+            <input type="number" name="lng" id="lngInput" placeholder="Longitude เช่น 100.5018" step="any" class="input-field flex-1 min-w-0" style="min-width:130px"/>
+            <button type="button" id="gpsAutoBtn" class="flex-shrink-0 flex items-center gap-1.5 bg-orange-50 border-2 border-orange-200 hover:border-brand-orange text-brand-orange text-sm font-semibold px-4 py-3 rounded-xl transition-all">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+              <span id="gpsBtnText">ระบุอัตโนมัติ</span>
+            </button>
+          </div>
+          <p class="text-xs text-gray-400 mt-1.5">หรือหา coordinates ได้จาก <a href="https://maps.google.com" target="_blank" class="text-brand-orange hover:underline">Google Maps</a> → คลิกขวาที่ร้าน → คัดลอกพิกัด</p>
+        </div>
+
+        <!-- Description -->
+        <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">รายละเอียดเพิ่มเติม / เงื่อนไขพิเศษ</label>
           <textarea name="description" rows="3" placeholder="เช่น ห้ามนำสุนัขพันธุ์ขนาดใหญ่เข้า, มีพื้นที่สนามหญ้าด้านหลัง..." class="input-field resize-none"></textarea>
         </div>
       </div>
-    </div>
 
-    <!-- ช่องทางออนไลน์ -->
-    <div class="section-card">
-      <h2 class="font-bold text-gray-900 text-lg mb-1 flex items-center gap-2"><span class="w-7 h-7 bg-orange-100 rounded-lg flex items-center justify-center text-sm">4</span> ช่องทางออนไลน์ <span class="text-gray-400 font-normal text-sm">(ไม่บังคับ)</span></h2>
-      <p class="text-xs text-gray-500 mb-4">แสดงบนหน้าร้านของคุณ ให้ลูกค้าติดตามได้ง่ายขึ้น</p>
-      <div class="grid sm:grid-cols-2 gap-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">🌐 เว็บไซต์</label>
-          <input type="url" name="website" placeholder="https://yoursite.com" class="input-field"/>
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">📘 Facebook</label>
-          <input type="url" name="facebook" placeholder="https://facebook.com/yourpage" class="input-field"/>
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">📸 Instagram</label>
-          <input type="url" name="instagram" placeholder="https://instagram.com/youraccount" class="input-field"/>
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">💬 LINE OA</label>
-          <input type="url" name="line" placeholder="https://line.me/R/ti/p/@yourlineoa" class="input-field"/>
+      <!-- ช่องทางออนไลน์ -->
+      <div class="section-card">
+        <h2 class="font-bold text-gray-900 text-base mb-1">📱 ช่องทางออนไลน์<span class="optional-badge">(ไม่บังคับ)</span></h2>
+        <p class="text-xs text-gray-500 mb-4">แสดงบนหน้าร้านของคุณ ให้ลูกค้าติดตามได้ง่ายขึ้น</p>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">🌐 เว็บไซต์</label>
+            <input type="url" name="website" placeholder="https://yoursite.com" class="input-field"/>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">📘 Facebook</label>
+            <input type="url" name="facebook" placeholder="https://facebook.com/yourpage" class="input-field"/>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">📸 Instagram</label>
+            <input type="url" name="instagram" placeholder="https://instagram.com/youraccount" class="input-field"/>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">💬 LINE OA</label>
+            <input type="url" name="line" placeholder="https://line.me/R/ti/p/@yourlineoa" class="input-field"/>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- ข้อมูลติดต่อเจ้าของ -->
-    <div class="section-card">
-      <h2 class="font-bold text-gray-900 text-lg mb-4 flex items-center gap-2"><span class="w-7 h-7 bg-orange-100 rounded-lg flex items-center justify-center text-sm">5</span> ข้อมูลติดต่อ (ไม่แสดงต่อสาธารณะ)</h2>
-      <div class="grid sm:grid-cols-2 gap-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">ชื่อผู้ติดต่อ <span class="text-red-500">*</span></label>
-          <input type="text" name="contactName" required placeholder="ชื่อ-นามสกุล" class="input-field"/>
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">อีเมลติดต่อ <span class="text-red-500">*</span></label>
-          <input type="email" name="contactEmail" required placeholder="email@example.com" class="input-field"/>
+      <!-- Step 2 nav -->
+      <div class="flex justify-between items-center mt-2">
+        <button type="button" id="step2Back" class="flex items-center gap-1.5 text-sm text-gray-500 hover:text-brand-orange font-medium transition-colors py-3 px-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+          ย้อนกลับ
+        </button>
+        <button type="button" id="step2Next" class="bg-brand-orange text-white px-7 py-3.5 rounded-2xl font-bold text-sm hover:bg-brand-orange-deep transition-all shadow-md flex items-center gap-2">
+          ถัดไป: ข้อมูลติดต่อ
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+
+    </div>
+    <!-- END STEP 2 -->
+
+    <!-- ──────────────────────────────────────────── -->
+    <!-- STEP 3: ข้อมูลติดต่อ                        -->
+    <!-- ──────────────────────────────────────────── -->
+    <div id="step3Panel" class="step-panel hidden">
+
+      <div class="section-card">
+        <h2 class="font-bold text-gray-900 text-base mb-1">📬 ข้อมูลติดต่อ</h2>
+        <p class="text-xs text-gray-500 mb-4">ข้อมูลนี้ไม่แสดงต่อสาธารณะ — ใช้สำหรับแจ้งผลการอนุมัติและการติดต่อจากทีมงานเท่านั้น</p>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">ชื่อผู้ติดต่อ <span class="text-red-500">*</span></label>
+            <input type="text" name="contactName" placeholder="ชื่อ-นามสกุล" class="input-field"/>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">อีเมลติดต่อ <span class="text-red-500">*</span></label>
+            <input type="email" name="contactEmail" placeholder="email@example.com" class="input-field"/>
+          </div>
         </div>
       </div>
+
+      <!-- Form error -->
+      <div id="formError" class="hidden mb-4 p-4 bg-red-50 border border-red-200 rounded-2xl text-sm text-red-700"></div>
+
+      <!-- Submit -->
+      <button type="submit" id="submitBtn" class="w-full bg-brand-orange text-white py-4 rounded-2xl text-base font-bold hover:bg-brand-orange-deep transition-all shadow-lg disabled:opacity-50">
+        ส่งข้อมูลเพื่อรอการอนุมัติ →
+      </button>
+      <p class="text-center text-xs text-gray-400 mt-3">ทีมงานจะตรวจสอบและแจ้งผลภายใน 1-3 วันทำการ</p>
+
+      <!-- Step 3 back -->
+      <div class="text-center mt-4">
+        <button type="button" id="step3Back" class="text-sm text-gray-400 hover:text-brand-orange transition-colors flex items-center gap-1 mx-auto">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+          ย้อนกลับแก้ไขรายละเอียด
+        </button>
+      </div>
+
     </div>
+    <!-- END STEP 3 -->
 
-    <!-- Error -->
-    <div id="formError" class="hidden mb-4 p-4 bg-red-50 border border-red-200 rounded-2xl text-sm text-red-700"></div>
-
-    <!-- Submit -->
-    <button type="submit" class="w-full bg-brand-orange text-white py-4 rounded-2xl text-lg font-bold hover:bg-brand-orange-deep transition-all shadow-lg disabled:opacity-50">
-      ส่งข้อมูลเพื่อรอการอนุมัติ →
-    </button>
-    <p class="text-center text-xs text-gray-400 mt-3">ทีมงานจะตรวจสอบและแจ้งผลภายใน 1-3 วันทำการ</p>
   </form>
+
 </main>
 
 <script type="module">
@@ -337,12 +492,84 @@
 
   initNavAuth();
 
-  // ─── Logo upload widget ───────────────────────────────────────────────────
-  const logoInput      = document.getElementById('logoInput');
-  const logoZone       = document.getElementById('logoZone');
+  // ── Step navigation ──────────────────────────────────────────────────────
+  const stepLabels = { 1:'ข้อมูลสถานที่', 2:'รายละเอียดเพิ่มเติม', 3:'ข้อมูลติดต่อ' };
+
+  function goToStep(n) {
+    [1, 2, 3].forEach(i => {
+      document.getElementById(`step${i}Panel`).classList.toggle('hidden', i !== n);
+    });
+    // Update dots
+    [1, 2, 3].forEach(i => {
+      const dot = document.getElementById(`dot${i}`);
+      const label = document.getElementById(`label${i}`);
+      if (i < n) {
+        dot.className = 'step-dot done';
+        dot.innerHTML = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>`;
+        label.className = 'step-label done';
+      } else if (i === n) {
+        dot.className = 'step-dot active';
+        dot.textContent = i;
+        label.className = 'step-label active';
+      } else {
+        dot.className = 'step-dot pending';
+        dot.textContent = i;
+        label.className = 'step-label pending';
+      }
+    });
+    // Update connectors
+    document.getElementById('line12').className = 'step-connector ' + (n > 1 ? 'active' : 'pending');
+    document.getElementById('line23').className = 'step-connector ' + (n > 2 ? 'active' : 'pending');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ── Step 1 → Step 2 ────────────────────────────────────────────────────
+  document.getElementById('step1Next').addEventListener('click', () => {
+    const form = document.getElementById('bizForm');
+    const name    = form.querySelector('[name=name]').value.trim();
+    const type    = form.querySelector('[name=type]').value;
+    const address = form.querySelector('[name=address]').value.trim();
+    const district= form.querySelector('[name=district]').value.trim();
+    const city    = form.querySelector('[name=city]').value.trim();
+    const pets    = [...form.querySelectorAll('[name=pets]:checked')];
+    const errDiv  = document.getElementById('step1Error');
+
+    if (!name || !type || !address || !district || !city) {
+      errDiv.textContent = '⚠️ กรุณากรอกข้อมูลที่มีเครื่องหมาย * ให้ครบ (ชื่อสถานที่, ประเภท, ที่อยู่, แขวง/เขต, จังหวัด)';
+      errDiv.classList.remove('hidden');
+      errDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+    if (pets.length === 0) {
+      errDiv.textContent = '⚠️ กรุณาเลือกสัตว์เลี้ยงที่รับเข้าได้อย่างน้อย 1 ประเภท';
+      errDiv.classList.remove('hidden');
+      errDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+    errDiv.classList.add('hidden');
+
+    // Require login before Step 2
+    if (!getCurrentUser()) {
+      const banner = document.getElementById('authRequired');
+      banner.classList.remove('hidden');
+      banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+
+    document.getElementById('authRequired').classList.add('hidden');
+    goToStep(2);
+  });
+
+  document.getElementById('step2Back').addEventListener('click', () => goToStep(1));
+  document.getElementById('step2Next').addEventListener('click', () => goToStep(3));
+  document.getElementById('step3Back').addEventListener('click', () => goToStep(2));
+
+  // ── Logo upload ────────────────────────────────────────────────────────
+  const logoInput       = document.getElementById('logoInput');
+  const logoZone        = document.getElementById('logoZone');
   const logoPlaceholder = document.getElementById('logoPlaceholder');
-  const logoPreview    = document.getElementById('logoPreview');
-  const removeLogoBtn  = document.getElementById('removeLogo');
+  const logoPreview     = document.getElementById('logoPreview');
+  const removeLogoBtn   = document.getElementById('removeLogo');
   let logoFile = null;
 
   function showLogoPreview(file) {
@@ -377,28 +604,23 @@
         async () => resolve(await getDownloadURL(task.snapshot.ref)));
     });
   }
-  // ─────────────────────────────────────────────────────────────────────────
 
-  // ─── Cover image upload widget ───────────────────────────────────────────
-  const storage       = getStorage(app);
-  const fileInput     = document.getElementById('coverImageInput');
-  const uploadZone    = document.getElementById('uploadZone');
-  const placeholder   = document.getElementById('uploadPlaceholder');
-  const preview       = document.getElementById('coverPreview');
-  const fileInfo      = document.getElementById('fileInfo');
-  const fileNameEl    = document.getElementById('fileName');
-  const removeBtn     = document.getElementById('removeImage');
-  let selectedFile    = null;
+  // ── Cover image upload ─────────────────────────────────────────────────
+  const storage      = getStorage(app);
+  const fileInput    = document.getElementById('coverImageInput');
+  const uploadZone   = document.getElementById('uploadZone');
+  const placeholder  = document.getElementById('uploadPlaceholder');
+  const preview      = document.getElementById('coverPreview');
+  const fileInfo     = document.getElementById('fileInfo');
+  const fileNameEl   = document.getElementById('fileName');
+  const removeBtn    = document.getElementById('removeImage');
+  let selectedFile   = null;
 
   function showPreview(file) {
     if (!file || !file.type.startsWith('image/')) return;
-    if (file.size > 5 * 1024 * 1024) {
-      alert('⚠️ ไฟล์ใหญ่เกิน 5 MB กรุณาเลือกใหม่');
-      return;
-    }
+    if (file.size > 5 * 1024 * 1024) { alert('⚠️ ไฟล์ใหญ่เกิน 5 MB กรุณาเลือกใหม่'); return; }
     selectedFile = file;
-    const url = URL.createObjectURL(file);
-    preview.src = url;
+    preview.src = URL.createObjectURL(file);
     preview.classList.remove('hidden');
     placeholder.classList.add('hidden');
     uploadZone.classList.add('has-image');
@@ -407,10 +629,8 @@
   }
 
   function clearImage() {
-    selectedFile = null;
-    fileInput.value = '';
-    preview.src = '';
-    preview.classList.add('hidden');
+    selectedFile = null; fileInput.value = '';
+    preview.src = ''; preview.classList.add('hidden');
     placeholder.classList.remove('hidden');
     uploadZone.classList.remove('has-image');
     fileInfo.classList.add('hidden');
@@ -418,24 +638,20 @@
 
   fileInput.addEventListener('change', e => showPreview(e.target.files[0]));
   removeBtn.addEventListener('click', e => { e.stopPropagation(); clearImage(); });
-
   uploadZone.addEventListener('dragover',  e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
   uploadZone.addEventListener('dragleave', ()  => uploadZone.classList.remove('drag-over'));
   uploadZone.addEventListener('drop', e => {
-    e.preventDefault();
-    uploadZone.classList.remove('drag-over');
+    e.preventDefault(); uploadZone.classList.remove('drag-over');
     showPreview(e.dataTransfer.files[0]);
   });
 
   async function uploadCoverImage(uid) {
     if (!selectedFile) return null;
-    const ext      = selectedFile.name.split('.').pop();
-    const path     = `business-covers/${uid}/${Date.now()}.${ext}`;
-    const storageRef = ref(storage, path);
+    const ext = selectedFile.name.split('.').pop();
+    const storageRef = ref(storage, `business-covers/${uid}/${Date.now()}.${ext}`);
     const progressWrap = document.getElementById('uploadProgressWrap');
     const progressBar  = document.getElementById('uploadProgressBar');
     progressWrap.classList.remove('hidden');
-
     return new Promise((resolve, reject) => {
       const task = uploadBytesResumable(storageRef, selectedFile);
       task.on('state_changed',
@@ -445,9 +661,8 @@
       );
     });
   }
-  // ─────────────────────────────────────────────────────────────────────────
 
-  // ── GPS Auto-fill ─────────────────────────────────────────────
+  // ── GPS Auto-fill ──────────────────────────────────────────────────────
   document.getElementById('gpsAutoBtn').addEventListener('click', () => {
     const txt = document.getElementById('gpsBtnText');
     const btn = document.getElementById('gpsAutoBtn');
@@ -466,15 +681,10 @@
     );
   });
 
+  // ── Auth state ─────────────────────────────────────────────────────────
   onAuthChange(user => {
-    if (!user) {
-      document.getElementById('loginRequired').classList.remove('hidden');
-      document.getElementById('mainForm').classList.add('hidden');
-    } else {
-      document.getElementById('loginRequired').classList.add('hidden');
-      document.getElementById('mainForm').classList.remove('hidden');
-      document.getElementById('bizForm').classList.remove('hidden');
-      // pre-fill contact email
+    if (user) {
+      document.getElementById('authRequired').classList.add('hidden');
       const emailInput = document.querySelector('[name=contactEmail]');
       if (emailInput && !emailInput.value) emailInput.value = user.email || '';
       const nameInput = document.querySelector('[name=contactName]');
@@ -482,17 +692,26 @@
     }
   });
 
+  // ── Form submit ─────────────────────────────────────────────────────────
   document.getElementById('bizForm').addEventListener('submit', async e => {
     e.preventDefault();
-    const btn = e.target.querySelector('button[type=submit]');
+    const btn    = document.getElementById('submitBtn');
     const errDiv = document.getElementById('formError');
     errDiv.classList.add('hidden');
 
     const fd = new FormData(e.target);
     const allowedPets = fd.getAll('pets');
 
+    const contactName  = fd.get('contactName')?.trim();
+    const contactEmail = fd.get('contactEmail')?.trim();
+
+    if (!contactName || !contactEmail) {
+      errDiv.textContent = '⚠️ กรุณากรอกชื่อและอีเมลติดต่อ';
+      errDiv.classList.remove('hidden');
+      return;
+    }
     if (allowedPets.length === 0) {
-      errDiv.textContent = '⚠️ กรุณาเลือกสัตว์เลี้ยงอย่างน้อย 1 ประเภท';
+      errDiv.textContent = '⚠️ กรุณาเลือกสัตว์เลี้ยงที่รับเข้าได้อย่างน้อย 1 ประเภท';
       errDiv.classList.remove('hidden');
       return;
     }
@@ -550,8 +769,8 @@
       logoUrl:       logoUrl,
       tier:          'free',
       description:   fd.get('description') || null,
-      contactName:   fd.get('contactName'),
-      contactEmail:  fd.get('contactEmail'),
+      contactName,
+      contactEmail,
       submittedBy:   user?.uid || null,
       status:        'pending',
       verified:      false,
@@ -580,6 +799,7 @@
       }).catch(() => {}); // ไม่ block ถ้า webhook ล้มเหลว
 
       document.getElementById('bizForm').classList.add('hidden');
+      document.getElementById('progressArea').classList.add('hidden');
       document.getElementById('successState').classList.remove('hidden');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err) {
@@ -600,7 +820,7 @@
           <div class="w-9 h-9 bg-brand-orange rounded-xl flex items-center justify-center text-xl">🐾</div>
           <span class="text-xl font-bold text-white">Paw<span class="text-brand-orange">Dee</span></span>
         </div>
-        <p class="text-sm leading-relaxed text-gray-400 max-w-xs">แพลตฟอร์มครบวงจรสำหรับทาสหมาทาสแมวชาวไทย เพราะสัตว์เลี้ยงคือสมาชิกในครอบครัว</p>
+        <p class="text-sm leading-relaxed text-gray-400 max-w-xs">ศูนย์กลางข้อมูล รีวิว และชุมชนสำหรับเจ้าของสัตว์เลี้ยงในไทย เพราะสัตว์เลี้ยงคือสมาชิกในครอบครัว</p>
         <div class="flex gap-3 mt-6">
           <a href="https://www.facebook.com/pawdeepet/" target="_blank" rel="noopener" class="w-9 h-9 bg-white/10 rounded-xl hover:bg-brand-orange transition-colors flex items-center justify-center">
             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
@@ -629,7 +849,7 @@
       </div>
     </div>
     <div class="border-t border-white/10 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
-      <p class="text-xs text-gray-500">© 2026 PawDee. Made with ❤️ สำหรับทาสหมาทาสแมวทุกคน</p>
+      <p class="text-xs text-gray-500">© 2026 PawDee. Made with ❤️ สำหรับเจ้าของสัตว์เลี้ยงทุกคน</p>
       <div class="flex gap-4 text-xs text-gray-500">
         <a href="privacy.html" class="hover:text-brand-orange transition-colors">นโยบายความเป็นส่วนตัว</a>
         <a href="terms.html" class="hover:text-brand-orange transition-colors">เงื่อนไขการใช้งาน</a>
