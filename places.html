@@ -57,7 +57,9 @@
     .review-tag-label { display:inline-flex; align-items:center; gap:0.25rem; font-size:0.7rem; font-weight:600; padding:0.3rem 0.65rem; border-radius:9999px; border:1.5px solid #E5E7EB; color:#6B7280; cursor:pointer; transition:all 0.15s; user-select:none; }
     .review-tag-label.selected { background:#FFF7ED; color:#EA580C; border-color:#F97316; }
     .review-tag-label input { display:none; }
-    #map { height: 600px; border-radius: 1.5rem; z-index: 0; }
+    #map { height: clamp(350px, 60vh, 700px); border-radius: 1.5rem; z-index: 0; }
+    @keyframes menuSlideDown { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
+    .menu-slide-in { animation:menuSlideDown 0.2s ease forwards; }
     .leaflet-popup-content-wrapper { border-radius: 1rem; font-family: 'Kanit', sans-serif; }
     .map-popup-btn { background:#F97316; color:white; border:none; border-radius:0.5rem; padding:0.4rem 0.8rem; font-family:'Kanit',sans-serif; font-size:0.8rem; font-weight:600; cursor:pointer; width:100%; margin-top:0.5rem; }
     .view-btn.active { background:#F97316; color:white; border-color:#F97316; }
@@ -85,7 +87,7 @@
         <a href="register-business.html" class="text-gray-600 hover:text-brand-orange transition-colors font-medium text-sm">สำหรับธุรกิจ</a>
       </div>
       <div id="navAuth"></div>
-      <button id="mobileMenuBtn" class="md:hidden p-2 rounded-lg hover:bg-orange-50 ml-2">
+      <button id="mobileMenuBtn" class="md:hidden p-2.5 rounded-lg hover:bg-orange-50 ml-2">
   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
 </button>
     </div>
@@ -194,9 +196,9 @@
 <div class="bg-orange-50/60 backdrop-blur border-b border-orange-100">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex items-center gap-2 overflow-x-auto scrollbar-hide">
     <span class="text-xs text-brand-orange font-bold flex-shrink-0 whitespace-nowrap">⭐ Google Maps ไม่มี:</span>
-    <button class="pet-filter-btn flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-semibold border-2 border-orange-200 text-orange-700 bg-white hover:border-purple-400 hover:text-purple-600 transition-all" data-attr="largeDogOk">🐕 รับพันธุ์ใหญ่</button>
-    <button class="pet-filter-btn flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-semibold border-2 border-orange-200 text-orange-700 bg-white hover:border-purple-400 hover:text-purple-600 transition-all" data-attr="indoorSeating">🏠 นั่งในร้านได้</button>
-    <button class="pet-filter-btn flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-semibold border-2 border-orange-200 text-orange-700 bg-white hover:border-purple-400 hover:text-purple-600 transition-all" data-attr="noCarrierNeeded">🚫 ไม่ต้องใส่กรง</button>
+    <button class="pet-filter-btn flex-shrink-0 px-3 py-2 rounded-xl text-xs font-semibold border-2 border-orange-200 text-orange-700 bg-white hover:border-purple-400 hover:text-purple-600 transition-all" data-attr="largeDogOk">🐕 รับพันธุ์ใหญ่</button>
+    <button class="pet-filter-btn flex-shrink-0 px-3 py-2 rounded-xl text-xs font-semibold border-2 border-orange-200 text-orange-700 bg-white hover:border-purple-400 hover:text-purple-600 transition-all" data-attr="indoorSeating">🏠 นั่งในร้านได้</button>
+    <button class="pet-filter-btn flex-shrink-0 px-3 py-2 rounded-xl text-xs font-semibold border-2 border-orange-200 text-orange-700 bg-white hover:border-purple-400 hover:text-purple-600 transition-all" data-attr="noCarrierNeeded">🚫 ไม่ต้องใส่กรง</button>
   </div>
 </div>
 
@@ -229,7 +231,7 @@
     <p id="resultCount" class="text-sm text-gray-500">กำลังโหลด...</p>
     <div class="flex items-center gap-3">
       <!-- Sort -->
-      <select id="sortSelect" class="text-sm border border-gray-200 rounded-xl px-3 py-1.5 focus:outline-none focus:border-brand-orange">
+      <select id="sortSelect" class="text-sm border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:border-brand-orange">
         <option value="rating">⭐ คะแนนสูงสุด</option>
         <option value="reviewCount">💬 รีวิวมากสุด</option>
         <option value="name">🔤 ชื่อ ก-ฮ</option>
@@ -237,11 +239,11 @@
       </select>
       <!-- View Toggle -->
       <div class="flex border-2 border-gray-200 rounded-xl overflow-hidden">
-        <button id="viewGrid" class="view-btn active flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold transition-all border-r border-gray-200">
+        <button id="viewGrid" class="view-btn active flex items-center gap-1.5 px-3 py-2 text-sm font-semibold transition-all border-r border-gray-200">
           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
           การ์ด
         </button>
-        <button id="viewMap" class="view-btn flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-gray-600 transition-all">
+        <button id="viewMap" class="view-btn flex items-center gap-1.5 px-3 py-2 text-sm font-semibold text-gray-600 transition-all">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
           แผนที่
         </button>
@@ -1247,10 +1249,20 @@
 </script>
 
 <script>
-  const btn = document.getElementById('mobileMenuBtn');
-  if (btn) btn.addEventListener('click', () => {
-    document.getElementById('mobileMenu').classList.toggle('hidden');
-  });
+  const _mb = document.getElementById('mobileMenuBtn');
+  const _mm = document.getElementById('mobileMenu');
+  if (_mb) {
+    _mb.addEventListener('click', () => {
+      const hidden = _mm.classList.contains('hidden');
+      _mm.classList.toggle('hidden', !hidden);
+      if (hidden) _mm.classList.add('menu-slide-in');
+    });
+    document.addEventListener('click', e => {
+      if (!_mm.classList.contains('hidden') && !_mm.contains(e.target) && !_mb.contains(e.target))
+        _mm.classList.add('hidden');
+    });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') _mm.classList.add('hidden'); });
+  }
 </script>
 <script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js").catch(()=>{});}</script>
 </body>

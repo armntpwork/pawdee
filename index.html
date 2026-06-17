@@ -111,6 +111,8 @@
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
     }
+    @keyframes menuSlideDown { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
+    .menu-slide-in { animation:menuSlideDown 0.2s ease forwards; }
 
     /* Stat number animation */
     @keyframes countUp {
@@ -198,7 +200,7 @@
         </div>
 
         <!-- Hamburger -->
-        <button id="mobileMenuBtn" class="md:hidden p-2 rounded-lg hover:bg-orange-50">
+        <button id="mobileMenuBtn" class="md:hidden p-2.5 rounded-lg hover:bg-orange-50">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
           </svg>
@@ -971,16 +973,22 @@
   });
 
   // Mobile Menu Toggle
-  document.getElementById('mobileMenuBtn').addEventListener('click', () => {
-    const menu = document.getElementById('mobileMenu');
-    menu.classList.toggle('hidden');
+  const _mb = document.getElementById('mobileMenuBtn');
+  const _mm = document.getElementById('mobileMenu');
+  _mb.addEventListener('click', () => {
+    const hidden = _mm.classList.contains('hidden');
+    _mm.classList.toggle('hidden', !hidden);
+    if (hidden) _mm.classList.add('menu-slide-in');
   });
+  document.addEventListener('click', e => {
+    if (!_mm.classList.contains('hidden') && !_mm.contains(e.target) && !_mb.contains(e.target))
+      _mm.classList.add('hidden');
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') _mm.classList.add('hidden'); });
 
   // Close mobile menu on link click
   document.querySelectorAll('#mobileMenu a').forEach(link => {
-    link.addEventListener('click', () => {
-      document.getElementById('mobileMenu').classList.add('hidden');
-    });
+    link.addEventListener('click', () => _mm.classList.add('hidden'));
   });
 
   // Back to Top

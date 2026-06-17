@@ -33,6 +33,8 @@
     .badge-approved { background:#D1FAE5; color:#065F46; }
     .badge-rejected { background:#FEE2E2; color:#991B1B; }
     .paw-bg { background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23F97316' fill-opacity='0.04'%3E%3Cellipse cx='15' cy='10' rx='4' ry='5'/%3E%3Cellipse cx='30' cy='8' rx='4' ry='5'/%3E%3Cellipse cx='45' cy='10' rx='4' ry='5'/%3E%3Cellipse cx='30' cy='35' rx='12' ry='14'/%3E%3C/g%3E%3C/svg%3E"); }
+    @keyframes menuSlideDown { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
+    .menu-slide-in { animation:menuSlideDown 0.2s ease forwards; }
   </style>
 </head>
 <body class="bg-brand-cream paw-bg text-gray-800 antialiased">
@@ -51,7 +53,7 @@
         <a href="emergency.html" class="hover:text-brand-orange transition-colors">คลินิกฉุกเฉิน</a>
       </div>
       <div id="navAuth"></div>
-      <button id="mobileMenuBtn" class="md:hidden p-2 rounded-lg hover:bg-orange-50 ml-2">
+      <button id="mobileMenuBtn" class="md:hidden p-2.5 rounded-lg hover:bg-orange-50 ml-2">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
       </button>
     </div>
@@ -186,10 +188,20 @@
 </footer>
 
 <script>
-  const btn = document.getElementById('mobileMenuBtn');
-  if (btn) btn.addEventListener('click', () => {
-    document.getElementById('mobileMenu').classList.toggle('hidden');
-  });
+  const _mb = document.getElementById('mobileMenuBtn');
+  const _mm = document.getElementById('mobileMenu');
+  if (_mb) {
+    _mb.addEventListener('click', () => {
+      const hidden = _mm.classList.contains('hidden');
+      _mm.classList.toggle('hidden', !hidden);
+      if (hidden) _mm.classList.add('menu-slide-in');
+    });
+    document.addEventListener('click', e => {
+      if (!_mm.classList.contains('hidden') && !_mm.contains(e.target) && !_mb.contains(e.target))
+        _mm.classList.add('hidden');
+    });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') _mm.classList.add('hidden'); });
+  }
 </script>
 
 <script type="module">
