@@ -126,19 +126,7 @@
   </div>
 
 <script type="module">
-  import { signInWithGoogle, getGoogleRedirectResult, signInWithEmail, signUpWithEmail, resetPassword, onAuthChange } from './js/auth.js';
-
-  // จัดการ redirect result จาก Google Sign-in บน mobile
-  getGoogleRedirectResult().then(result => {
-    if (result?.user) {
-      const next = new URLSearchParams(location.search).get('next') || 'index.html';
-      location.href = next;
-    }
-  }).catch(err => {
-    if (err.code !== 'auth/no-current-user') {
-      showBanner(friendlyError(err.code));
-    }
-  });
+  import { signInWithGoogle, signInWithEmail, signUpWithEmail, resetPassword, onAuthChange } from './js/auth.js';
 
   // redirect ถ้า login อยู่แล้ว
   onAuthChange(user => {
