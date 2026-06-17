@@ -525,7 +525,7 @@
     shop:       { label: 'Pet Shop',     icon: '🛍️', cls: 'badge-shop'       },
   };
 
-  const PET_ICONS = { dog: '🐕', cat: '🐈', rabbit: '🐇', bird: '🦜', fish: '🐟', other: '🐾' };
+  const PET_ICONS = { dog: '🐕', cat: '🐈', rabbit: '🐇', bird: '🦜', fish: '🐟', exotic: '🦎', other: '🐾' };
 
   // backward compat: ข้อมูลเก่าใช้ type (string), ใหม่ใช้ categories (array)
   function getCategories(p) {
@@ -1131,8 +1131,9 @@
 
     // สัตว์ที่รับ + amenity chips
     const petsEl = document.getElementById('modalPets');
+    const PET_NAMES = { dog:'สุนัข', cat:'แมว', rabbit:'กระต่าย', bird:'นก', fish:'ปลา', exotic:'Exotic', other: place.customPet || 'อื่นๆ' };
     petsEl.innerHTML = (place.allowedPets || []).map(p =>
-      `<span class="inline-flex items-center gap-1 bg-orange-50 text-orange-700 text-xs font-semibold px-3 py-1.5 rounded-full">${PET_ICONS[p] || '🐾'} ${p === 'dog' ? 'สุนัข' : p === 'cat' ? 'แมว' : p === 'rabbit' ? 'กระต่าย' : p === 'bird' ? 'นก' : p === 'fish' ? 'ปลา' : 'สัตว์อื่นๆ'}</span>`
+      `<span class="inline-flex items-center gap-1 bg-orange-50 text-orange-700 text-xs font-semibold px-3 py-1.5 rounded-full">${PET_ICONS[p] || '🐾'} ${PET_NAMES[p] || p}</span>`
     ).join('');
     // Amenity chips (ข้อมูลที่ Google ไม่มี)
     const amenities = [];

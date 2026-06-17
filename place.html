@@ -330,7 +330,7 @@ function categoryChipsHtml(place) {
 
 const PET_LABELS = {
   dog: '🐕 สุนัข', cat: '🐈 แมว', rabbit: '🐇 กระต่าย',
-  bird: '🦜 นก', fish: '🐠 ปลา', hamster: '🐹 แฮมสเตอร์', other: '🐾 อื่นๆ'
+  bird: '🦜 นก', fish: '🐠 ปลา', exotic: '🦎 Exotic', other: '🐾 อื่นๆ'
 };
 
 const REVIEW_TAG_LABELS = {
@@ -522,9 +522,10 @@ function renderPlace(place) {
   // ── Allowed Pets ──
   const pets = place.allowedPets || [];
   if (pets.length > 0) {
-    document.getElementById('allowedPetsChips').innerHTML = pets.map(p =>
-      `<span class="text-sm bg-orange-50 text-orange-700 border border-orange-200 px-3 py-1 rounded-full font-medium">${PET_LABELS[p] || p}</span>`
-    ).join('');
+    document.getElementById('allowedPetsChips').innerHTML = pets.map(p => {
+      const label = p === 'other' && place.customPet ? `🐾 ${place.customPet}` : (PET_LABELS[p] || p);
+      return `<span class="text-sm bg-orange-50 text-orange-700 border border-orange-200 px-3 py-1 rounded-full font-medium">${label}</span>`;
+    }).join('');
   } else {
     document.getElementById('allowedPetsSection').classList.add('hidden');
   }

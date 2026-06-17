@@ -289,7 +289,11 @@
           <input type="checkbox" id="pet-rabbit" name="pets" value="rabbit" class="checkbox-pet"/><label for="pet-rabbit">🐇 กระต่าย</label>
           <input type="checkbox" id="pet-bird"   name="pets" value="bird"   class="checkbox-pet"/><label for="pet-bird">🦜 นก</label>
           <input type="checkbox" id="pet-fish"   name="pets" value="fish"   class="checkbox-pet"/><label for="pet-fish">🐟 ปลา</label>
+          <input type="checkbox" id="pet-exotic" name="pets" value="exotic" class="checkbox-pet"/><label for="pet-exotic">🦎 Exotic</label>
           <input type="checkbox" id="pet-other"  name="pets" value="other"  class="checkbox-pet"/><label for="pet-other">🐾 อื่นๆ</label>
+        </div>
+        <div id="customPetWrap" class="hidden mt-2">
+          <input type="text" name="customPet" id="customPetInput" placeholder="ระบุสัตว์เลี้ยงของคุณ เช่น แฮมสเตอร์, เต่า, งู" class="input-field" maxlength="100"/>
         </div>
       </div>
 
@@ -538,6 +542,8 @@
     data.pets = [...form.querySelectorAll('input[name=pets]:checked')].map(el => el.value);
     // Checkbox: categories (multi-value array)
     data.categories = [...form.querySelectorAll('input[name=category]:checked')].map(el => el.value);
+    // Checkbox: customPet text
+    data.customPet = form.querySelector('[name=customPet]')?.value || '';
     // Checkbox: single booleans
     ['needCarrier', 'indoorSeating', 'emergency24hr'].forEach(name => {
       const el = form.querySelector(`input[name=${name}]`);
@@ -568,6 +574,11 @@
       form.querySelectorAll('input[name=category]').forEach(el => { el.checked = saved.categories.includes(el.value); });
       const wrap = document.getElementById('customCategoryWrap');
       if (wrap) wrap.classList.toggle('hidden', !saved.categories.includes('other'));
+    }
+    // customPet text + show/hide
+    if (saved.customPet) {
+      const el = form.querySelector('[name=customPet]');
+      if (el) { el.value = saved.customPet; document.getElementById('customPetWrap')?.classList.remove('hidden'); }
     }
     // boolean checkboxes
     ['needCarrier', 'indoorSeating', 'emergency24hr'].forEach(name => {
@@ -671,10 +682,14 @@
   }
 
   // ── Step 1 → Step 2 ────────────────────────────────────────────────────
-  // ── "อื่นๆ" toggle ───────────────────────────────────────────────────────
+  // ── "อื่นๆ" toggles ──────────────────────────────────────────────────────
   document.getElementById('cat-other').addEventListener('change', function() {
     document.getElementById('customCategoryWrap').classList.toggle('hidden', !this.checked);
     if (!this.checked) document.getElementById('customCategoryInput').value = '';
+  });
+  document.getElementById('pet-other').addEventListener('change', function() {
+    document.getElementById('customPetWrap').classList.toggle('hidden', !this.checked);
+    if (!this.checked) document.getElementById('customPetInput').value = '';
   });
 
   document.getElementById('step1Next').addEventListener('click', () => {
@@ -856,6 +871,7 @@
     // ใช้ querySelector โดยตรง (ไม่ใช้ FormData) เพราะ FormData ข้าม display:none elements
     const val = name => form.querySelector(`[name="${name}"]`)?.value ?? null;
     const allowedPets = [...form.querySelectorAll('[name=pets]:checked')].map(el => el.value);
+    const customPet = allowedPets.includes('other') ? (val('customPet') || null) : null;
 
     const contactName  = val('contactName')?.trim();
     const contactEmail = val('contactEmail')?.trim();
@@ -924,6 +940,7 @@
       city:          val('city'),
       openHours:     val('openHours') || null,
       allowedPets,
+      customPet,
       maxWeightKg:   maxWeightVal ? Number(maxWeightVal) : null,
       needCarrier:   needCarrierVal === 'true',
       indoorSeating: indoorVal === 'true',
