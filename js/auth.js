@@ -10,10 +10,6 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signInWithPopup,
-  signInWithRedirect,
-  getRedirectResult,
-  setPersistence,
-  browserSessionPersistence,
   GoogleAuthProvider,
   signOut as fbSignOut,
   sendPasswordResetEmail,
@@ -22,25 +18,9 @@ import {
 
 const googleProvider = new GoogleAuthProvider();
 
-const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-const isIOS    = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-
 // ── Auth actions ──────────────────────────────────────────────
-export const signInWithGoogle = async () => {
-  if (isMobile) {
-    // iOS Safari: ตั้ง sessionStorage persistence ก่อน redirect
-    // เพื่อหลีกเลี่ยง ITP ล้าง IndexedDB ระหว่างข้าม domain
-    if (isIOS) await setPersistence(auth, browserSessionPersistence);
-    return signInWithRedirect(auth, googleProvider);
-  }
-  return signInWithPopup(auth, googleProvider);
-};
-
-export const getGoogleRedirectResult = async () => {
-  // iOS: ต้อง set persistence เดิมก่อนอ่าน redirect result ด้วย
-  if (isIOS) await setPersistence(auth, browserSessionPersistence);
-  return getRedirectResult(auth);
-};
+// ใช้ popup ทุก platform — iOS Safari อนุญาต popup เมื่อ trigger จาก user click
+export const signInWithGoogle = () => signInWithPopup(auth, googleProvider);
 
 export const signInWithEmail  = (email, password) =>
   signInWithEmailAndPassword(auth, email, password);
