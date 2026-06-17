@@ -830,22 +830,28 @@
     e.preventDefault();
     const btn    = document.getElementById('submitBtn');
     const errDiv = document.getElementById('formError');
+    const form   = e.target;
     errDiv.classList.add('hidden');
 
-    const fd = new FormData(e.target);
-    const allowedPets = fd.getAll('pets');
+    // ใช้ querySelector โดยตรง (ไม่ใช้ FormData) เพราะ FormData ข้าม display:none elements
+    const val = name => form.querySelector(`[name="${name}"]`)?.value ?? null;
+    const allowedPets = [...form.querySelectorAll('[name=pets]:checked')].map(el => el.value);
 
-    const contactName  = fd.get('contactName')?.trim();
-    const contactEmail = fd.get('contactEmail')?.trim();
+    const contactName  = val('contactName')?.trim();
+    const contactEmail = val('contactEmail')?.trim();
+
+    function showError(msg) {
+      errDiv.textContent = msg;
+      errDiv.classList.remove('hidden');
+      errDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
 
     if (!contactName || !contactEmail) {
-      errDiv.textContent = '⚠️ กรุณากรอกชื่อและอีเมลติดต่อ';
-      errDiv.classList.remove('hidden');
+      showError('⚠️ กรุณากรอกชื่อและอีเมลติดต่อ');
       return;
     }
     if (allowedPets.length === 0) {
-      errDiv.textContent = '⚠️ กรุณาเลือกสัตว์เลี้ยงที่รับเข้าได้อย่างน้อย 1 ประเภท';
-      errDiv.classList.remove('hidden');
+      showError('⚠️ กรุณาเลือกสัตว์เลี้ยงที่รับเข้าได้อย่างน้อย 1 ประเภท — กลับไป Step 1 เพื่อเลือก');
       return;
     }
 
@@ -861,8 +867,7 @@
         btn.textContent = '⏳ กำลังอัปโหลดรูปปก...';
         imageUrl = await uploadCoverImage(user?.uid || 'anonymous');
       } catch (uploadErr) {
-        errDiv.textContent = `❌ อัปโหลดรูปไม่สำเร็จ: ${uploadErr.message}`;
-        errDiv.classList.remove('hidden');
+        showError(`❌ อัปโหลดรูปไม่สำเร็จ: ${uploadErr.message}`);
         btn.disabled = false;
         btn.textContent = 'ส่งข้อมูลเพื่อรอการอนุมัติ →';
         return;
@@ -879,29 +884,36 @@
     }
     btn.textContent = '⏳ กำลังบันทึกข้อมูล...';
 
+    const needCarrierVal = val('needCarrier');
+    const indoorVal      = val('indoorSeating');
+    const emergencyVal   = val('emergency24hr');
+    const maxWeightVal   = val('maxWeightKg');
+    const latVal         = val('lat');
+    const lngVal         = val('lng');
+
     const data = {
-      name:          fd.get('name'),
-      type:          fd.get('type'),
-      phone:         fd.get('phone') || null,
-      address:       fd.get('address'),
-      district:      fd.get('district'),
-      city:          fd.get('city'),
-      openHours:     fd.get('openHours') || null,
+      name:          val('name'),
+      type:          val('type'),
+      phone:         val('phone') || null,
+      address:       val('address'),
+      district:      val('district'),
+      city:          val('city'),
+      openHours:     val('openHours') || null,
       allowedPets,
-      maxWeightKg:   fd.get('maxWeightKg') ? Number(fd.get('maxWeightKg')) : null,
-      needCarrier:   fd.get('needCarrier') === 'true',
-      indoorSeating: fd.get('indoorSeating') === 'true',
-      emergency24hr: fd.get('emergency24hr') === 'true',
-      lat:           fd.get('lat') ? Number(fd.get('lat')) : null,
-      lng:           fd.get('lng') ? Number(fd.get('lng')) : null,
-      website:       fd.get('website') || null,
-      facebook:      fd.get('facebook') || null,
-      instagram:     fd.get('instagram') || null,
-      line:          fd.get('line') || null,
+      maxWeightKg:   maxWeightVal ? Number(maxWeightVal) : null,
+      needCarrier:   needCarrierVal === 'true',
+      indoorSeating: indoorVal === 'true',
+      emergency24hr: emergencyVal === 'true',
+      lat:           latVal ? Number(latVal) : null,
+      lng:           lngVal ? Number(lngVal) : null,
+      website:       val('website') || null,
+      facebook:      val('facebook') || null,
+      instagram:     val('instagram') || null,
+      line:          val('line') || null,
       imageUrl:      imageUrl,
       logoUrl:       logoUrl,
       tier:          'free',
-      description:   fd.get('description') || null,
+      description:   val('description') || null,
       contactName,
       contactEmail,
       submittedBy:   user?.uid || null,
@@ -937,8 +949,7 @@
       document.getElementById('successState').classList.remove('hidden');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err) {
-      errDiv.textContent = `❌ เกิดข้อผิดพลาด: ${err.message}`;
-      errDiv.classList.remove('hidden');
+      showError(`❌ เกิดข้อผิดพลาด: ${err.message}`);
       btn.disabled = false;
       btn.textContent = 'ส่งข้อมูลเพื่อรอการอนุมัติ →';
     }

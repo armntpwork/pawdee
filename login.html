@@ -126,7 +126,19 @@
   </div>
 
 <script type="module">
-  import { signInWithGoogle, signInWithEmail, signUpWithEmail, resetPassword, onAuthChange } from './js/auth.js';
+  import { signInWithGoogle, getGoogleRedirectResult, signInWithEmail, signUpWithEmail, resetPassword, onAuthChange } from './js/auth.js';
+
+  // จัดการ redirect result จาก Google Sign-in บน mobile
+  getGoogleRedirectResult().then(result => {
+    if (result?.user) {
+      const next = new URLSearchParams(location.search).get('next') || 'index.html';
+      location.href = next;
+    }
+  }).catch(err => {
+    if (err.code !== 'auth/no-current-user') {
+      showBanner(friendlyError(err.code));
+    }
+  });
 
   // redirect ถ้า login อยู่แล้ว
   onAuthChange(user => {
@@ -187,8 +199,10 @@
       'auth/email-already-in-use': 'อีเมลนี้ถูกใช้แล้ว กรุณาเข้าสู่ระบบ',
       'auth/weak-password':        'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร',
       'auth/invalid-email':        'รูปแบบอีเมลไม่ถูกต้อง',
-      'auth/popup-closed-by-user': 'ยกเลิกการเข้าสู่ระบบ',
-      'auth/too-many-requests':    'พยายามเข้าสู่ระบบบ่อยเกินไป กรุณารอสักครู่',
+      'auth/popup-closed-by-user':      'ยกเลิกการเข้าสู่ระบบ',
+      'auth/popup-blocked':             'เบราว์เซอร์บล็อก popup กรุณาลองอีกครั้ง',
+      'auth/cancelled-popup-request':   'ยกเลิกการเข้าสู่ระบบ',
+      'auth/too-many-requests':         'พยายามเข้าสู่ระบบบ่อยเกินไป กรุณารอสักครู่',
     };
     return map[code] || 'เกิดข้อผิดพลาด กรุณาลองอีกครั้ง';
   }
