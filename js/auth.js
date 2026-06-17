@@ -10,6 +10,8 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   GoogleAuthProvider,
   signOut as fbSignOut,
   sendPasswordResetEmail,
@@ -19,7 +21,14 @@ import {
 const googleProvider = new GoogleAuthProvider();
 
 // ── Auth actions ──────────────────────────────────────────────
-export const signInWithGoogle = () => signInWithPopup(auth, googleProvider);
+// mobile browsers บล็อก popup — ใช้ redirect บน mobile แทน
+const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+export const signInWithGoogle = () =>
+  isMobile ? signInWithRedirect(auth, googleProvider)
+           : signInWithPopup(auth, googleProvider);
+
+export const getGoogleRedirectResult = () => getRedirectResult(auth);
 
 export const signInWithEmail  = (email, password) =>
   signInWithEmailAndPassword(auth, email, password);
