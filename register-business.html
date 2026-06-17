@@ -69,6 +69,8 @@
     @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
     /* Optional badge */
     .optional-badge { font-size:0.7rem; color:#9ca3af; font-weight:400; margin-left:0.375rem; }
+    @keyframes menuSlideDown { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
+    .menu-slide-in { animation:menuSlideDown 0.2s ease forwards; }
   </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -87,8 +89,23 @@
         <a href="emergency.html" class="text-gray-600 hover:text-red-500 transition-colors font-medium text-sm">🚨 คลินิกฉุกเฉิน</a>
         <a href="register-business.html" class="text-brand-orange font-semibold text-sm">สำหรับธุรกิจ</a>
       </div>
-      <div id="navAuth"></div>
+      <div class="flex items-center gap-2">
+        <div id="navAuth"></div>
+        <!-- Hamburger -->
+        <button id="mobileMenuBtn" class="md:hidden p-2.5 rounded-lg hover:bg-orange-50">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
     </div>
+  </div>
+  <!-- Mobile Menu -->
+  <div id="mobileMenu" class="hidden md:hidden border-t border-orange-100 bg-white px-4 py-4 space-y-3">
+    <a href="places.html" class="block text-gray-700 hover:text-brand-orange font-medium py-1">🗺️ สถานที่</a>
+    <a href="sitters.html" class="block text-gray-700 hover:text-brand-orange font-medium py-1">🧑 พี่เลี้ยง</a>
+    <a href="emergency.html" class="block text-gray-700 hover:text-red-500 font-medium py-1">🚨 คลินิกฉุกเฉิน</a>
+    <a href="register-business.html" class="block text-brand-orange font-semibold py-1">สำหรับธุรกิจ</a>
   </div>
 </nav>
 
@@ -975,5 +992,21 @@
   </div>
 </footer>
 <script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js").catch(()=>{});}</script>
+<script>
+  const _mb = document.getElementById('mobileMenuBtn');
+  const _mm = document.getElementById('mobileMenu');
+  if (_mb) {
+    _mb.addEventListener('click', () => {
+      const hidden = _mm.classList.contains('hidden');
+      _mm.classList.toggle('hidden', !hidden);
+      if (hidden) _mm.classList.add('menu-slide-in');
+    });
+    document.addEventListener('click', e => {
+      if (!_mm.classList.contains('hidden') && !_mm.contains(e.target) && !_mb.contains(e.target))
+        _mm.classList.add('hidden');
+    });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') _mm.classList.add('hidden'); });
+  }
+</script>
 </body>
 </html>
