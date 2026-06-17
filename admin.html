@@ -307,7 +307,7 @@ async function loadApplications(status) {
               </div>
               <div class="text-sm text-gray-500 mt-1 truncate">${d.address || '—'}</div>
               <div class="flex gap-4 mt-2 text-xs text-gray-400">
-                <span>📋 ${d.type || '—'}</span>
+                <span>📋 ${(d.categories||[d.type]).filter(Boolean).join(', ') || '—'}${d.customCategory ? ` (${d.customCategory})` : ''}</span>
                 <span>🐾 ${pets}</span>
                 <span>📅 ${date}</span>
               </div>
@@ -339,7 +339,7 @@ window.openModal = function(id) {
 
   document.getElementById('modalBody').innerHTML =
     Object.entries({
-      'ประเภท': d.type, 'ที่อยู่': d.address, 'เมือง': d.city, 'จังหวัด': d.province,
+      'ประเภท': (d.categories||[d.type]).filter(Boolean).join(', ') + (d.customCategory ? ` (${d.customCategory})` : ''), 'ที่อยู่': d.address, 'เมือง': d.city, 'จังหวัด': d.province,
       'โทรศัพท์': d.phone, 'เว็บไซต์': d.website, 'Facebook': d.facebook,
       'สัตว์ที่รับ': Array.isArray(d.pets) ? d.pets.join(', ') : d.pets,
       'บริการ': Array.isArray(d.services) ? d.services.join(', ') : d.services,
@@ -433,7 +433,10 @@ window.deletePlace = async function(id) {
 
 async function copyToPlaces(d) {
   const placeData = {
-    name: d.name || '', type: d.type || 'shop', address: d.address || '',
+    name: d.name || '',
+    categories: d.categories?.length ? d.categories : (d.type ? [d.type] : ['other']),
+    customCategory: d.customCategory || null,
+    address: d.address || '',
     city: d.city || '', province: d.province || '', phone: d.phone || '',
     website: d.website || '', facebook: d.facebook || '',
     pets: d.pets || [], services: d.services || [], hours: d.hours || '',

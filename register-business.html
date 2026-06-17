@@ -237,20 +237,22 @@
             <label class="block text-sm font-medium text-gray-700 mb-1">ชื่อสถานที่ <span class="text-red-500">*</span></label>
             <input type="text" name="name" placeholder="เช่น Hound & Ground Coffee" class="input-field"/>
           </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">ประเภท <span class="text-red-500">*</span></label>
-            <select name="type" class="input-field">
-              <option value="">-- เลือกประเภท --</option>
-              <option value="cafe">☕ คาเฟ่</option>
-              <option value="restaurant">🍽️ ร้านอาหาร</option>
-              <option value="hotel">🏨 โรงแรม / ที่พัก</option>
-              <option value="clinic">🏥 คลินิกสัตว์</option>
-              <option value="grooming">🛁 อาบน้ำ-ตัดขน</option>
-              <option value="shop">🛍️ Pet Shop</option>
-              <option value="condo">🏠 คอนโด / หมู่บ้าน</option>
-              <option value="park">🌳 สวนสาธารณะ</option>
-              <option value="other">📍 อื่นๆ</option>
-            </select>
+          <div class="sm:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-2">ประเภทสถานที่ <span class="text-red-500">*</span> <span class="text-xs text-gray-400 font-normal">(เลือกได้มากกว่า 1)</span></label>
+            <div class="flex flex-wrap gap-2">
+              <input type="checkbox" id="cat-cafe"       name="category" value="cafe"       class="checkbox-pet"/><label for="cat-cafe">☕ คาเฟ่</label>
+              <input type="checkbox" id="cat-restaurant" name="category" value="restaurant" class="checkbox-pet"/><label for="cat-restaurant">🍽️ ร้านอาหาร</label>
+              <input type="checkbox" id="cat-hotel"      name="category" value="hotel"      class="checkbox-pet"/><label for="cat-hotel">🏨 โรงแรม/ที่พัก</label>
+              <input type="checkbox" id="cat-clinic"     name="category" value="clinic"     class="checkbox-pet"/><label for="cat-clinic">🏥 คลินิกสัตว์</label>
+              <input type="checkbox" id="cat-grooming"   name="category" value="grooming"   class="checkbox-pet"/><label for="cat-grooming">🛁 อาบน้ำ-ตัดขน</label>
+              <input type="checkbox" id="cat-shop"       name="category" value="shop"       class="checkbox-pet"/><label for="cat-shop">🛍️ Pet Shop</label>
+              <input type="checkbox" id="cat-condo"      name="category" value="condo"      class="checkbox-pet"/><label for="cat-condo">🏠 คอนโด/หมู่บ้าน</label>
+              <input type="checkbox" id="cat-park"       name="category" value="park"       class="checkbox-pet"/><label for="cat-park">🌳 สวนสาธารณะ</label>
+              <input type="checkbox" id="cat-other"      name="category" value="other"      class="checkbox-pet"/><label for="cat-other">📍 อื่นๆ</label>
+            </div>
+            <div id="customCategoryWrap" class="hidden mt-2">
+              <input type="text" name="customCategory" id="customCategoryInput" placeholder="ระบุประเภทของคุณ เช่น โรงเรียนฝึกสุนัข" class="input-field" maxlength="50"/>
+            </div>
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">เบอร์โทรศัพท์<span class="optional-badge">(ไม่บังคับ)</span></label>
@@ -534,6 +536,8 @@
     });
     // Checkbox: pets (multi-value array)
     data.pets = [...form.querySelectorAll('input[name=pets]:checked')].map(el => el.value);
+    // Checkbox: categories (multi-value array)
+    data.categories = [...form.querySelectorAll('input[name=category]:checked')].map(el => el.value);
     // Checkbox: single booleans
     ['needCarrier', 'indoorSeating', 'emergency24hr'].forEach(name => {
       const el = form.querySelector(`input[name=${name}]`);
@@ -558,6 +562,12 @@
     // pets checkboxes
     if (Array.isArray(saved.pets)) {
       form.querySelectorAll('input[name=pets]').forEach(el => { el.checked = saved.pets.includes(el.value); });
+    }
+    // category checkboxes
+    if (Array.isArray(saved.categories)) {
+      form.querySelectorAll('input[name=category]').forEach(el => { el.checked = saved.categories.includes(el.value); });
+      const wrap = document.getElementById('customCategoryWrap');
+      if (wrap) wrap.classList.toggle('hidden', !saved.categories.includes('other'));
     }
     // boolean checkboxes
     ['needCarrier', 'indoorSeating', 'emergency24hr'].forEach(name => {
@@ -596,11 +606,12 @@
       }
     });
 
-    // type: only accept known option values, fallback to empty
+    // type (URL param backward compat) → pre-check matching category checkbox
     const typeVal = params.get('type');
     if (typeVal && VALID_TYPES.includes(typeVal)) {
-      const el = form.querySelector('[name="type"]');
-      if (el) el.value = typeVal;
+      const el = form.querySelector(`input[name="category"][value="${typeVal}"]`);
+      if (el) { el.checked = true; saveFormData(); }
+      if (typeVal === 'other') document.getElementById('customCategoryWrap').classList.remove('hidden');
     }
 
     // lat/lng: validate numeric before setting
@@ -660,18 +671,24 @@
   }
 
   // ── Step 1 → Step 2 ────────────────────────────────────────────────────
+  // ── "อื่นๆ" toggle ───────────────────────────────────────────────────────
+  document.getElementById('cat-other').addEventListener('change', function() {
+    document.getElementById('customCategoryWrap').classList.toggle('hidden', !this.checked);
+    if (!this.checked) document.getElementById('customCategoryInput').value = '';
+  });
+
   document.getElementById('step1Next').addEventListener('click', () => {
     const form = document.getElementById('bizForm');
-    const name    = form.querySelector('[name=name]').value.trim();
-    const type    = form.querySelector('[name=type]').value;
-    const address = form.querySelector('[name=address]').value.trim();
-    const district= form.querySelector('[name=district]').value.trim();
-    const city    = form.querySelector('[name=city]').value.trim();
-    const pets    = [...form.querySelectorAll('[name=pets]:checked')];
-    const errDiv  = document.getElementById('step1Error');
+    const name       = form.querySelector('[name=name]').value.trim();
+    const categories = [...form.querySelectorAll('[name=category]:checked')].map(el => el.value);
+    const address    = form.querySelector('[name=address]').value.trim();
+    const district   = form.querySelector('[name=district]').value.trim();
+    const city       = form.querySelector('[name=city]').value.trim();
+    const pets       = [...form.querySelectorAll('[name=pets]:checked')];
+    const errDiv     = document.getElementById('step1Error');
 
-    if (!name || !type || !address || !district || !city) {
-      errDiv.textContent = '⚠️ กรุณากรอกข้อมูลที่มีเครื่องหมาย * ให้ครบ (ชื่อสถานที่, ประเภท, ที่อยู่, แขวง/เขต, จังหวัด)';
+    if (!name || categories.length === 0 || !address || !district || !city) {
+      errDiv.textContent = '⚠️ กรุณากรอกข้อมูลที่มีเครื่องหมาย * ให้ครบ (ชื่อสถานที่, ประเภทอย่างน้อย 1, ที่อยู่, แขวง/เขต, จังหวัด)';
       errDiv.classList.remove('hidden');
       errDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
@@ -894,10 +911,14 @@
     const latVal         = val('lat');
     const lngVal         = val('lng');
 
+    const categories    = [...form.querySelectorAll('[name=category]:checked')].map(el => el.value);
+    const customCategory = categories.includes('other') ? (val('customCategory') || null) : null;
+
     const data = {
-      name:          val('name'),
-      type:          val('type'),
-      phone:         val('phone') || null,
+      name:           val('name'),
+      categories:     categories,
+      customCategory: customCategory,
+      phone:          val('phone') || null,
       address:       val('address'),
       district:      val('district'),
       city:          val('city'),
@@ -937,7 +958,8 @@
         body: JSON.stringify({
           event: 'new_business_registration',
           name: data.name,
-          type: data.type,
+          categories: data.categories.join(', '),
+          customCategory: data.customCategory || '',
           city: data.city,
           contactName: data.contactName,
           contactEmail: data.contactEmail,

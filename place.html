@@ -313,6 +313,21 @@ const TYPE_LABELS = {
   shop:       { label: 'Pet Shop',     icon: '🛍️', cls: 'badge-shop'       },
 };
 
+function getCategories(p) {
+  return p.categories?.length ? p.categories : (p.type ? [p.type] : []);
+}
+function categoryChipsHtml(place) {
+  return getCategories(place).map(key => {
+    if (key === 'other') {
+      const label = place.customCategory || 'อื่นๆ';
+      return `<span class="inline-flex items-center gap-1 text-xs font-semibold px-3 py-1 rounded-full bg-gray-100 text-gray-600">📍 ${label}</span>`;
+    }
+    const t = TYPE_LABELS[key];
+    if (!t) return '';
+    return `<span class="inline-flex items-center gap-1 text-xs font-semibold px-3 py-1 rounded-full ${t.cls}">${t.icon} ${t.label}</span>`;
+  }).filter(Boolean).join('');
+}
+
 const PET_LABELS = {
   dog: '🐕 สุนัข', cat: '🐈 แมว', rabbit: '🐇 กระต่าย',
   bird: '🦜 นก', fish: '🐠 ปลา', hamster: '🐹 แฮมสเตอร์', other: '🐾 อื่นๆ'
@@ -362,7 +377,9 @@ function showContent() {
 
 // ── Render Place ────────────────────────────────────────────
 function renderPlace(place) {
-  const t = TYPE_LABELS[place.type] || { label: place.type, icon: '📍', cls: '' };
+  const cats = getCategories(place);
+  const firstKey = cats[0] || '';
+  const t = TYPE_LABELS[firstKey] || { label: place.customCategory || firstKey || 'สถานที่', icon: '📍', cls: '' };
 
   // ── Update <title> + meta description ──
   const titleStr = `${place.name} — ${t.label} Pet-Friendly ที่ ${place.district || ''} ${place.city || ''} | PawDee`;
@@ -379,7 +396,7 @@ function renderPlace(place) {
   }
 
   // ── Inject JSON-LD LocalBusiness ──
-  const schemaType = { clinic:'VeterinaryCare', hotel:'LodgingBusiness', restaurant:'Restaurant', cafe:'CafeOrCoffeeShop' }[place.type] || 'LocalBusiness';
+  const schemaType = { clinic:'VeterinaryCare', hotel:'LodgingBusiness', restaurant:'Restaurant', cafe:'CafeOrCoffeeShop' }[firstKey] || 'LocalBusiness';
   const ldJson = {
     '@context': 'https://schema.org',
     '@type': schemaType,
@@ -410,7 +427,7 @@ function renderPlace(place) {
   // ── Hero Image ──
   const heroImg = document.getElementById('heroImg');
   heroImg.src = place.imageUrl || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=1200&q=80';
-  heroImg.alt = `${place.name} — ${t.label} Pet-Friendly`;
+  heroImg.alt = `${place.name} — ${t.label} Pet-Friendly ที่ ${place.city || ''}`;
   heroImg.onerror = () => { heroImg.src = 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=1200&q=80'; };
 
   // Logo
@@ -443,10 +460,10 @@ function renderPlace(place) {
   // ── Breadcrumb ──
   document.getElementById('breadcrumbName').textContent = place.name;
 
-  // ── Type badge ──
+  // ── Type badges (multi-category) ──
   const typeBadge = document.getElementById('typeBadge');
-  typeBadge.className = `inline-flex items-center gap-1 text-xs font-semibold px-3 py-1 rounded-full ${t.cls}`;
-  typeBadge.textContent = `${t.icon} ${t.label}`;
+  typeBadge.className = 'flex flex-wrap gap-1.5';
+  typeBadge.innerHTML = categoryChipsHtml(place);
 
   // Verified badge
   if (place.verified) {

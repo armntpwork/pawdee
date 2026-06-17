@@ -527,6 +527,22 @@
 
   const PET_ICONS = { dog: '🐕', cat: '🐈', rabbit: '🐇', bird: '🦜', fish: '🐟', other: '🐾' };
 
+  // backward compat: ข้อมูลเก่าใช้ type (string), ใหม่ใช้ categories (array)
+  function getCategories(p) {
+    return p.categories?.length ? p.categories : (p.type ? [p.type] : []);
+  }
+  function categoryChips(place) {
+    return getCategories(place).map(key => {
+      if (key === 'other') {
+        const label = place.customCategory || 'อื่นๆ';
+        return `<span class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-gray-100 text-gray-600">📍 ${label}</span>`;
+      }
+      const t = TYPE_LABELS[key];
+      if (!t) return '';
+      return `<span class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full ${t.cls}">${t.icon} ${t.label}</span>`;
+    }).filter(Boolean).join('');
+  }
+
   // ── State ─────────────────────────────────────────────────────
   let allPlaces   = [];
   let activeType  = 'all';
@@ -568,7 +584,6 @@
 
   // ── Build card HTML ───────────────────────────────────────────
   function buildCard(place) {
-    const t = TYPE_LABELS[place.type] || { label: place.type, icon: '📍', cls: '' };
     const petIcons = (place.allowedPets || []).map(p => PET_ICONS[p] || '🐾').join(' ');
     const weightTag = place.maxWeightKg
       ? `<span class="text-xs text-gray-400">น้ำหนักไม่เกิน ${place.maxWeightKg} กก.</span>`
@@ -623,9 +638,7 @@
         </div>
         <div class="${place.logoUrl ? 'pt-7' : 'pt-0'} p-4 flex flex-col flex-1">
           <div class="flex items-start justify-between gap-2 mb-2">
-            <span class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full ${t.cls}">
-              ${t.icon} ${t.label}
-            </span>
+            <div class="flex flex-wrap gap-1">${categoryChips(place)}</div>
             ${verified}
           </div>
           <h3 class="font-bold text-gray-900 leading-tight mb-1">${place.name}</h3>
@@ -661,7 +674,7 @@
   // ── Render ────────────────────────────────────────────────────
   function render() {
     let filtered = allPlaces.filter(p => {
-      const matchType   = activeType === 'all' || p.type === activeType;
+      const matchType   = activeType === 'all' || getCategories(p).includes(activeType);
       const q           = searchQuery.toLowerCase();
       const matchSearch = !q || p.name.toLowerCase().includes(q)
                               || (p.district || '').toLowerCase().includes(q)
@@ -869,7 +882,7 @@
     const bounds = [];
     places.forEach(p => {
       if (!p.lat || !p.lng) return;
-      const icon = TYPE_ICONS[p.type] || '📍';
+      const icon = TYPE_ICONS[getCategories(p)[0]] || '📍';
       const marker = L.marker([p.lat, p.lng], {
         icon: L.divIcon({
           html: `<div style="background:white;border:2px solid #F97316;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 8px rgba(0,0,0,.2)">${icon}</div>`,
@@ -915,7 +928,7 @@
     document.getElementById('mapView').classList.remove('hidden');
     initMap();
     renderMapMarkers(allPlaces.filter(p => {
-      const matchType = activeType === 'all' || p.type === activeType;
+      const matchType = activeType === 'all' || getCategories(p).includes(activeType);
       const q = searchQuery.toLowerCase();
       return matchType && (!q || p.name.toLowerCase().includes(q) || (p.district||'').toLowerCase().includes(q));
     }));
@@ -1066,7 +1079,6 @@
   const modal = document.getElementById('placeModal');
 
   function showDetailModal(place) {
-    const t = TYPE_LABELS[place.type] || { label: place.type, icon: '📍', cls: '' };
 
     document.getElementById('modalImg').src = place.imageUrl || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&q=80';
     document.getElementById('modalImg').alt = place.name;
@@ -1105,8 +1117,8 @@
     document.getElementById('modalHours').textContent   = place.openHours || '-';
 
     const badge = document.getElementById('modalBadge');
-    badge.className = `inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full ${t.cls}`;
-    badge.textContent = `${t.icon} ${t.label}`;
+    badge.className = 'flex flex-wrap gap-1';
+    badge.innerHTML = categoryChips(place);
 
     const verified = document.getElementById('modalVerified');
     place.verified ? verified.classList.remove('hidden') : verified.classList.add('hidden');
