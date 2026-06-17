@@ -504,6 +504,24 @@ function renderPlace(place) {
   if (place.emergency24hr) {
     policies.push({ icon:'🚨', label:'เปิด 24 ชั่วโมง', note:'รับกรณีฉุกเฉินตลอด 24 ชม.' });
   }
+  if (place.hasParking) {
+    policies.push({ icon:'🅿️', label:'มีที่จอดรถหน้าร้าน', note:'สะดวกเวลาพาน้องมาฉุกเฉิน' });
+  }
+  if (place.hasSpecialist) {
+    policies.push({ icon:'👨‍⚕️', label:'มีหมอเฉพาะทาง', note:'ศัลยกรรม ผิวหนัง ทันตกรรม และอื่นๆ' });
+  }
+  if (place.hasXray) {
+    policies.push({ icon:'🔬', label:'มีเครื่องเอกซเรย์ / อัลตราซาวด์', note:'วินิจฉัยได้ทันทีโดยไม่ต้องส่งตัว' });
+  }
+  if (place.hasLab) {
+    policies.push({ icon:'🧪', label:'มีห้องปฏิบัติการ (Lab)', note:'ตรวจเลือด ตรวจปัสสาวะได้เลย ไม่ต้องรอนอกสถานที่' });
+  }
+  if (place.hasSurgery) {
+    policies.push({ icon:'🏥', label:'มีห้องผ่าตัด', note:'รองรับการผ่าตัดได้ในสถานที่' });
+  }
+  if (place.specialServices) {
+    policies.push({ icon:'🩺', label:'บริการพิเศษ', note: place.specialServices });
+  }
 
   if (policies.length === 0) {
     policies.push({ icon:'ℹ️', label:'ข้อมูลนโยบายสัตว์เลี้ยง', note:'ยังไม่มีข้อมูลละเอียด — ลองโทรสอบถามก่อนนะครับ' });

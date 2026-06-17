@@ -335,6 +335,15 @@
               </div>
             </label>
           </div>
+          <div>
+            <label class="flex items-center gap-3 cursor-pointer">
+              <input type="checkbox" name="hasParking" value="true" class="w-5 h-5 accent-orange-500 flex-shrink-0"/>
+              <div>
+                <div class="text-sm font-medium text-gray-700">🅿️ มีที่จอดรถหน้าร้าน</div>
+                <div class="text-xs text-gray-400">สำคัญมากเวลาสัตว์ป่วยฉุกเฉิน</div>
+              </div>
+            </label>
+          </div>
         </div>
       </div>
 
@@ -432,6 +441,46 @@
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">รายละเอียดเพิ่มเติม / เงื่อนไขพิเศษ</label>
           <textarea name="description" rows="3" placeholder="เช่น ห้ามนำสุนัขพันธุ์ขนาดใหญ่เข้า, มีพื้นที่สนามหญ้าด้านหลัง..." class="input-field resize-none"></textarea>
+        </div>
+      </div>
+
+      <!-- บริการพิเศษ (คลินิก/รพ.สัตว์) -->
+      <div class="section-card">
+        <h2 class="font-bold text-gray-900 text-base mb-1">🩺 บริการพิเศษ<span class="optional-badge">(ไม่บังคับ — เหมาะสำหรับคลินิก/รพ.สัตว์)</span></h2>
+        <p class="text-xs text-gray-500 mb-4">ข้อมูลที่ Google Maps ไม่มี ช่วยให้เจ้าของสัตว์ตัดสินใจได้ทันที</p>
+        <div class="grid sm:grid-cols-2 gap-3 mb-4">
+          <label class="flex items-center gap-3 cursor-pointer p-3 rounded-xl border-2 border-gray-100 hover:border-orange-200 transition-colors">
+            <input type="checkbox" name="hasSpecialist" value="true" class="w-5 h-5 accent-orange-500 flex-shrink-0"/>
+            <div>
+              <div class="text-sm font-medium text-gray-700">👨‍⚕️ มีหมอเฉพาะทาง</div>
+              <div class="text-xs text-gray-400">เช่น ศัลยกรรม ผิวหนัง ทันตกรรม</div>
+            </div>
+          </label>
+          <label class="flex items-center gap-3 cursor-pointer p-3 rounded-xl border-2 border-gray-100 hover:border-orange-200 transition-colors">
+            <input type="checkbox" name="hasXray" value="true" class="w-5 h-5 accent-orange-500 flex-shrink-0"/>
+            <div>
+              <div class="text-sm font-medium text-gray-700">🔬 มีเครื่องเอกซเรย์</div>
+              <div class="text-xs text-gray-400">X-ray / อัลตราซาวด์</div>
+            </div>
+          </label>
+          <label class="flex items-center gap-3 cursor-pointer p-3 rounded-xl border-2 border-gray-100 hover:border-orange-200 transition-colors">
+            <input type="checkbox" name="hasLab" value="true" class="w-5 h-5 accent-orange-500 flex-shrink-0"/>
+            <div>
+              <div class="text-sm font-medium text-gray-700">🧪 มีห้องปฏิบัติการ (Lab)</div>
+              <div class="text-xs text-gray-400">ตรวจเลือด ตรวจปัสสาวะได้เลย</div>
+            </div>
+          </label>
+          <label class="flex items-center gap-3 cursor-pointer p-3 rounded-xl border-2 border-gray-100 hover:border-orange-200 transition-colors">
+            <input type="checkbox" name="hasSurgery" value="true" class="w-5 h-5 accent-orange-500 flex-shrink-0"/>
+            <div>
+              <div class="text-sm font-medium text-gray-700">🏥 มีห้องผ่าตัด</div>
+              <div class="text-xs text-gray-400">รองรับการผ่าตัดได้</div>
+            </div>
+          </label>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">บริการอื่นๆ / ความเชี่ยวชาญพิเศษ</label>
+          <input type="text" name="specialServices" placeholder="เช่น ทำหมัน, ฝังไมโครชิป, ดูแลสัตว์ exotic เฉพาะทาง" class="input-field" maxlength="150"/>
         </div>
       </div>
 
@@ -545,7 +594,7 @@
     // Checkbox: customPet text
     data.customPet = form.querySelector('[name=customPet]')?.value || '';
     // Checkbox: single booleans
-    ['needCarrier', 'indoorSeating', 'emergency24hr'].forEach(name => {
+    ['needCarrier', 'indoorSeating', 'emergency24hr', 'hasParking', 'hasSpecialist', 'hasXray', 'hasLab', 'hasSurgery'].forEach(name => {
       const el = form.querySelector(`input[name=${name}]`);
       if (el) data[name] = el.checked;
     });
@@ -581,7 +630,7 @@
       if (el) { el.value = saved.customPet; document.getElementById('customPetWrap')?.classList.remove('hidden'); }
     }
     // boolean checkboxes
-    ['needCarrier', 'indoorSeating', 'emergency24hr'].forEach(name => {
+    ['needCarrier', 'indoorSeating', 'emergency24hr', 'hasParking', 'hasSpecialist', 'hasXray', 'hasLab', 'hasSurgery'].forEach(name => {
       const el = form.querySelector(`input[name=${name}]`);
       if (el && saved[name] !== undefined) el.checked = !!saved[name];
     });
@@ -942,9 +991,15 @@
       allowedPets,
       customPet,
       maxWeightKg:   maxWeightVal ? Number(maxWeightVal) : null,
-      needCarrier:   needCarrierVal === 'true',
-      indoorSeating: indoorVal === 'true',
-      emergency24hr: emergencyVal === 'true',
+      needCarrier:    needCarrierVal === 'true',
+      indoorSeating:  indoorVal === 'true',
+      emergency24hr:  emergencyVal === 'true',
+      hasParking:     form.querySelector('[name=hasParking]')?.checked || false,
+      hasSpecialist:  form.querySelector('[name=hasSpecialist]')?.checked || false,
+      hasXray:        form.querySelector('[name=hasXray]')?.checked || false,
+      hasLab:         form.querySelector('[name=hasLab]')?.checked || false,
+      hasSurgery:     form.querySelector('[name=hasSurgery]')?.checked || false,
+      specialServices: val('specialServices') || null,
       lat:           latVal ? Number(latVal) : null,
       lng:           lngVal ? Number(lngVal) : null,
       website:       val('website') || null,

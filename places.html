@@ -366,6 +366,7 @@
 
       <div id="modalPets" class="mb-3 flex flex-wrap gap-2"></div>
       <div id="modalWeight" class="hidden mb-3 text-xs text-gray-500"></div>
+      <div id="modalSpecialServices" class="hidden mb-3 text-xs text-blue-700 bg-blue-50 px-3 py-2 rounded-xl">🩺 <span id="modalSpecialServicesText"></span></div>
       <!-- Tag Aggregate Stats -->
       <div id="modalTagStats" class="hidden mb-3"></div>
       <!-- Social Links -->
@@ -1140,6 +1141,11 @@
     if (place.indoorSeating) amenities.push('🏠 นั่งในร้านได้');
     if (!place.needCarrier)  amenities.push('🚫 ไม่ต้องใส่กรง');
     if ((place.allowedPets||[]).includes('dog') && (place.maxWeightKg == null || place.maxWeightKg >= 20)) amenities.push('🐕 รับพันธุ์ใหญ่');
+    if (place.hasParking)    amenities.push('🅿️ มีที่จอดรถ');
+    if (place.hasSpecialist) amenities.push('👨‍⚕️ หมอเฉพาะทาง');
+    if (place.hasXray)       amenities.push('🔬 เอกซเรย์/อัลตราซาวด์');
+    if (place.hasLab)        amenities.push('🧪 มีห้อง Lab');
+    if (place.hasSurgery)    amenities.push('🏥 มีห้องผ่าตัด');
     if (amenities.length) {
       petsEl.innerHTML += amenities.map(a =>
         `<span class="inline-flex items-center gap-1 bg-purple-50 text-purple-700 text-xs font-semibold px-3 py-1.5 rounded-full">${a}</span>`
@@ -1152,6 +1158,14 @@
       weightEl.classList.remove('hidden');
     } else {
       weightEl.classList.add('hidden');
+    }
+
+    const ssEl = document.getElementById('modalSpecialServices');
+    if (place.specialServices) {
+      document.getElementById('modalSpecialServicesText').textContent = place.specialServices;
+      ssEl.classList.remove('hidden');
+    } else {
+      ssEl.classList.add('hidden');
     }
 
     // Social / Website links
