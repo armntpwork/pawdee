@@ -712,7 +712,7 @@
                               || (p.city    || '').toLowerCase().includes(q)
                               || (p.address || '').toLowerCase().includes(q);
       if (!matchType || !matchSearch) return false;
-      if (activePetFilters.has('largeDogOk') && p.maxWeightKg != null && p.maxWeightKg < 20) return false;
+      if (activePetFilters.has('largeDogOk') && (!(p.allowedPets||[]).includes('dog') || (p.maxWeightKg != null && p.maxWeightKg < 20))) return false;
       if (activePetFilters.has('indoorSeating') && !p.indoorSeating) return false;
       if (activePetFilters.has('noCarrierNeeded') && p.needCarrier) return false;
       return true;
@@ -961,7 +961,12 @@
     renderMapMarkers(allPlaces.filter(p => {
       const matchType = activeType === 'all' || getCategories(p).includes(activeType);
       const q = searchQuery.toLowerCase();
-      return matchType && (!q || p.name.toLowerCase().includes(q) || (p.district||'').toLowerCase().includes(q));
+      const matchSearch = !q || p.name.toLowerCase().includes(q) || (p.district||'').toLowerCase().includes(q) || (p.city||'').toLowerCase().includes(q);
+      if (!matchType || !matchSearch) return false;
+      if (activePetFilters.has('largeDogOk') && (!(p.allowedPets||[]).includes('dog') || (p.maxWeightKg != null && p.maxWeightKg < 20))) return false;
+      if (activePetFilters.has('indoorSeating') && !p.indoorSeating) return false;
+      if (activePetFilters.has('noCarrierNeeded') && p.needCarrier) return false;
+      return true;
     }));
   });
 

@@ -295,7 +295,7 @@
       </div>
     </div>
     <div class="border-t border-gray-800 pt-6 flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-gray-500">
-      <p>© 2025 PawDee. สงวนลิขสิทธิ์.</p>
+      <p>© 2026 PawDee. สงวนลิขสิทธิ์.</p>
       <div class="flex gap-4">
         <a href="privacy.html" class="hover:text-brand-orange transition-colors">นโยบายความเป็นส่วนตัว</a>
         <a href="terms.html" class="hover:text-brand-orange transition-colors">เงื่อนไขการใช้งาน</a>
@@ -632,7 +632,7 @@ function renderPlace(place) {
   if (place.website)   socialItems.push({ icon:'🌐', label:'เว็บไซต์',  href: place.website });
   if (place.facebook)  socialItems.push({ icon:'📘', label:'Facebook',  href: place.facebook });
   if (place.instagram) socialItems.push({ icon:'📸', label:'Instagram', href: place.instagram });
-  if (place.line)      socialItems.push({ icon:'💬', label:'LINE',      href: `https://line.me/R/ti/p/${place.line}` });
+  if (place.line)      socialItems.push({ icon:'💬', label:'LINE',      href: place.line.startsWith('http') ? place.line : `https://line.me/R/ti/p/${place.line}` });
 
   if (socialItems.length > 0) {
     document.getElementById('socialSection').classList.remove('hidden');

@@ -973,9 +973,9 @@
     }
     btn.textContent = '⏳ กำลังบันทึกข้อมูล...';
 
-    const needCarrierVal = val('needCarrier');
-    const indoorVal      = val('indoorSeating');
-    const emergencyVal   = val('emergency24hr');
+    const needCarrierVal = form.querySelector('[name=needCarrier]')?.checked || false;
+    const indoorVal      = form.querySelector('[name=indoorSeating]')?.checked || false;
+    const emergencyVal   = form.querySelector('[name=emergency24hr]')?.checked || false;
     const maxWeightVal   = val('maxWeightKg');
     const latVal         = val('lat');
     const lngVal         = val('lng');
@@ -995,9 +995,9 @@
       allowedPets,
       customPet,
       maxWeightKg:   maxWeightVal ? Number(maxWeightVal) : null,
-      needCarrier:    needCarrierVal === 'true',
-      indoorSeating:  indoorVal === 'true',
-      emergency24hr:  emergencyVal === 'true',
+      needCarrier:    needCarrierVal,
+      indoorSeating:  indoorVal,
+      emergency24hr:  emergencyVal,
       hasParking:     form.querySelector('[name=hasParking]')?.checked || false,
       hasSpecialist:  form.querySelector('[name=hasSpecialist]')?.checked || false,
       hasXray:        form.querySelector('[name=hasXray]')?.checked || false,
