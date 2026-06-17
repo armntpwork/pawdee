@@ -10,24 +10,27 @@
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
   <meta name="apple-mobile-web-app-title" content="PawDee"/>
-  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/css/fonts.css"/>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: { brand: { orange:'#F97316','orange-deep':'#EA580C',cream:'#FFFBEB' } },
-          fontFamily: { sans: ['Kanit','ui-sans-serif'] }
+          fontFamily: { sans: ['Poppins', 'LINE Seed Sans TH', 'ui-sans-serif'] }
         }
       }
     }
   </script>
   <style>
-    * { font-family:'Kanit',sans-serif; }
+    * { font-family:'Poppins','LINE Seed Sans TH',sans-serif; }
     html { scroll-behavior:smooth; }
     .nav-glass { background:rgba(255,255,255,0.92); backdrop-filter:blur(12px); }
     .tab-btn.active { background:#F97316; color:white; border-color:#F97316; }
-    .input-field { width:100%; padding:0.75rem 1rem; border-radius:0.75rem; border:2px solid #e5e7eb; background:white; font-family:'Kanit',sans-serif; font-size:0.875rem; color:#1f2937; outline:none; transition:border-color 0.2s; }
+    .input-field { width:100%; padding:0.75rem 1rem; border-radius:0.75rem; border:2px solid #e5e7eb; background:white; font-family:'Poppins','LINE Seed Sans TH',sans-serif; font-size:0.875rem; color:#1f2937; outline:none; transition:border-color 0.2s; }
     .input-field:focus { border-color:#F97316; }
     .badge-pending  { background:#FEF3C7; color:#92400E; }
     .badge-approved { background:#D1FAE5; color:#065F46; }

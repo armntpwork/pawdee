@@ -21,7 +21,10 @@
   <meta property="og:locale" content="th_TH"/>
   <meta property="og:site_name" content="PawDee"/>
   <meta name="twitter:card" content="summary_large_image"/>
-  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/css/fonts.css"/>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -29,13 +32,13 @@
       theme: {
         extend: {
           colors: { brand: { orange: '#F97316', 'orange-deep': '#EA580C', cream: '#FFFBEB' } },
-          fontFamily: { sans: ['Kanit', 'ui-sans-serif'] },
+          fontFamily: { sans: ['Poppins', 'LINE Seed Sans TH', 'ui-sans-serif'] },
         }
       }
     }
   </script>
   <style>
-    * { font-family: 'Kanit', sans-serif; }
+    * { font-family:'Poppins','LINE Seed Sans TH',sans-serif; }
     html { scroll-behavior: smooth; }
     .nav-glass { background: rgba(255,255,255,0.92); backdrop-filter: blur(12px); }
     .card-hover { transition: transform 0.25s ease, box-shadow 0.25s ease; }
@@ -60,8 +63,8 @@
     #map { height: clamp(350px, 60vh, 700px); border-radius: 1.5rem; z-index: 0; }
     @keyframes menuSlideDown { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
     .menu-slide-in { animation:menuSlideDown 0.2s ease forwards; }
-    .leaflet-popup-content-wrapper { border-radius: 1rem; font-family: 'Kanit', sans-serif; }
-    .map-popup-btn { background:#F97316; color:white; border:none; border-radius:0.5rem; padding:0.4rem 0.8rem; font-family:'Kanit',sans-serif; font-size:0.8rem; font-weight:600; cursor:pointer; width:100%; margin-top:0.5rem; }
+    .leaflet-popup-content-wrapper { border-radius: 1rem; font-family:'Poppins','LINE Seed Sans TH',sans-serif; }
+    .map-popup-btn { background:#F97316; color:white; border:none; border-radius:0.5rem; padding:0.4rem 0.8rem; font-family:'Poppins','LINE Seed Sans TH',sans-serif; font-size:0.8rem; font-weight:600; cursor:pointer; width:100%; margin-top:0.5rem; }
     .view-btn.active { background:#F97316; color:white; border-color:#F97316; }
     .paw-bg { background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23F97316' fill-opacity='0.04'%3E%3Cellipse cx='15' cy='10' rx='4' ry='5'/%3E%3Cellipse cx='30' cy='8' rx='4' ry='5'/%3E%3Cellipse cx='45' cy='10' rx='4' ry='5'/%3E%3Cellipse cx='30' cy='35' rx='12' ry='14'/%3E%3C/g%3E%3C/svg%3E"); }
     /* Tier logo frames */
@@ -877,7 +880,7 @@
       }).addTo(leafletMap);
 
       marker.bindPopup(`
-        <div style="min-width:180px;font-family:'Kanit',sans-serif">
+        <div style="min-width:180px;font-family:'Poppins','LINE Seed Sans TH',sans-serif">
           <div style="font-weight:700;font-size:0.9rem;margin-bottom:4px">${p.name}</div>
           <div style="font-size:0.75rem;color:#6b7280;margin-bottom:2px">📍 ${p.district}, ${p.city}</div>
           <div style="font-size:0.75rem;color:#6b7280;margin-bottom:6px">⭐ ${p.rating?.toFixed(1) || '-'} · 🕐 ${p.openHours || '-'}</div>

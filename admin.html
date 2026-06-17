@@ -4,20 +4,23 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>PawDee — Admin Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/css/fonts.css"/>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: { brand: { orange:'#F97316','orange-deep':'#EA580C',cream:'#FFFBEB' } },
-          fontFamily: { sans: ['Kanit','ui-sans-serif'] }
+          fontFamily: { sans: ['Poppins', 'LINE Seed Sans TH', 'ui-sans-serif'] }
         }
       }
     }
   </script>
   <style>
-    * { font-family:'Kanit',sans-serif; }
+    * { font-family:'Poppins','LINE Seed Sans TH',sans-serif; }
     .nav-glass { background:rgba(255,255,255,0.92); backdrop-filter:blur(12px); }
     .stat-card { background:white; border-radius:1.5rem; padding:1.25rem 1.5rem; box-shadow:0 4px 20px rgba(0,0,0,0.06); transition:transform 0.15s,box-shadow 0.15s; }
     .stat-card:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,0.1); }

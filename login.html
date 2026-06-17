@@ -19,20 +19,23 @@
   <meta property="og:locale" content="th_TH"/>
   <meta property="og:site_name" content="PawDee"/>
   <meta name="twitter:card" content="summary_large_image"/>
-  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/css/fonts.css"/>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: { brand: { orange:'#F97316','orange-deep':'#EA580C',cream:'#FFFBEB' } },
-          fontFamily: { sans: ['Kanit','ui-sans-serif'] }
+          fontFamily: { sans: ['Poppins', 'LINE Seed Sans TH', 'ui-sans-serif'] }
         }
       }
     }
   </script>
   <style>
-    * { font-family:'Kanit',sans-serif; }
+    * { font-family:'Poppins','LINE Seed Sans TH',sans-serif; }
     .paw-bg { background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23F97316' fill-opacity='0.05'%3E%3Cellipse cx='15' cy='10' rx='4' ry='5'/%3E%3Cellipse cx='30' cy='8' rx='4' ry='5'/%3E%3Cellipse cx='45' cy='10' rx='4' ry='5'/%3E%3Cellipse cx='30' cy='35' rx='12' ry='14'/%3E%3C/g%3E%3C/svg%3E"); }
     .input-field { @apply w-full px-4 py-3 rounded-xl border-2 border-gray-200 bg-white focus:outline-none focus:border-brand-orange transition-colors text-gray-800 placeholder-gray-400; font-size:1rem; }
     .btn-primary { @apply w-full bg-brand-orange text-white py-3 rounded-xl font-bold hover:bg-brand-orange-deep transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed; }

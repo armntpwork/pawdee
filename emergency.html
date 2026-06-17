@@ -21,7 +21,10 @@
   <meta property="og:locale" content="th_TH"/>
   <meta property="og:site_name" content="PawDee"/>
   <meta name="twitter:card" content="summary_large_image"/>
-  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/css/fonts.css"/>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -29,13 +32,13 @@
       theme: {
         extend: {
           colors: { brand: { orange:'#F97316','orange-deep':'#EA580C',cream:'#FFFBEB' } },
-          fontFamily: { sans: ['Kanit','ui-sans-serif'] }
+          fontFamily: { sans: ['Poppins', 'LINE Seed Sans TH', 'ui-sans-serif'] }
         }
       }
     }
   </script>
   <style>
-    * { font-family:'Kanit',sans-serif; }
+    * { font-family:'Poppins','LINE Seed Sans TH',sans-serif; }
     html { scroll-behavior:smooth; }
     .nav-glass { background:rgba(255,255,255,0.92); backdrop-filter:blur(12px); }
     .card-hover { transition:transform 0.2s, box-shadow 0.2s; }
@@ -43,7 +46,7 @@
     #map { height:clamp(280px, 50vh, 500px); border-radius:1.5rem; z-index:0; }
     @keyframes menuSlideDown { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
     .menu-slide-in { animation:menuSlideDown 0.2s ease forwards; }
-    .leaflet-popup-content-wrapper { border-radius:1rem; font-family:'Kanit',sans-serif; }
+    .leaflet-popup-content-wrapper { border-radius:1rem; font-family:'Poppins','LINE Seed Sans TH',sans-serif; }
     .open-24 { background:#DCFCE7; color:#166534; }
     .open-now { background:#FEF3C7; color:#92400E; }
     .closed { background:#FEE2E2; color:#991B1B; }
@@ -241,7 +244,7 @@ function addMarkers(list) {
     const m = L.marker([v.lat, v.lng], { icon })
       .addTo(map)
       .bindPopup(`
-        <div style="min-width:200px;font-family:Kanit,sans-serif">
+        <div style="min-width:200px;font-family:'Poppins','LINE Seed Sans TH',sans-serif">
           <div style="font-weight:700;font-size:14px;margin-bottom:4px">${v.name}</div>
           <div style="font-size:12px;color:#666;margin-bottom:6px">📍 ${v.area}</div>
           ${v.is24h ? '<div style="background:#DCFCE7;color:#166534;font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;display:inline-block;margin-bottom:6px">🕐 24 ชั่วโมง</div>' : ''}

@@ -19,20 +19,23 @@
   <meta property="og:locale" content="th_TH"/>
   <meta property="og:site_name" content="PawDee"/>
   <meta name="twitter:card" content="summary_large_image"/>
-  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/css/fonts.css"/>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: { brand: { orange:'#F97316','orange-deep':'#EA580C',cream:'#FFFBEB' } },
-          fontFamily: { sans: ['Kanit','ui-sans-serif'] }
+          fontFamily: { sans: ['Poppins', 'LINE Seed Sans TH', 'ui-sans-serif'] }
         }
       }
     }
   </script>
   <style>
-    * { font-family:'Kanit',sans-serif; }
+    * { font-family:'Poppins','LINE Seed Sans TH',sans-serif; }
     .nav-glass { background:rgba(255,255,255,0.92); backdrop-filter:blur(12px); }
     .prose h2 { font-size:1.15rem; font-weight:700; color:#1f2937; margin-top:2rem; margin-bottom:0.5rem; padding-bottom:0.4rem; border-bottom:2px solid #FEE5CC; }
     .prose h3 { font-size:0.95rem; font-weight:600; color:#374151; margin-top:1.25rem; margin-bottom:0.25rem; }
