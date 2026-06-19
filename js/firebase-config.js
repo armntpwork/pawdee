@@ -14,7 +14,7 @@ import { getAuth } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-aut
 
 const firebaseConfig = {
   apiKey:            "AIzaSyABryVHH_TrpqXoBfxCLSK0eyxoMltq6pU",
-  authDomain:        "pawdee-f082e.firebaseapp.com",
+  authDomain:        "www.pawdeepet.com",
   projectId:         "pawdee-f082e",
   storageBucket:     "pawdee-f082e.firebasestorage.app",
   messagingSenderId: "982501650315",
