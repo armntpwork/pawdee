@@ -6,4 +6,4 @@ Disallow: /admin-seed
 Disallow: /admin-link-generator
 Disallow: /generate-icon
 
-Sitemap: https://pawdee.vercel.app/sitemap.xml
+Sitemap: https://www.pawdeepet.com/sitemap.xml

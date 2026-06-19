@@ -12,18 +12,18 @@
   <meta name="apple-mobile-web-app-title" content="PawDee"/>
   <meta name="description" content="ข้อมูลสถานที่ Pet-Friendly บน PawDee — รายละเอียด ที่อยู่ นโยบายสัตว์เลี้ยง และรีวิวจากเจ้าของจริง"/>
   <meta property="og:type" content="place"/>
-  <meta property="og:url" content="https://pawdee.vercel.app/place"/>
+  <meta property="og:url" content="https://www.pawdeepet.com/place"/>
   <meta property="og:title" content="สถานที่ Pet-Friendly | PawDee"/>
   <meta property="og:site_name" content="PawDee"/>
   <meta property="og:locale" content="th_TH"/>
-  <meta property="og:image" content="https://pawdee.vercel.app/animals-hero.png.png"/>
+  <meta property="og:image" content="https://www.pawdeepet.com/animals-hero.png.png"/>
   <meta property="og:image:width" content="1200"/>
   <meta property="og:image:height" content="630"/>
-  <link rel="canonical" href="https://pawdee.vercel.app/place"/>
+  <link rel="canonical" href="https://www.pawdeepet.com/place"/>
   <meta name="twitter:card" content="summary_large_image"/>
   <meta name="twitter:title" content="สถานที่ Pet-Friendly | PawDee"/>
   <meta name="twitter:description" content="ข้อมูลสถานที่ Pet-Friendly บน PawDee — รายละเอียด ที่อยู่ นโยบายสัตว์เลี้ยง และรีวิวจากเจ้าของจริง"/>
-  <meta name="twitter:image" content="https://pawdee.vercel.app/animals-hero.png.png"/>
+  <meta name="twitter:image" content="https://www.pawdeepet.com/animals-hero.png.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
@@ -405,7 +405,7 @@ function renderPlace(place) {
     ` ⭐ ${place.rating?.toFixed(1) || ''} (${place.reviewCount || 0} รีวิว)`;
   document.querySelector('meta[property="og:title"]') &&
     (document.querySelector('meta[property="og:title"]').content = titleStr);
-  const placeUrl = `https://pawdee.vercel.app/place/${placeId}`;
+  const placeUrl = `https://www.pawdeepet.com/place/${placeId}`;
   document.querySelector('meta[property="og:url"]').content = placeUrl;
   document.querySelector('link[rel="canonical"]').href = placeUrl;
   const twTitle = document.querySelector('meta[name="twitter:title"]');
@@ -433,7 +433,7 @@ function renderPlace(place) {
       addressCountry: 'TH'
     },
     telephone: place.phone || undefined,
-    url: place.website || `https://pawdee.vercel.app/place/${placeId}`,
+    url: place.website || `https://www.pawdeepet.com/place/${placeId}`,
     openingHours: place.openHours || undefined,
     aggregateRating: place.reviewCount > 0 ? {
       '@type': 'AggregateRating',
@@ -465,9 +465,9 @@ function renderPlace(place) {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'PawDee', item: 'https://pawdee.vercel.app/' },
-      { '@type': 'ListItem', position: 2, name: 'ค้นหาสถานที่', item: 'https://pawdee.vercel.app/places' },
-      { '@type': 'ListItem', position: 3, name: place.name, item: `https://pawdee.vercel.app/place/${placeId}` },
+      { '@type': 'ListItem', position: 1, name: 'PawDee', item: 'https://www.pawdeepet.com/' },
+      { '@type': 'ListItem', position: 2, name: 'ค้นหาสถานที่', item: 'https://www.pawdeepet.com/places' },
+      { '@type': 'ListItem', position: 3, name: place.name, item: `https://www.pawdeepet.com/place/${placeId}` },
     ]
   });
   document.head.appendChild(bcScript);

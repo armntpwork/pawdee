@@ -3,7 +3,7 @@
 
   <!-- หน้าหลัก -->
   <url>
-    <loc>https://pawdee.vercel.app/</loc>
+    <loc>https://www.pawdeepet.com/</loc>
     <lastmod>2026-06-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
@@ -11,7 +11,7 @@
 
   <!-- ค้นหาสถานที่ Pet-Friendly -->
   <url>
-    <loc>https://pawdee.vercel.app/places</loc>
+    <loc>https://www.pawdeepet.com/places</loc>
     <lastmod>2026-06-17</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
@@ -19,7 +19,7 @@
 
   <!-- คลินิกฉุกเฉิน 24 ชั่วโมง -->
   <url>
-    <loc>https://pawdee.vercel.app/emergency</loc>
+    <loc>https://www.pawdeepet.com/emergency</loc>
     <lastmod>2026-06-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -27,7 +27,7 @@
 
   <!-- ลงทะเบียนธุรกิจ -->
   <url>
-    <loc>https://pawdee.vercel.app/register-business</loc>
+    <loc>https://www.pawdeepet.com/register-business</loc>
     <lastmod>2026-06-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -35,7 +35,7 @@
 
   <!-- พี่เลี้ยงสัตว์ (coming soon) -->
   <url>
-    <loc>https://pawdee.vercel.app/sitters</loc>
+    <loc>https://www.pawdeepet.com/sitters</loc>
     <lastmod>2026-06-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
@@ -43,7 +43,7 @@
 
   <!-- นโยบายความเป็นส่วนตัว -->
   <url>
-    <loc>https://pawdee.vercel.app/privacy</loc>
+    <loc>https://www.pawdeepet.com/privacy</loc>
     <lastmod>2026-06-17</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.2</priority>
@@ -51,7 +51,7 @@
 
   <!-- เงื่อนไขการใช้งาน -->
   <url>
-    <loc>https://pawdee.vercel.app/terms</loc>
+    <loc>https://www.pawdeepet.com/terms</loc>
     <lastmod>2026-06-17</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.2</priority>
