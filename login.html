@@ -64,6 +64,12 @@
         <span class="text-2xl font-bold text-gray-900">Paw<span class="text-brand-orange">Dee</span></span>
       </a>
       <p class="text-gray-500 text-sm mt-2">ศูนย์กลางข้อมูล รีวิว และชุมชน 🐕 🐈 🐇</p>
+      <!-- Language Switcher -->
+      <div class="flex items-center justify-center gap-0.5 bg-gray-100 rounded-xl p-1 mt-3 w-fit mx-auto">
+        <button class="lang-btn px-2.5 py-1 text-xs font-bold rounded-lg bg-brand-orange text-white" data-lang="th" title="ภาษาไทย">🇹🇭 ไทย</button>
+        <button class="lang-btn px-2.5 py-1 text-xs font-semibold rounded-lg text-gray-500 hover:bg-orange-50 transition-colors" data-lang="en" title="English">🇬🇧 EN</button>
+        <button class="lang-btn px-2.5 py-1 text-xs font-semibold rounded-lg text-gray-500 hover:bg-orange-50 transition-colors" data-lang="zh" title="中文">🇨🇳 中文</button>
+      </div>
     </div>
 
     <div class="bg-white rounded-3xl shadow-xl p-6 sm:p-8">
@@ -295,6 +301,10 @@
       btn.textContent = input.type === 'password' ? '👁️' : '🙈';
     });
   });
+</script>
+<script type="module">
+  import { initI18n } from './js/i18n.js';
+  initI18n();
 </script>
 <script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js").catch(()=>{});}</script>
 </body>

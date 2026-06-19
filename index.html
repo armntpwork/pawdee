@@ -236,21 +236,28 @@
 
       <!-- Desktop Nav -->
       <div class="hidden md:flex items-center gap-8">
-        <a href="places.html" class="text-gray-600 hover:text-brand-orange transition-colors font-medium text-sm">🗺️ สถานที่</a>
-        <a href="sitters.html" class="text-gray-600 hover:text-brand-orange transition-colors font-medium text-sm">🧑 พี่เลี้ยง</a>
-        <a href="emergency.html" class="text-gray-600 hover:text-red-500 transition-colors font-medium text-sm">🚨 คลินิกฉุกเฉิน</a>
-        <a href="register-business.html" class="text-gray-600 hover:text-brand-orange transition-colors font-medium text-sm">สำหรับธุรกิจ</a>
+        <a href="places.html" class="text-gray-600 hover:text-brand-orange transition-colors font-medium text-sm" data-i18n="nav.places">🗺️ สถานที่</a>
+        <a href="sitters.html" class="text-gray-600 hover:text-brand-orange transition-colors font-medium text-sm" data-i18n="nav.sitters">🧑 พี่เลี้ยง</a>
+        <a href="emergency.html" class="text-gray-600 hover:text-red-500 transition-colors font-medium text-sm" data-i18n="nav.emergency">🚨 คลินิกฉุกเฉิน</a>
+        <a href="register-business.html" class="text-gray-600 hover:text-brand-orange transition-colors font-medium text-sm" data-i18n="nav.business">สำหรับธุรกิจ</a>
       </div>
 
       <!-- CTA + Auth -->
       <div class="flex items-center gap-3">
         <div id="navAuth">
-          <a href="login.html" class="hidden sm:inline-flex items-center gap-1 text-sm font-medium text-brand-orange hover:text-brand-orange-deep transition-colors">
+          <a href="login.html" class="hidden sm:inline-flex items-center gap-1 text-sm font-medium text-brand-orange hover:text-brand-orange-deep transition-colors" data-i18n="nav.login">
             เข้าสู่ระบบ
           </a>
-          <a href="login.html?tab=signup" class="bg-brand-orange text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-brand-orange-deep transition-all shadow-md hover:shadow-lg">
+          <a href="login.html?tab=signup" class="bg-brand-orange text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-brand-orange-deep transition-all shadow-md hover:shadow-lg" data-i18n="nav.join">
             เข้าร่วมก่อนใคร ✨
           </a>
+        </div>
+
+        <!-- Language Switcher -->
+        <div class="flex items-center gap-0.5 bg-gray-100 rounded-xl p-1 ml-1">
+          <button class="lang-btn px-2 py-1 text-xs font-bold rounded-lg bg-brand-orange text-white" data-lang="th" title="ภาษาไทย">🇹🇭</button>
+          <button class="lang-btn px-2 py-1 text-xs font-semibold rounded-lg text-gray-500 hover:bg-orange-50 transition-colors" data-lang="en" title="English">🇬🇧</button>
+          <button class="lang-btn px-2 py-1 text-xs font-semibold rounded-lg text-gray-500 hover:bg-orange-50 transition-colors" data-lang="zh" title="中文">🇨🇳</button>
         </div>
 
         <!-- Hamburger -->
@@ -265,11 +272,11 @@
 
   <!-- Mobile Menu -->
   <div id="mobileMenu" class="hidden md:hidden border-t border-orange-100 bg-white px-4 py-4 space-y-3">
-    <a href="places.html" class="block text-gray-700 hover:text-brand-orange font-medium py-1">🗺️ สถานที่ Pet-Friendly</a>
-    <a href="#features" class="block text-gray-700 hover:text-brand-orange font-medium py-1">ฟีเจอร์</a>
-    <a href="register-business.html" class="block text-gray-700 hover:text-brand-orange font-medium py-1">สำหรับธุรกิจ</a>
-    <a href="#community" class="block text-gray-700 hover:text-brand-orange font-medium py-1">ชุมชน</a>
-    <a href="login.html?tab=signup" class="block bg-brand-orange text-white text-center py-3 rounded-xl font-semibold">เข้าร่วมก่อนใคร ✨</a>
+    <a href="places.html" class="block text-gray-700 hover:text-brand-orange font-medium py-1" data-i18n="nav.places_mobile">🗺️ สถานที่ Pet-Friendly</a>
+    <a href="#features" class="block text-gray-700 hover:text-brand-orange font-medium py-1" data-i18n="nav.features">ฟีเจอร์</a>
+    <a href="register-business.html" class="block text-gray-700 hover:text-brand-orange font-medium py-1" data-i18n="nav.business_mobile">🏪 สำหรับธุรกิจ</a>
+    <a href="#community" class="block text-gray-700 hover:text-brand-orange font-medium py-1" data-i18n="nav.community">ชุมชน</a>
+    <a href="login.html?tab=signup" class="block bg-brand-orange text-white text-center py-3 rounded-xl font-semibold" data-i18n="nav.join">เข้าร่วมก่อนใคร ✨</a>
   </div>
 </nav>
 
@@ -287,27 +294,27 @@
         <!-- Badge -->
         <div class="inline-flex items-center gap-2 bg-orange-100 text-brand-orange px-4 py-2 rounded-full text-sm font-semibold mb-6">
           <span class="w-2 h-2 bg-brand-orange rounded-full animate-pulse"></span>
-          เปิด Early Access แล้วครับ ✨
+          <span data-i18n="index.hero_badge">เปิด Early Access แล้วครับ ✨</span>
         </div>
 
         <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight text-gray-900 mb-6">
-          Google Maps ไม่รู้<br/>
-          <span class="gradient-text">แต่ PawDee รู้</span>
+          <span data-i18n="index.h1_1">Google Maps ไม่รู้</span><br/>
+          <span class="gradient-text" data-i18n="index.h1_2">แต่ PawDee รู้</span>
         </h1>
 
         <p class="text-lg text-gray-700 leading-relaxed mb-8 max-w-lg mx-auto lg:mx-0">
-          <strong class="text-gray-900 font-semibold">รับพันธุ์ใหญ่ได้ไหม? นั่งในร้านได้เลยหรือต้องใส่กรง?</strong><br/>
-          Google Maps ไม่มีคำตอบ — PawDee มี พร้อมรีวิวจากเจ้าของสัตว์เลี้ยงจริงๆ ไม่ใช่แค่คนผ่านมา<br/>
-          <span class="text-gray-600 text-base mt-2 inline-block">ข้อมูลที่แม่นยำขึ้นทุกวัน เพราะทาสหมาทาสแมวทั่วไทยช่วยกันรีวิวและอัปเดต</span>
+          <strong class="text-gray-900 font-semibold" data-i18n="index.hero_bold">รับพันธุ์ใหญ่ได้ไหม? นั่งในร้านได้เลยหรือต้องใส่กรง?</strong><br/>
+          <span data-i18n="index.hero_desc">Google Maps ไม่มีคำตอบ — PawDee มี พร้อมรีวิวจากเจ้าของสัตว์เลี้ยงจริงๆ ไม่ใช่แค่คนผ่านมา</span><br/>
+          <span class="text-gray-600 text-base mt-2 inline-block" data-i18n="index.hero_sub">ข้อมูลที่แม่นยำขึ้นทุกวัน เพราะทาสหมาทาสแมวทั่วไทยช่วยกันรีวิวและอัปเดต</span>
         </p>
 
         <!-- CTA Buttons -->
         <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-10">
           <a href="places.html" class="group bg-brand-orange text-white px-8 py-4 rounded-2xl text-lg font-bold hover:bg-brand-orange-deep transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1 flex items-center justify-center gap-2">
-            ค้นหาสถานที่เลย
+            <span data-i18n="index.cta_search">ค้นหาสถานที่เลย</span>
             <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
           </a>
-          <a href="#waitlist" class="border-2 border-orange-200 text-gray-700 px-8 py-4 rounded-2xl text-lg font-semibold hover:border-brand-orange hover:text-brand-orange transition-all flex items-center justify-center gap-2 bg-white/60">
+          <a href="#waitlist" class="border-2 border-orange-200 text-gray-700 px-8 py-4 rounded-2xl text-lg font-semibold hover:border-brand-orange hover:text-brand-orange transition-all flex items-center justify-center gap-2 bg-white/60" data-i18n="index.cta_waitlist">
             เข้าร่วม Waitlist
           </a>
         </div>
@@ -1162,6 +1169,10 @@
   });
 </script>
 
+<script type="module">
+  import { initI18n } from './js/i18n.js';
+  initI18n();
+</script>
 <script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js").catch(()=>{});}</script>
 </body>
 </html>
