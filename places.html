@@ -1162,7 +1162,7 @@
     document.getElementById('modalAddress').textContent = `📍 ${place.address || ''}, ${place.district || ''}, ${place.city || ''}`;
     document.getElementById('modalRating').textContent  = place.rating?.toFixed(1) || '-';
     document.getElementById('modalReviews').textContent = place.reviewCount ? `${place.reviewCount.toLocaleString()} รีวิว` : '';
-    document.getElementById('modalHours').textContent   = place.openHours || '-';
+    document.getElementById('modalHours').textContent   = place.openHours || place.hours || '-';
 
     const badge = document.getElementById('modalBadge');
     badge.className = 'flex flex-wrap gap-1';
