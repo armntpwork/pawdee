@@ -113,6 +113,7 @@
       <button class="main-tab px-5 py-2.5 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 transition-all" data-panel="waitlist">📋 Waitlist</button>
       <button class="main-tab px-5 py-2.5 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 transition-all" data-panel="notify">🔔 แจ้งเตือนพี่เลี้ยง</button>
       <button class="main-tab px-5 py-2.5 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 transition-all" data-panel="claim">🏷️ อ้างสิทธิ์</button>
+      <button class="main-tab px-5 py-2.5 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 transition-all" data-panel="sitemap">🗺️ Sitemap</button>
     </div>
 
     <!-- Panel: สถานที่ -->
@@ -194,6 +195,67 @@
       </div>
       <div id="claimList" class="space-y-3">
         <div class="text-center py-16 text-gray-400"><div class="text-4xl mb-3">⏳</div><p>กำลังโหลด...</p></div>
+      </div>
+    </div>
+
+    <!-- Panel: Sitemap -->
+    <div id="panel-sitemap" class="hidden">
+      <div class="max-w-2xl mx-auto space-y-5">
+        <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+          <h2 class="font-bold text-gray-900 mb-1">🗺️ Generate Sitemap.xml</h2>
+          <p class="text-sm text-gray-500 mb-4">สร้างไฟล์ sitemap จาก Firestore แล้ว upload ขึ้น root ของเว็บ เพื่อให้ Google crawl ร้านทุกร้านได้</p>
+          <div class="flex gap-3 flex-wrap text-sm mb-4">
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block"></span>🌟 Premium — priority 1.0</span>
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-orange-400 inline-block"></span>🔶 Pro — priority 0.7</span>
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-gray-300 inline-block"></span>Starter — priority 0.5</span>
+          </div>
+          <button id="sitemapGenBtn" onclick="generateSitemap()"
+            class="w-full bg-brand-orange hover:bg-brand-orange-deep text-white font-bold py-3 rounded-xl transition-colors">
+            ⚡ Generate Sitemap
+          </button>
+        </div>
+
+        <!-- Stats -->
+        <div id="sitemapStats" class="hidden grid grid-cols-3 gap-3 text-center">
+          <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+            <div id="smStatTotal" class="text-2xl font-bold text-gray-900">–</div>
+            <div class="text-xs text-gray-500 mt-1">ร้านทั้งหมด</div>
+          </div>
+          <div class="bg-white rounded-xl p-4 border border-amber-100 shadow-sm">
+            <div id="smStatPremium" class="text-2xl font-bold text-amber-600">–</div>
+            <div class="text-xs text-gray-500 mt-1">🌟 Premium</div>
+          </div>
+          <div class="bg-white rounded-xl p-4 border border-orange-100 shadow-sm">
+            <div id="smStatPro" class="text-2xl font-bold text-orange-500">–</div>
+            <div class="text-xs text-gray-500 mt-1">🔶 Pro</div>
+          </div>
+        </div>
+
+        <!-- Output -->
+        <div id="sitemapOutput" class="hidden bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-semibold text-gray-800">sitemap.xml</h3>
+            <div class="flex gap-2">
+              <button onclick="copySitemap()" class="text-sm px-4 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors">📋 Copy</button>
+              <button onclick="downloadSitemap()" class="text-sm px-4 py-1.5 bg-brand-orange hover:bg-brand-orange-deep text-white rounded-lg font-medium transition-colors">⬇️ Download</button>
+            </div>
+          </div>
+          <div class="bg-gray-900 text-green-400 rounded-xl p-4 text-xs overflow-auto max-h-72">
+            <pre id="sitemapXmlPreview"></pre>
+          </div>
+        </div>
+
+        <!-- Instructions -->
+        <div id="sitemapInstructions" class="hidden bg-blue-50 border border-blue-200 rounded-2xl p-5 text-sm">
+          <h3 class="font-semibold text-blue-900 mb-3">📋 ขั้นตอนหลัง Download</h3>
+          <ol class="text-blue-800 space-y-1.5 list-decimal list-inside">
+            <li>Upload <code class="bg-blue-100 px-1 rounded">sitemap.xml</code> ไปที่ root ของเว็บ (ข้างๆ index.html)</li>
+            <li>เปิด <strong>Google Search Console</strong> → Sitemaps</li>
+            <li>ใส่ URL: <code class="bg-blue-100 px-1 rounded">https://www.pawdeepet.com/sitemap.xml</code></li>
+            <li>กด <strong>Submit</strong> — Google จะ crawl ภายใน 1–7 วัน</li>
+          </ol>
+          <p class="text-blue-600 mt-3 text-xs">💡 Re-generate ทุกครั้งที่มีร้านใหม่เพิ่มเข้าระบบ</p>
+        </div>
       </div>
     </div>
 
@@ -962,7 +1024,7 @@ document.querySelectorAll('.filter-tab').forEach(btn => {
 });
 
 // ── Main Tab Switching ────────────────────────────────────────
-const panels = ['places', 'waitlist', 'notify', 'claim'];
+const panels = ['places', 'waitlist', 'notify', 'claim', 'sitemap'];
 document.querySelectorAll('.main-tab').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.main-tab').forEach(b => {
@@ -1033,6 +1095,66 @@ window.claimAction = async function(id, placeId, status) {
     try { await updateDoc(doc(db, 'places', placeId), { ownerVerified: true }); } catch(e) {}
   }
   loadClaims(currentClaimStatus);
+};
+
+// ── Sitemap Generator ──────────────────────────────────────────────────────
+let sitemapXmlContent = '';
+
+window.generateSitemap = async function() {
+  const btn = document.getElementById('sitemapGenBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ กำลัง generate...';
+  try {
+    const snap   = await getDocs(collection(db, 'places'));
+    const places = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const now    = new Date().toISOString().split('T')[0];
+    const BASE   = 'https://www.pawdeepet.com';
+
+    const tierOrder = p => { const t = p.tier||'free'; return t==='premium'?0:(t==='pro'||t==='basic'||t==='verified'?1:2); };
+    places.sort((a,b) => tierOrder(a) - tierOrder(b));
+
+    const urls = [
+      `  <url>\n    <loc>${BASE}/</loc>\n    <lastmod>${now}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>`,
+      `  <url>\n    <loc>${BASE}/places.html</loc>\n    <lastmod>${now}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.8</priority>\n  </url>`,
+      `  <url>\n    <loc>${BASE}/register-business.html</loc>\n    <lastmod>${now}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.6</priority>\n  </url>`,
+    ];
+
+    let premiumCount = 0, proCount = 0;
+    places.forEach(p => {
+      const t = p.tier||'free';
+      const isPremium = t==='premium';
+      const isPro     = t==='pro'||t==='basic'||t==='verified';
+      if (isPremium) premiumCount++;
+      else if (isPro) proCount++;
+      const priority   = isPremium ? '1.0' : isPro ? '0.7' : '0.5';
+      const changefreq = isPremium ? 'daily' : isPro ? 'weekly' : 'monthly';
+      urls.push(`  <url>\n    <loc>${BASE}/place?id=${p.id}</loc>\n    <lastmod>${now}</lastmod>\n    <changefreq>${changefreq}</changefreq>\n    <priority>${priority}</priority>\n  </url>`);
+    });
+
+    sitemapXmlContent = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>`;
+
+    document.getElementById('smStatTotal').textContent   = places.length;
+    document.getElementById('smStatPremium').textContent = premiumCount;
+    document.getElementById('smStatPro').textContent     = proCount;
+    document.getElementById('sitemapStats').classList.remove('hidden');
+    document.getElementById('sitemapXmlPreview').textContent = sitemapXmlContent;
+    document.getElementById('sitemapOutput').classList.remove('hidden');
+    document.getElementById('sitemapInstructions').classList.remove('hidden');
+  } catch(e) { alert('Error: ' + e.message); }
+  btn.disabled = false;
+  btn.textContent = '⚡ Generate อีกครั้ง';
+};
+
+window.copySitemap = function() {
+  navigator.clipboard.writeText(sitemapXmlContent).then(() => alert('Copied! ✅'));
+};
+
+window.downloadSitemap = function() {
+  const blob = new Blob([sitemapXmlContent], { type: 'application/xml' });
+  const a    = document.createElement('a');
+  a.href     = URL.createObjectURL(blob);
+  a.download = 'sitemap.xml';
+  a.click();
 };
 
 document.querySelectorAll('.claim-filter-tab').forEach(btn => {
