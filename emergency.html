@@ -119,7 +119,7 @@
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
     <div class="flex items-center justify-center gap-2 mb-3">
       <div class="pulse-dot"></div>
-      <span class="text-red-500 font-semibold text-sm">ให้บริการ 24 ชั่วโมง</span>
+      <span class="text-red-500 font-semibold text-sm" data-i18n="emergency.hero_badge">ให้บริการ 24 ชั่วโมง</span>
     </div>
     <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-3">
       <span class="text-red-500">🚨</span> <span data-i18n="emer.h1_1">คลินิกสัตว์เลี้ยง</span><br class="sm:hidden"/> <span class="text-red-500" data-i18n="emer.h1_2">ฉุกเฉิน 24 ชั่วโมง</span>
@@ -131,14 +131,14 @@
       <div class="flex gap-3">
         <div class="w-10 h-10 bg-red-100 rounded-2xl flex items-center justify-center text-xl flex-shrink-0">⚠️</div>
         <div>
-          <div class="font-bold text-red-700 mb-2">สัญญาณฉุกเฉินที่ต้องพาไปหาหมอทันที</div>
+          <div class="font-bold text-red-700 mb-2" data-i18n="emergency.tips_title">สัญญาณฉุกเฉินที่ต้องพาไปหาหมอทันที</div>
           <div class="text-sm text-red-600 grid grid-cols-1 sm:grid-cols-2 gap-1">
-            <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 bg-red-400 rounded-full flex-shrink-0"></span>หยุดหายใจหรือหายใจลำบาก</span>
-            <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 bg-red-400 rounded-full flex-shrink-0"></span>ชัก หมดสติ ล้มลง</span>
-            <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 bg-red-400 rounded-full flex-shrink-0"></span>เลือดออกมาก บาดแผลลึก</span>
-            <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 bg-red-400 rounded-full flex-shrink-0"></span>กินยา/สารพิษเข้าไป</span>
-            <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 bg-red-400 rounded-full flex-shrink-0"></span>ท้องบวมโตผิดปกติ</span>
-            <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 bg-red-400 rounded-full flex-shrink-0"></span>ปัสสาวะไม่ออกนานกว่า 12 ชม.</span>
+            <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 bg-red-400 rounded-full flex-shrink-0"></span><span data-i18n="emergency.tip1">หยุดหายใจหรือหายใจลำบาก</span></span>
+            <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 bg-red-400 rounded-full flex-shrink-0"></span><span data-i18n="emergency.tip2">ชัก หมดสติ ล้มลง</span></span>
+            <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 bg-red-400 rounded-full flex-shrink-0"></span><span data-i18n="emergency.tip3">เลือดออกมาก บาดแผลลึก</span></span>
+            <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 bg-red-400 rounded-full flex-shrink-0"></span><span data-i18n="emergency.tip4">กินยา/สารพิษเข้าไป</span></span>
+            <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 bg-red-400 rounded-full flex-shrink-0"></span><span data-i18n="emergency.tip5">ท้องบวมโตผิดปกติ</span></span>
+            <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 bg-red-400 rounded-full flex-shrink-0"></span><span data-i18n="emergency.tip6">ปัสสาวะไม่ออกนานกว่า 12 ชม.</span></span>
           </div>
         </div>
       </div>
@@ -150,12 +150,12 @@
         <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-gray-400">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
         </div>
-        <input id="searchInput" type="text" placeholder="ค้นหาชื่อโรงพยาบาล หรือเขต..."
+        <input id="searchInput" type="text" placeholder="ค้นหาชื่อโรงพยาบาล หรือเขต..." data-i18n-ph="emergency.search_ph"
           class="w-full pl-12 pr-4 py-3.5 sm:py-4 rounded-2xl border-2 border-red-200 bg-white shadow-sm focus:outline-none focus:border-red-400 transition-colors text-sm sm:text-base"/>
       </div>
       <button id="locateBtn" class="bg-red-500 text-white px-4 sm:px-5 py-3.5 sm:py-4 rounded-2xl font-semibold hover:bg-red-600 transition-all shadow-md flex items-center gap-2 flex-shrink-0">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-        <span>ใกล้ฉัน</span>
+        <span data-i18n="emergency.locate_btn">ใกล้ฉัน</span>
       </button>
     </div>
   </div>
@@ -164,11 +164,11 @@
 <!-- Filter -->
 <div class="sticky top-16 z-40 bg-white/90 backdrop-blur border-b border-gray-100 shadow-sm">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex gap-2 overflow-x-auto">
-    <button class="filter-btn active flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-red-500 bg-red-500 text-white" data-type="all">ทั้งหมด</button>
-    <button class="filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600" data-type="24h">24 ชั่วโมง 🌙</button>
-    <button class="filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600" data-type="hospital">โรงพยาบาลสัตว์ 🏥</button>
-    <button class="filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600" data-type="clinic">คลินิก 🩺</button>
-    <button class="filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600" data-type="specialist">ผู้เชี่ยวชาญ ⭐</button>
+    <button class="filter-btn active flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-red-500 bg-red-500 text-white" data-type="all" data-i18n="emergency.filter_all">ทั้งหมด</button>
+    <button class="filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600" data-type="24h" data-i18n="emergency.filter_24h">24 ชั่วโมง 🌙</button>
+    <button class="filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600" data-type="hospital" data-i18n="emergency.filter_hospital">โรงพยาบาลสัตว์ 🏥</button>
+    <button class="filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600" data-type="clinic" data-i18n="emergency.filter_clinic">คลินิก 🩺</button>
+    <button class="filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600" data-type="specialist" data-i18n="emergency.filter_specialist">ผู้เชี่ยวชาญ ⭐</button>
   </div>
 </div>
 
@@ -192,7 +192,7 @@
           <div class="w-9 h-9 bg-brand-orange rounded-xl flex items-center justify-center text-xl">🐾</div>
           <span class="text-xl font-bold text-white">Paw<span class="text-brand-orange">Dee</span></span>
         </div>
-        <p class="text-sm leading-relaxed text-gray-400 max-w-xs">ศูนย์กลางข้อมูล รีวิว และชุมชนสำหรับเจ้าของสัตว์เลี้ยงในไทย เพราะสัตว์เลี้ยงคือสมาชิกในครอบครัว</p>
+        <p class="text-sm leading-relaxed text-gray-400 max-w-xs" data-i18n="footer.tagline">ศูนย์กลางข้อมูล รีวิว และชุมชนสำหรับเจ้าของสัตว์เลี้ยงในไทย เพราะสัตว์เลี้ยงคือสมาชิกในครอบครัว</p>
         <div class="flex gap-3 mt-6">
           <a href="https://www.facebook.com/pawdeepet/" target="_blank" rel="noopener" class="w-9 h-9 bg-white/10 rounded-xl hover:bg-brand-orange transition-colors flex items-center justify-center">
             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
@@ -203,28 +203,28 @@
         </div>
       </div>
       <div>
-        <h4 class="text-white font-semibold mb-4">สำรวจ</h4>
+        <h4 class="text-white font-semibold mb-4" data-i18n="footer.explore">สำรวจ</h4>
         <ul class="space-y-3 text-sm">
-          <li><a href="places.html" class="hover:text-brand-orange transition-colors">🗺️ สถานที่ Pet-Friendly</a></li>
-          <li><a href="sitters.html" class="hover:text-brand-orange transition-colors">🧑 พี่เลี้ยงสัตว์</a></li>
-          <li><a href="emergency.html" class="hover:text-brand-orange transition-colors">🚨 คลินิกฉุกเฉิน</a></li>
-          <li><a href="register-business.html" class="hover:text-brand-orange transition-colors">🏪 ลงทะเบียนธุรกิจ</a></li>
+          <li><a href="places.html" class="hover:text-brand-orange transition-colors" data-i18n="footer.places">🗺️ สถานที่ Pet-Friendly</a></li>
+          <li><a href="sitters.html" class="hover:text-brand-orange transition-colors" data-i18n="footer.sitters">🧑 พี่เลี้ยงสัตว์</a></li>
+          <li><a href="emergency.html" class="hover:text-brand-orange transition-colors" data-i18n="footer.emergency">🚨 คลินิกฉุกเฉิน</a></li>
+          <li><a href="register-business.html" class="hover:text-brand-orange transition-colors" data-i18n="footer.register">🏪 ลงทะเบียนธุรกิจ</a></li>
         </ul>
       </div>
       <div>
-        <h4 class="text-white font-semibold mb-4">ติดต่อ</h4>
+        <h4 class="text-white font-semibold mb-4" data-i18n="footer.contact">ติดต่อ</h4>
         <ul class="space-y-3 text-sm">
           <li class="flex items-center gap-2">📧 <a href="mailto:armntp.work@gmail.com" class="hover:text-brand-orange transition-colors">armntp.work@gmail.com</a></li>
           <li class="flex items-center gap-2">📱 LINE: <a href="https://line.me/R/ti/p/@237mvbgf" target="_blank" rel="noopener" class="hover:text-brand-orange transition-colors">@237mvbgf</a></li>
-          <li class="flex items-center gap-2">📍 กรุงเทพมหานคร, ไทย</li>
+          <li class="flex items-center gap-2" data-i18n="footer.city">📍 กรุงเทพมหานคร, ไทย</li>
         </ul>
       </div>
     </div>
     <div class="border-t border-white/10 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
-      <p class="text-xs text-gray-500">© 2026 PawDee. Made with ❤️ สำหรับทาสหมาทาสแมวทุกคน</p>
+      <p class="text-xs text-gray-500" data-i18n="footer.copyright">© 2026 PawDee. Made with ❤️ สำหรับทาสหมาทาสแมวทุกคน</p>
       <div class="flex gap-4 text-xs text-gray-500">
-        <a href="privacy.html" class="hover:text-brand-orange transition-colors">นโยบายความเป็นส่วนตัว</a>
-        <a href="terms.html" class="hover:text-brand-orange transition-colors">เงื่อนไขการใช้งาน</a>
+        <a href="privacy.html" class="hover:text-brand-orange transition-colors" data-i18n="footer.privacy">นโยบายความเป็นส่วนตัว</a>
+        <a href="terms.html" class="hover:text-brand-orange transition-colors" data-i18n="footer.terms">เงื่อนไขการใช้งาน</a>
       </div>
     </div>
   </div>

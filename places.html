@@ -174,17 +174,17 @@
     <div class="flex justify-center mt-4 mb-2">
       <button id="nearbyBtn" class="inline-flex items-center gap-2 bg-brand-orange hover:bg-brand-orange-deep text-white px-6 py-3 rounded-2xl text-sm font-bold shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-        <span id="nearbyBtnText">📍 หาร้านใกล้ฉัน</span>
+        <span id="nearbyBtnText" data-i18n="places.nearby_btn">📍 หาร้านใกล้ฉัน</span>
       </button>
     </div>
 
     <!-- Quick stats pills -->
     <div class="flex flex-wrap items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-500">
-      <span class="bg-amber-50 text-amber-700 px-3 py-1 rounded-full font-medium">☕ คาเฟ่</span>
-      <span class="bg-blue-50 text-blue-700 px-3 py-1 rounded-full font-medium">🏨 โรงแรม</span>
-      <span class="bg-pink-50 text-pink-700 px-3 py-1 rounded-full font-medium">🏥 คลินิก</span>
-      <span class="bg-green-50 text-green-700 px-3 py-1 rounded-full font-medium">🛁 อาบน้ำ-ตัดขน</span>
-      <span class="bg-orange-50 text-orange-700 px-3 py-1 rounded-full font-medium">🛍️ Pet Shop</span>
+      <span class="bg-amber-50 text-amber-700 px-3 py-1 rounded-full font-medium" data-i18n="places.hero_cafe">☕ คาเฟ่</span>
+      <span class="bg-blue-50 text-blue-700 px-3 py-1 rounded-full font-medium" data-i18n="places.hero_hotel">🏨 โรงแรม</span>
+      <span class="bg-pink-50 text-pink-700 px-3 py-1 rounded-full font-medium" data-i18n="places.hero_clinic">🏥 คลินิก</span>
+      <span class="bg-green-50 text-green-700 px-3 py-1 rounded-full font-medium" data-i18n="places.hero_grooming">🛁 อาบน้ำ-ตัดขน</span>
+      <span class="bg-orange-50 text-orange-700 px-3 py-1 rounded-full font-medium" data-i18n="places.hero_shop">🛍️ Pet Shop</span>
     </div>
   </div>
 </section>
@@ -192,42 +192,42 @@
 <!-- "What Google Maps doesn't have" strip -->
 <div class="bg-gradient-to-r from-orange-500 to-amber-500 text-white py-2.5">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 flex flex-wrap items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm font-semibold">
-    <span class="opacity-80 text-xs uppercase tracking-wider hidden sm:inline">Google Maps ไม่มี →</span>
-    <span class="bg-white/20 px-3 py-1 rounded-full">🐕 รับพันธุ์ใหญ่ได้ไหม?</span>
-    <span class="bg-white/20 px-3 py-1 rounded-full">🏠 นั่งในร้านได้เลยไหม?</span>
-    <span class="bg-white/20 px-3 py-1 rounded-full">🚫 ต้องใส่กรงไหม?</span>
-    <span class="bg-white/20 px-3 py-1 rounded-full">👋 รีวิวจากเจ้าของสัตว์จริงๆ</span>
+    <span class="opacity-80 text-xs uppercase tracking-wider hidden sm:inline" data-i18n="places.gmaps_label">Google Maps ไม่มี →</span>
+    <span class="bg-white/20 px-3 py-1 rounded-full" data-i18n="places.gmaps_1">🐕 รับพันธุ์ใหญ่ได้ไหม?</span>
+    <span class="bg-white/20 px-3 py-1 rounded-full" data-i18n="places.gmaps_2">🏠 นั่งในร้านได้เลยไหม?</span>
+    <span class="bg-white/20 px-3 py-1 rounded-full" data-i18n="places.gmaps_3">🚫 ต้องใส่กรงไหม?</span>
+    <span class="bg-white/20 px-3 py-1 rounded-full" data-i18n="places.gmaps_4">👋 รีวิวจากเจ้าของสัตว์จริงๆ</span>
   </div>
 </div>
 
 <!-- Filters -->
 <div class="sticky top-16 z-40 bg-white/90 backdrop-blur border-b border-gray-100 shadow-sm">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex gap-2 overflow-x-auto scrollbar-hide">
-    <button class="filter-btn active flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-brand-orange" data-type="all">
+    <button class="filter-btn active flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-brand-orange" data-type="all" data-i18n="places.filter_all">
       ทั้งหมด
     </button>
-    <button class="filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 hover:border-brand-orange hover:text-brand-orange" data-type="cafe">
+    <button class="filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 hover:border-brand-orange hover:text-brand-orange" data-type="cafe" data-i18n="places.filter_cafe">
       ☕ คาเฟ่
     </button>
-    <button class="filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 hover:border-brand-orange hover:text-brand-orange" data-type="restaurant">
+    <button class="filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 hover:border-brand-orange hover:text-brand-orange" data-type="restaurant" data-i18n="places.filter_restaurant">
       🍽️ ร้านอาหาร
     </button>
-    <button class="filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 hover:border-brand-orange hover:text-brand-orange" data-type="hotel">
+    <button class="filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 hover:border-brand-orange hover:text-brand-orange" data-type="hotel" data-i18n="places.filter_hotel">
       🏨 โรงแรม
     </button>
-    <button class="filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 hover:border-brand-orange hover:text-brand-orange" data-type="clinic">
+    <button class="filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 hover:border-brand-orange hover:text-brand-orange" data-type="clinic" data-i18n="places.filter_clinic">
       🏥 คลินิก
     </button>
-    <button class="filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 hover:border-brand-orange hover:text-brand-orange" data-type="grooming">
+    <button class="filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 hover:border-brand-orange hover:text-brand-orange" data-type="grooming" data-i18n="places.filter_grooming">
       🛁 อาบน้ำ-ตัดขน
     </button>
-    <button class="filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 hover:border-brand-orange hover:text-brand-orange" data-type="condo">
+    <button class="filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 hover:border-brand-orange hover:text-brand-orange" data-type="condo" data-i18n="places.filter_condo">
       🏠 คอนโด
     </button>
-    <button class="filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 hover:border-brand-orange hover:text-brand-orange" data-type="park">
+    <button class="filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 hover:border-brand-orange hover:text-brand-orange" data-type="park" data-i18n="places.filter_park">
       🌳 สวนสาธารณะ
     </button>
-    <button class="filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 hover:border-brand-orange hover:text-brand-orange" data-type="shop">
+    <button class="filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 hover:border-brand-orange hover:text-brand-orange" data-type="shop" data-i18n="places.filter_shop">
       🛍️ Pet Shop
     </button>
   </div>
@@ -236,10 +236,10 @@
 <!-- Pet Attribute Filters -->
 <div class="bg-orange-50/60 backdrop-blur border-b border-orange-100">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex items-center gap-2 overflow-x-auto scrollbar-hide">
-    <span class="text-xs text-brand-orange font-bold flex-shrink-0 whitespace-nowrap">⭐ Google Maps ไม่มี:</span>
-    <button class="pet-filter-btn flex-shrink-0 px-3 py-2 rounded-xl text-xs font-semibold border-2 border-orange-200 text-orange-700 bg-white hover:border-purple-400 hover:text-purple-600 transition-all" data-attr="largeDogOk">🐕 รับพันธุ์ใหญ่</button>
-    <button class="pet-filter-btn flex-shrink-0 px-3 py-2 rounded-xl text-xs font-semibold border-2 border-orange-200 text-orange-700 bg-white hover:border-purple-400 hover:text-purple-600 transition-all" data-attr="indoorSeating">🏠 นั่งในร้านได้</button>
-    <button class="pet-filter-btn flex-shrink-0 px-3 py-2 rounded-xl text-xs font-semibold border-2 border-orange-200 text-orange-700 bg-white hover:border-purple-400 hover:text-purple-600 transition-all" data-attr="noCarrierNeeded">🚫 ไม่ต้องใส่กรง</button>
+    <span class="text-xs text-brand-orange font-bold flex-shrink-0 whitespace-nowrap" data-i18n="places.attr_label">⭐ Google Maps ไม่มี:</span>
+    <button class="pet-filter-btn flex-shrink-0 px-3 py-2 rounded-xl text-xs font-semibold border-2 border-orange-200 text-orange-700 bg-white hover:border-purple-400 hover:text-purple-600 transition-all" data-attr="largeDogOk" data-i18n="places.attr_large">🐕 รับพันธุ์ใหญ่</button>
+    <button class="pet-filter-btn flex-shrink-0 px-3 py-2 rounded-xl text-xs font-semibold border-2 border-orange-200 text-orange-700 bg-white hover:border-purple-400 hover:text-purple-600 transition-all" data-attr="indoorSeating" data-i18n="places.attr_indoor">🏠 นั่งในร้านได้</button>
+    <button class="pet-filter-btn flex-shrink-0 px-3 py-2 rounded-xl text-xs font-semibold border-2 border-orange-200 text-orange-700 bg-white hover:border-purple-400 hover:text-purple-600 transition-all" data-attr="noCarrierNeeded" data-i18n="places.attr_nocarrier">🚫 ไม่ต้องใส่กรง</button>
   </div>
 </div>
 
@@ -273,20 +273,20 @@
     <div class="flex items-center gap-3">
       <!-- Sort -->
       <select id="sortSelect" class="text-sm border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:border-brand-orange">
-        <option value="rating">⭐ คะแนนสูงสุด</option>
-        <option value="reviewCount">💬 รีวิวมากสุด</option>
-        <option value="name">🔤 ชื่อ ก-ฮ</option>
-        <option value="distance" id="sortDistanceOption" disabled>📍 ใกล้ที่สุด</option>
+        <option value="rating" data-i18n="places.sort_rating">⭐ คะแนนสูงสุด</option>
+        <option value="reviewCount" data-i18n="places.sort_reviews">💬 รีวิวมากสุด</option>
+        <option value="name" data-i18n="places.sort_name">🔤 ชื่อ ก-ฮ</option>
+        <option value="distance" id="sortDistanceOption" disabled data-i18n="places.sort_nearby">📍 ใกล้ที่สุด</option>
       </select>
       <!-- View Toggle -->
       <div class="flex border-2 border-gray-200 rounded-xl overflow-hidden">
         <button id="viewGrid" class="view-btn active flex items-center gap-1.5 px-3 py-2 text-sm font-semibold transition-all border-r border-gray-200">
           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
-          การ์ด
+          <span data-i18n="places.view_card">การ์ด</span>
         </button>
         <button id="viewMap" class="view-btn flex items-center gap-1.5 px-3 py-2 text-sm font-semibold text-gray-600 transition-all">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
-          แผนที่
+          <span data-i18n="places.view_map">แผนที่</span>
         </button>
       </div>
     </div>
@@ -296,8 +296,8 @@
   <div id="emergencyBanner" class="hidden mb-6 bg-red-50 border border-red-200 rounded-2xl p-4 flex items-center gap-3">
     <div class="text-2xl">🚨</div>
     <div>
-      <div class="font-bold text-red-800">คลินิกฉุกเฉิน 24 ชั่วโมง</div>
-      <div class="text-sm text-red-600">ด้านล่างรวมคลินิกที่เปิด 24 ชม. ไว้ด้านบนสุดแล้ว</div>
+      <div class="font-bold text-red-800" data-i18n="places.emergency_badge">คลินิกฉุกเฉิน 24 ชั่วโมง</div>
+      <div class="text-sm text-red-600" data-i18n="places.emergency_note">ด้านล่างรวมคลินิกที่เปิด 24 ชม. ไว้ด้านบนสุดแล้ว</div>
     </div>
   </div>
 
@@ -347,23 +347,23 @@
   <!-- Map View -->
   <div id="mapView" class="hidden mb-6">
     <div id="map"></div>
-    <p class="text-xs text-gray-400 mt-2 text-center">แผนที่จาก OpenStreetMap · คลิกหมุดเพื่อดูรายละเอียด</p>
+    <p class="text-xs text-gray-400 mt-2 text-center" data-i18n="places.map_credit">แผนที่จาก OpenStreetMap · คลิกหมุดเพื่อดูรายละเอียด</p>
   </div>
 
   <!-- Empty State -->
   <div id="emptyState" class="hidden text-center py-20">
     <div class="text-6xl mb-4">🐾</div>
-    <h3 class="text-xl font-bold text-gray-700 mb-2">ไม่พบสถานที่</h3>
-    <p class="text-gray-500 text-sm">ลองเปลี่ยน keyword หรือ filter ใหม่นะครับ</p>
+    <h3 class="text-xl font-bold text-gray-700 mb-2" data-i18n="places.empty_title">ไม่พบสถานที่</h3>
+    <p class="text-gray-500 text-sm" data-i18n="places.empty_desc">ลองเปลี่ยน keyword หรือ filter ใหม่นะครับ</p>
     <div class="text-4xl mt-4 opacity-50">🐕 🐈 🐇</div>
   </div>
 
   <!-- Error State -->
   <div id="errorState" class="hidden text-center py-20">
     <div class="text-5xl mb-4">⚠️</div>
-    <h3 class="text-xl font-bold text-gray-700 mb-2">โหลดข้อมูลไม่ได้</h3>
+    <h3 class="text-xl font-bold text-gray-700 mb-2" data-i18n="places.error_title">โหลดข้อมูลไม่ได้</h3>
     <p id="errorMsg" class="text-gray-500 text-sm mb-4"></p>
-    <button onclick="location.reload()" class="bg-brand-orange text-white px-6 py-2 rounded-xl font-semibold">
+    <button onclick="location.reload()" class="bg-brand-orange text-white px-6 py-2 rounded-xl font-semibold" data-i18n="places.error_retry">
       ลองอีกครั้ง
     </button>
   </div>
@@ -392,12 +392,12 @@
 
       <div class="grid grid-cols-2 gap-3 mb-4">
         <div class="bg-orange-50 rounded-2xl p-3">
-          <div class="text-xs text-gray-400 mb-0.5">คะแนน</div>
+          <div class="text-xs text-gray-400 mb-0.5" data-i18n="places.modal_rating">คะแนน</div>
           <div class="font-bold text-gray-900">⭐ <span id="modalRating"></span></div>
           <div id="modalReviews" class="text-xs text-gray-400"></div>
         </div>
         <div class="bg-orange-50 rounded-2xl p-3">
-          <div class="text-xs text-gray-400 mb-0.5">เวลาทำการ</div>
+          <div class="text-xs text-gray-400 mb-0.5" data-i18n="places.modal_hours">เวลาทำการ</div>
           <div id="modalHours" class="font-semibold text-gray-900 text-sm leading-tight"></div>
         </div>
       </div>
@@ -413,7 +413,7 @@
       <!-- Reviews Section -->
       <div id="modalReviewsSection" class="mt-4 pt-4 border-t border-gray-100">
         <div class="flex items-center justify-between mb-3">
-          <h3 class="font-bold text-gray-900 text-sm">💬 รีวิวจากผู้ใช้</h3>
+          <h3 class="font-bold text-gray-900 text-sm" data-i18n="places.modal_reviews">💬 รีวิวจากผู้ใช้</h3>
           <span id="reviewsCount" class="text-xs text-gray-400"></span>
         </div>
         <div id="reviewsList" class="space-y-3 mb-4"></div>
@@ -421,7 +421,7 @@
         <!-- Form: login + haven't reviewed yet -->
         <div id="reviewFormWrap" class="hidden">
           <div class="bg-orange-50 rounded-2xl p-4">
-            <p class="text-sm font-semibold text-gray-800 mb-3">เขียนรีวิวของคุณ</p>
+            <p class="text-sm font-semibold text-gray-800 mb-3" data-i18n="places.modal_write">เขียนรีวิวของคุณ</p>
             <div class="flex gap-1 mb-3" id="starPicker">
               <button type="button" data-star="1" class="star-btn text-3xl leading-none text-gray-300 transition-colors hover:scale-110">★</button>
               <button type="button" data-star="2" class="star-btn text-3xl leading-none text-gray-300 transition-colors hover:scale-110">★</button>
@@ -430,21 +430,21 @@
               <button type="button" data-star="5" class="star-btn text-3xl leading-none text-gray-300 transition-colors hover:scale-110">★</button>
             </div>
             <div class="mb-3">
-              <p class="text-xs text-gray-400 mb-2">ประสบการณ์กับสัตว์เลี้ยง <span class="text-gray-300">(เลือกได้หลายข้อ)</span></p>
+              <p class="text-xs text-gray-400 mb-2"><span data-i18n="places.modal_tag_label">ประสบการณ์กับสัตว์เลี้ยง</span> <span class="text-gray-300" data-i18n="places.modal_tag_sub">(เลือกได้หลายข้อ)</span></p>
               <div class="flex flex-wrap gap-1.5" id="reviewTagPicker">
-                <label class="review-tag-label"><input type="checkbox" value="petFriendlyStaff"/>👋 พนักงานเป็นมิตร</label>
-                <label class="review-tag-label"><input type="checkbox" value="waterBowl"/>💧 มีถาดน้ำ/อาหาร</label>
-                <label class="review-tag-label"><input type="checkbox" value="indoorOk"/>🪑 นั่งในร้านได้</label>
-                <label class="review-tag-label"><input type="checkbox" value="spacious"/>🌿 พื้นที่กว้าง</label>
-                <label class="review-tag-label"><input type="checkbox" value="clean"/>🧹 สะอาด</label>
-                <label class="review-tag-label"><input type="checkbox" value="easyParking"/>🅿️ ที่จอดสะดวก</label>
+                <label class="review-tag-label"><input type="checkbox" value="petFriendlyStaff"/><span data-i18n="places.modal_tag1">👋 พนักงานเป็นมิตร</span></label>
+                <label class="review-tag-label"><input type="checkbox" value="waterBowl"/><span data-i18n="places.modal_tag2">💧 มีถาดน้ำ/อาหาร</span></label>
+                <label class="review-tag-label"><input type="checkbox" value="indoorOk"/><span data-i18n="places.modal_tag3">🪑 นั่งในร้านได้</span></label>
+                <label class="review-tag-label"><input type="checkbox" value="spacious"/><span data-i18n="places.modal_tag4">🌿 พื้นที่กว้าง</span></label>
+                <label class="review-tag-label"><input type="checkbox" value="clean"/><span data-i18n="places.modal_tag5">🧹 สะอาด</span></label>
+                <label class="review-tag-label"><input type="checkbox" value="easyParking"/><span data-i18n="places.modal_tag6">🅿️ ที่จอดสะดวก</span></label>
               </div>
             </div>
             <textarea id="reviewComment" rows="3"
-              placeholder="เล่าประสบการณ์ของคุณ... (ไม่บังคับ)"
+              placeholder="เล่าประสบการณ์ของคุณ... (ไม่บังคับ)" data-i18n-ph="places.modal_review_ph"
               class="w-full text-sm border border-orange-200 rounded-xl px-3 py-2.5 resize-none focus:outline-none focus:ring-2 focus:ring-brand-orange/30 bg-white placeholder-gray-300"></textarea>
             <button id="submitReviewBtn"
-              class="mt-2.5 w-full bg-brand-orange text-white text-sm font-semibold py-2.5 rounded-xl hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+              class="mt-2.5 w-full bg-brand-orange text-white text-sm font-semibold py-2.5 rounded-xl hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" data-i18n="places.modal_submit">
               ส่งรีวิว
             </button>
           </div>
@@ -452,17 +452,17 @@
 
         <!-- Not logged in -->
         <div id="reviewLoginPrompt" class="hidden text-center py-3 bg-gray-50 rounded-2xl">
-          <p class="text-xs text-gray-400 mb-1.5">เข้าสู่ระบบเพื่อเขียนรีวิว</p>
-          <a href="login.html" class="text-xs text-brand-orange font-semibold hover:underline">เข้าสู่ระบบ →</a>
+          <p class="text-xs text-gray-400 mb-1.5" data-i18n="places.modal_login">เข้าสู่ระบบเพื่อเขียนรีวิว</p>
+          <a href="login.html" class="text-xs text-brand-orange font-semibold hover:underline" data-i18n="places.modal_login_link">เข้าสู่ระบบ →</a>
         </div>
       </div>
     </div>
     <!-- Actions -->
     <div class="p-4 border-t border-gray-100 flex gap-2 flex-shrink-0">
-      <a id="modalPhone" href="#" class="hidden flex-1 text-center bg-orange-50 text-brand-orange border border-orange-200 py-3 rounded-2xl font-semibold hover:bg-orange-100 transition-colors text-sm">
+      <a id="modalPhone" href="#" class="hidden flex-1 text-center bg-orange-50 text-brand-orange border border-orange-200 py-3 rounded-2xl font-semibold hover:bg-orange-100 transition-colors text-sm" data-i18n="places.modal_call">
         📞 โทรหาร้าน
       </a>
-      <a id="modalMap" href="#" target="_blank" class="flex-1 text-center bg-brand-orange text-white py-3 rounded-2xl font-semibold hover:bg-orange-600 transition-colors text-sm">
+      <a id="modalMap" href="#" target="_blank" class="flex-1 text-center bg-brand-orange text-white py-3 rounded-2xl font-semibold hover:bg-orange-600 transition-colors text-sm" data-i18n="places.modal_directions">
         🗺️ ดูแผนที่
       </a>
       <button id="modalShare" title="แชร์ร้านนี้"
@@ -482,7 +482,7 @@
           <div class="w-9 h-9 bg-brand-orange rounded-xl flex items-center justify-center text-xl">🐾</div>
           <span class="text-xl font-bold text-white">Paw<span class="text-brand-orange">Dee</span></span>
         </div>
-        <p class="text-sm leading-relaxed text-gray-400 max-w-xs">ศูนย์กลางข้อมูล รีวิว และชุมชนสำหรับเจ้าของสัตว์เลี้ยงในไทย เพราะสัตว์เลี้ยงคือสมาชิกในครอบครัว</p>
+        <p class="text-sm leading-relaxed text-gray-400 max-w-xs" data-i18n="footer.tagline">ศูนย์กลางข้อมูล รีวิว และชุมชนสำหรับเจ้าของสัตว์เลี้ยงในไทย เพราะสัตว์เลี้ยงคือสมาชิกในครอบครัว</p>
         <div class="flex gap-3 mt-6">
           <a href="https://www.facebook.com/pawdeepet/" target="_blank" rel="noopener" class="w-9 h-9 bg-white/10 rounded-xl hover:bg-brand-orange transition-colors flex items-center justify-center">
             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
@@ -493,28 +493,28 @@
         </div>
       </div>
       <div>
-        <h4 class="text-white font-semibold mb-4">สำรวจ</h4>
+        <h4 class="text-white font-semibold mb-4" data-i18n="footer.explore">สำรวจ</h4>
         <ul class="space-y-3 text-sm">
-          <li><a href="places.html" class="hover:text-brand-orange transition-colors">🗺️ สถานที่ Pet-Friendly</a></li>
-          <li><a href="sitters.html" class="hover:text-brand-orange transition-colors">🧑 พี่เลี้ยงสัตว์</a></li>
-          <li><a href="emergency.html" class="hover:text-brand-orange transition-colors">🚨 คลินิกฉุกเฉิน</a></li>
-          <li><a href="register-business.html" class="hover:text-brand-orange transition-colors">🏪 ลงทะเบียนธุรกิจ</a></li>
+          <li><a href="places.html" class="hover:text-brand-orange transition-colors" data-i18n="footer.places">🗺️ สถานที่ Pet-Friendly</a></li>
+          <li><a href="sitters.html" class="hover:text-brand-orange transition-colors" data-i18n="footer.sitters">🧑 พี่เลี้ยงสัตว์</a></li>
+          <li><a href="emergency.html" class="hover:text-brand-orange transition-colors" data-i18n="footer.emergency">🚨 คลินิกฉุกเฉิน</a></li>
+          <li><a href="register-business.html" class="hover:text-brand-orange transition-colors" data-i18n="footer.register">🏪 ลงทะเบียนธุรกิจ</a></li>
         </ul>
       </div>
       <div>
-        <h4 class="text-white font-semibold mb-4">ติดต่อ</h4>
+        <h4 class="text-white font-semibold mb-4" data-i18n="footer.contact">ติดต่อ</h4>
         <ul class="space-y-3 text-sm">
           <li class="flex items-center gap-2">📧 <a href="mailto:armntp.work@gmail.com" class="hover:text-brand-orange transition-colors">armntp.work@gmail.com</a></li>
           <li class="flex items-center gap-2">📱 LINE: <a href="https://line.me/R/ti/p/@237mvbgf" target="_blank" rel="noopener" class="hover:text-brand-orange transition-colors">@237mvbgf</a></li>
-          <li class="flex items-center gap-2">📍 กรุงเทพมหานคร, ไทย</li>
+          <li class="flex items-center gap-2" data-i18n="footer.city">📍 กรุงเทพมหานคร, ไทย</li>
         </ul>
       </div>
     </div>
     <div class="border-t border-white/10 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
-      <p class="text-xs text-gray-500">© 2026 PawDee. Made with ❤️ สำหรับทาสหมาทาสแมวทุกคน</p>
+      <p class="text-xs text-gray-500" data-i18n="footer.copyright">© 2026 PawDee. Made with ❤️ สำหรับทาสหมาทาสแมวทุกคน</p>
       <div class="flex gap-4 text-xs text-gray-500">
-        <a href="privacy.html" class="hover:text-brand-orange transition-colors">นโยบายความเป็นส่วนตัว</a>
-        <a href="terms.html" class="hover:text-brand-orange transition-colors">เงื่อนไขการใช้งาน</a>
+        <a href="privacy.html" class="hover:text-brand-orange transition-colors" data-i18n="footer.privacy">นโยบายความเป็นส่วนตัว</a>
+        <a href="terms.html" class="hover:text-brand-orange transition-colors" data-i18n="footer.terms">เงื่อนไขการใช้งาน</a>
       </div>
     </div>
   </div>
