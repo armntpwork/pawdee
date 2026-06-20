@@ -532,6 +532,18 @@ window.openEditForm = function() {
         </div>
         <div class="col-span-2">
           <label class="block text-xs font-semibold text-gray-500 mb-1">พิกัด GPS</label>
+
+          <!-- วิธีที่ 1: วาง Google Maps link -->
+          <div class="flex gap-2 mb-2">
+            <input id="ef_gmaps_url" type="text" placeholder="วาง Google Maps link หรือพิกัด เช่น 13.347, 100.974"
+              class="${FIELD_INPUT} flex-1 text-xs"/>
+            <button type="button" onclick="parseGmapsUrl()"
+              class="px-3 py-2 rounded-xl bg-green-50 border-2 border-green-200 text-green-700 text-xs font-bold hover:bg-green-100 transition-all whitespace-nowrap">
+              📍 ดึงพิกัด
+            </button>
+          </div>
+
+          <!-- วิธีที่ 2: ค้นหาจากที่อยู่ -->
           <button type="button" onclick="geocodeAddress()"
             class="w-full mb-2 py-2 px-3 rounded-xl bg-blue-50 border-2 border-blue-200 text-blue-700 text-xs font-bold hover:bg-blue-100 transition-all flex items-center justify-center gap-2">
             🔍 ค้นหาพิกัดจากที่อยู่อัตโนมัติ
@@ -578,6 +590,56 @@ window.openEditForm = function() {
 };
 
 function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+window.parseGmapsUrl = function() {
+  const input = document.getElementById('ef_gmaps_url').value.trim();
+  const status = document.getElementById('geocodeStatus');
+  const mapLink = document.getElementById('geocodeMapLink');
+  const mapAnchor = document.getElementById('geocodeMapAnchor');
+
+  let lat = null, lng = null;
+
+  // รูปแบบที่ 1: พิกัดตรงๆ เช่น "13.347651, 100.974862" หรือ "13.347651 100.974862"
+  const plainCoords = input.match(/^(-?\d+\.?\d*)[,\s]+(-?\d+\.?\d*)$/);
+  if (plainCoords) {
+    lat = parseFloat(plainCoords[1]);
+    lng = parseFloat(plainCoords[2]);
+  }
+
+  // รูปแบบที่ 2: URL ยาว — /@lat,lng,zoom หรือ !3dlat!4dlng
+  if (!lat) {
+    const atMatch = input.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+    if (atMatch) { lat = parseFloat(atMatch[1]); lng = parseFloat(atMatch[2]); }
+  }
+  if (!lat) {
+    const dMatch = input.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/);
+    if (dMatch) { lat = parseFloat(dMatch[1]); lng = parseFloat(dMatch[2]); }
+  }
+
+  // รูปแบบที่ 3: ?q=lat,lng
+  if (!lat) {
+    const qMatch = input.match(/[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/);
+    if (qMatch) { lat = parseFloat(qMatch[1]); lng = parseFloat(qMatch[2]); }
+  }
+
+  if (lat && lng) {
+    document.getElementById('ef_lat').value = lat.toFixed(6);
+    document.getElementById('ef_lng').value = lng.toFixed(6);
+    document.getElementById('ef_gmaps_url').value = '';
+
+    status.className = 'mb-2 text-xs px-3 py-2 rounded-xl bg-green-50 text-green-700';
+    status.textContent = `✅ พิกัด: ${lat.toFixed(5)}, ${lng.toFixed(5)} — กรุณาตรวจสอบก่อนบันทึก`;
+    status.classList.remove('hidden');
+
+    mapAnchor.href = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+    mapLink.classList.remove('hidden');
+  } else {
+    status.className = 'mb-2 text-xs px-3 py-2 rounded-xl bg-red-50 text-red-700';
+    status.textContent = '❌ ไม่พบพิกัดใน link นี้ — ลอง copy URL จาก address bar ของ Google Maps แทนครับ';
+    status.classList.remove('hidden');
+    mapLink.classList.add('hidden');
+  }
+};
 
 window.toggleCatLabel = function(label) {
   const cb = label.querySelector('input[type=checkbox]');

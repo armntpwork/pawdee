@@ -663,24 +663,21 @@
     return `
       <article class="card-hover bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 flex flex-col">
         <div class="relative h-44 bg-gray-100 overflow-hidden">
-          ${place.logoUrl ? `
-            <!-- รูปพื้นหลัง blur ให้โลโก้เป็นจุดเด่น -->
-            <img src="${place.imageUrl || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&q=80'}"
-              alt="" class="w-full h-full object-cover scale-110 blur-sm opacity-40" loading="lazy"
-              onerror="this.src='https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&q=80'"/>
-            <!-- โลโก้กลางการ์ด -->
-            <div class="absolute inset-0 flex items-center justify-center">
-              <div class="logo-frame-${tier} w-28 h-28 rounded-3xl overflow-hidden bg-white shadow-2xl p-2">
-                <img src="${place.logoUrl}" alt="${place.name}" class="w-full h-full object-contain" loading="lazy"/>
-              </div>
-            </div>
-          ` : `
-            <img src="${place.imageUrl || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&q=80'}"
-              alt="${place.name}" class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-              loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&q=80'"/>
-          `}
+          <img
+            src="${place.imageUrl || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&q=80'}"
+            alt="${place.name}"
+            class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+            loading="lazy"
+            onerror="this.src='https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&q=80'"
+          />
           ${emergency}
           ${usingDemo ? '' : tierBadge}
+          ${place.logoUrl ? `
+            <div class="absolute bottom-2 left-2 z-10">
+              <div class="logo-frame-${tier} w-16 h-16 rounded-2xl overflow-hidden bg-white shadow-lg p-1.5" style="border:2.5px solid white">
+                <img src="${place.logoUrl}" alt="${place.name} logo" class="w-full h-full object-contain" loading="lazy"/>
+              </div>
+            </div>` : ''}
         </div>
         <div class="p-4 flex flex-col flex-1">
           <div class="flex items-start justify-between gap-2 mb-2">
@@ -1248,16 +1245,17 @@
       phoneEl.classList.add('hidden');
     }
 
-    // ปุ่มแผนที่ — ใช้พิกัดจริงเท่านั้น ถ้าเป็น default หรือไม่มีให้ search ด้วยชื่อ+ที่อยู่แทน
+    // ปุ่มแผนที่ — ค้นหาด้วยชื่อร้าน+ที่อยู่ เพื่อให้โชว์ชื่อร้านบน Google Maps
+    // ถ้ามีพิกัดจริงให้ใส่เป็น center ของแผนที่ด้วย
     const mapEl = document.getElementById('modalMap');
     const DEFAULT_LAT = 13.7563, DEFAULT_LNG = 100.5018;
     const hasRealCoords = place.lat && place.lng &&
       !(Math.abs(place.lat - DEFAULT_LAT) < 0.001 && Math.abs(place.lng - DEFAULT_LNG) < 0.001);
+    const searchQ = encodeURIComponent([place.name, place.address, place.city || place.district, place.province].filter(Boolean).join(' '));
     if (hasRealCoords) {
-      mapEl.href = `https://www.google.com/maps/search/?api=1&query=${place.lat},${place.lng}`;
+      mapEl.href = `https://www.google.com/maps/search/${searchQ}/@${place.lat},${place.lng},17z`;
     } else {
-      const q = [place.name, place.address, place.city || place.district, place.province].filter(Boolean).join(' ');
-      mapEl.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
+      mapEl.href = `https://www.google.com/maps/search/?api=1&query=${searchQ}`;
     }
 
     currentPlaceId = place.id;
