@@ -409,20 +409,105 @@ function showContent() {
   document.getElementById('placeContent').classList.remove('hidden');
 }
 
+// ── SEO Injection ────────────────────────────────────────────
+function injectSEO(place) {
+  const BASE = 'https://www.pawdeepet.com';
+  const url  = `${BASE}/place?id=${place.id}`;
+  const tier = place.tier || 'free';
+  const isPro = tier === 'pro' || tier === 'basic' || tier === 'verified';
+  const isPremium = tier === 'premium';
+
+  // ── Title & Description ──
+  const cityStr = [place.city, place.province].filter(Boolean).join(' ');
+  const typeLabel = place.categories?.[0] || place.type || 'สถานที่';
+  const titleText = `${place.name} | ${typeLabel}${cityStr ? ' ' + cityStr : ''} — PawDee`;
+  const descText  = place.description
+    ? place.description.slice(0, 155)
+    : `${place.name} ${typeLabel}${cityStr ? ' ใน' + cityStr : ''} — ข้อมูล ที่อยู่ เวลาเปิด-ปิด และนโยบายสัตว์เลี้ยงบน PawDee`;
+
+  document.title = titleText;
+  document.querySelector('meta[name="description"]')?.setAttribute('content', descText);
+  document.querySelector('meta[property="og:title"]')?.setAttribute('content', titleText);
+  document.querySelector('meta[property="og:description"]')?.setAttribute('content', descText);
+  document.querySelector('meta[property="og:url"]')?.setAttribute('content', url);
+  document.querySelector('meta[property="twitter:title"]')?.setAttribute('content', titleText);
+  document.querySelector('meta[property="twitter:description"]')?.setAttribute('content', descText);
+  document.querySelector('link[rel="canonical"]')?.setAttribute('href', url);
+
+  if (place.imageUrl) {
+    document.querySelector('meta[property="og:image"]')?.setAttribute('content', place.imageUrl);
+    document.querySelector('meta[property="og:type"]')?.setAttribute('content', 'website');
+    document.querySelector('meta[property="twitter:image"]')?.setAttribute('content', place.imageUrl);
+  }
+
+  // ── Schema.org JSON-LD ──
+  const SCHEMA_TYPE_MAP = {
+    vet: 'VeterinaryCare', clinic: 'VeterinaryCare',
+    cafe: 'CafeOrCoffeeShop', restaurant: 'FoodEstablishment',
+    hotel: 'LodgingBusiness', pet_hotel: 'LodgingBusiness',
+    grooming: 'LocalBusiness', pet_store: 'PetStore',
+    park: 'Park', beach: 'Beach',
+  };
+  const firstCat = place.categories?.[0] || place.type || '';
+  const schemaType = SCHEMA_TYPE_MAP[firstCat] || 'LocalBusiness';
+
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': schemaType,
+    name: place.name,
+    description: descText,
+    url,
+    ...(place.phone && { telephone: place.phone }),
+    ...(place.website && { sameAs: [place.website] }),
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: place.address || '',
+      addressLocality: place.city || place.district || '',
+      addressRegion: place.province || '',
+      addressCountry: 'TH',
+    },
+    ...(place.lat && place.lng && {
+      geo: { '@type': 'GeoCoordinates', latitude: place.lat, longitude: place.lng },
+      hasMap: `https://www.google.com/maps?q=${place.lat},${place.lng}`,
+    }),
+    ...(place.openHours && { openingHours: place.openHours }),
+    ...(place.priceRange && { priceRange: place.priceRange }),
+    ...(place.imageUrl && { image: place.imageUrl }),
+  };
+
+  // Pro+: aggregateRating (ดาวขึ้น Google)
+  if ((isPro || isPremium) && place.rating > 0 && place.reviewCount > 0) {
+    schema.aggregateRating = {
+      '@type': 'AggregateRating',
+      ratingValue: place.rating.toFixed(1),
+      reviewCount: place.reviewCount,
+      bestRating: 5,
+      worstRating: 1,
+    };
+  }
+
+  // Premium: gallery images in schema
+  if (isPremium && place.gallery?.length > 0) {
+    schema.photo = place.gallery.map(u => ({ '@type': 'ImageObject', url: u }));
+  }
+
+  const existing = document.getElementById('place-json-ld');
+  if (existing) existing.remove();
+  const script = document.createElement('script');
+  script.id   = 'place-json-ld';
+  script.type = 'application/ld+json';
+  script.text = JSON.stringify(schema);
+  document.head.appendChild(script);
+}
+
 // ── Render Place ────────────────────────────────────────────
 function renderPlace(place) {
   const cats = getCategories(place);
   const firstKey = cats[0] || '';
   const t = TYPE_LABELS[firstKey] || { label: place.customCategory || firstKey || 'สถานที่', icon: '📍', cls: '' };
 
-  // ── Update <title> + meta description ──
-  const titleStr = `${place.name} — ${t.label} Pet-Friendly ที่ ${place.district || ''} ${place.city || ''} | PawDee`;
-  document.title = titleStr;
-  document.querySelector('meta[name="description"]').content =
-    `${place.name} ${t.label} Pet-Friendly ที่ ${place.address || ''} ${place.district || ''} ${place.city || ''}` +
-    (place.indoorSeating ? ' รับสัตว์เลี้ยงในร้านได้' : '') +
-    (place.maxWeightKg == null || place.maxWeightKg >= 20 ? ' รับพันธุ์ใหญ่' : '') +
-    ` ⭐ ${place.rating?.toFixed(1) || ''} (${place.reviewCount || 0} รีวิว)`;
+  // ── SEO: title, meta, og, canonical, JSON-LD ──
+  injectSEO(place);
   document.querySelector('meta[property="og:title"]') &&
     (document.querySelector('meta[property="og:title"]').content = titleStr);
   const placeUrl = `https://www.pawdeepet.com/place/${placeId}`;

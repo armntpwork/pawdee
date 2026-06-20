@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sitemap Generator | PawDee Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; background:#f9fafb; }
+    pre { white-space: pre-wrap; word-break: break-all; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-start p-8">
+
+  <div class="w-full max-w-3xl">
+    <div class="mb-8 text-center">
+      <h1 class="text-2xl font-bold text-gray-900 mb-1">🗺️ Sitemap Generator</h1>
+      <p class="text-gray-500 text-sm">Generate <code>sitemap.xml</code> จาก Firestore แล้ว upload ขึ้น root ของเว็บ</p>
+    </div>
+
+    <!-- Auth check -->
+    <div id="authCheck" class="text-center py-12 text-gray-400">⏳ กำลังตรวจสอบสิทธิ์...</div>
+
+    <!-- Main content -->
+    <div id="mainContent" class="hidden space-y-6">
+
+      <!-- Priority legend -->
+      <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+        <h2 class="font-semibold text-gray-800 mb-3">Priority ตาม Tier</h2>
+        <div class="flex gap-4 flex-wrap text-sm">
+          <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-amber-400 inline-block"></span><span>🌟 Premium — priority <strong>1.0</strong></span></div>
+          <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-orange-400 inline-block"></span><span>🔶 Pro — priority <strong>0.7</strong></span></div>
+          <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-gray-300 inline-block"></span><span>Starter — priority <strong>0.5</strong></span></div>
+        </div>
+      </div>
+
+      <!-- Generate button -->
+      <button id="generateBtn" onclick="generate()"
+        class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl transition-colors">
+        ⚡ Generate Sitemap
+      </button>
+
+      <!-- Stats -->
+      <div id="stats" class="hidden grid grid-cols-3 gap-3 text-center">
+        <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+          <div id="statTotal" class="text-2xl font-bold text-gray-900">–</div>
+          <div class="text-xs text-gray-500 mt-1">ร้านทั้งหมด</div>
+        </div>
+        <div class="bg-white rounded-xl p-4 border border-amber-100 shadow-sm">
+          <div id="statPremium" class="text-2xl font-bold text-amber-600">–</div>
+          <div class="text-xs text-gray-500 mt-1">🌟 Premium</div>
+        </div>
+        <div class="bg-white rounded-xl p-4 border border-orange-100 shadow-sm">
+          <div id="statPro" class="text-2xl font-bold text-orange-500">–</div>
+          <div class="text-xs text-gray-500 mt-1">🔶 Pro</div>
+        </div>
+      </div>
+
+      <!-- Output -->
+      <div id="outputSection" class="hidden">
+        <div class="flex items-center justify-between mb-2">
+          <h2 class="font-semibold text-gray-800">sitemap.xml</h2>
+          <div class="flex gap-2">
+            <button onclick="copyXML()" class="text-sm px-4 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors">📋 Copy</button>
+            <button onclick="downloadXML()" class="text-sm px-4 py-1.5 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium transition-colors">⬇️ Download</button>
+          </div>
+        </div>
+        <div class="bg-gray-900 text-green-400 rounded-2xl p-4 text-xs overflow-auto max-h-80">
+          <pre id="xmlOutput"></pre>
+        </div>
+      </div>
+
+      <!-- Instructions -->
+      <div id="instructions" class="hidden bg-blue-50 border border-blue-200 rounded-2xl p-5 text-sm">
+        <h3 class="font-semibold text-blue-900 mb-3">📋 วิธีใช้งาน</h3>
+        <ol class="text-blue-800 space-y-2 list-decimal list-inside">
+          <li>กด <strong>Download</strong> เพื่อโหลดไฟล์ <code>sitemap.xml</code></li>
+          <li>Upload ไฟล์ไปยัง <strong>root ของเว็บ</strong> (ข้างๆ index.html)</li>
+          <li>เปิด <a href="https://search.google.com/search-console" target="_blank" class="underline font-medium">Google Search Console</a> → Sitemaps</li>
+          <li>ใส่ URL: <code class="bg-blue-100 px-1 rounded">https://www.pawdeepet.com/sitemap.xml</code></li>
+          <li>กด <strong>Submit</strong> — Google จะ crawl ภายใน 1–7 วัน</li>
+        </ol>
+        <p class="text-blue-600 mt-3 text-xs">💡 ควร re-generate ทุกครั้งที่มีร้านใหม่เข้าระบบ</p>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import { getFirestore, collection, getDocs, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+    import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+    import { firebaseConfig } from './js/firebase-config.js';
+
+    const app = initializeApp(firebaseConfig, 'sitemap-gen');
+    const db  = getFirestore(app);
+    const auth = getAuth(app);
+
+    const ADMINS = ['armntp.work@gmail.com'];
+    const BASE   = 'https://www.pawdeepet.com';
+
+    onAuthStateChanged(auth, user => {
+      if (!user || !ADMINS.includes(user.email)) {
+        document.getElementById('authCheck').textContent = '🔒 เฉพาะ Admin เท่านั้น';
+        return;
+      }
+      document.getElementById('authCheck').classList.add('hidden');
+      document.getElementById('mainContent').classList.remove('hidden');
+    });
+
+    let xmlContent = '';
+
+    window.generate = async function() {
+      const btn = document.getElementById('generateBtn');
+      btn.textContent = '⏳ กำลัง generate...';
+      btn.disabled = true;
+
+      try {
+        const snap = await getDocs(collection(db, 'places'));
+        const places = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+        // sort: premium first, then pro, then free
+        const tierOrder = p => {
+          const t = p.tier || 'free';
+          if (t === 'premium') return 0;
+          if (t === 'pro' || t === 'basic' || t === 'verified') return 1;
+          return 2;
+        };
+        places.sort((a, b) => tierOrder(a) - tierOrder(b));
+
+        const now  = new Date().toISOString().split('T')[0];
+        const urls = [];
+
+        // Static pages
+        const staticPages = [
+          { loc: `${BASE}/`, priority: '0.9', changefreq: 'weekly' },
+          { loc: `${BASE}/places.html`, priority: '0.8', changefreq: 'daily' },
+          { loc: `${BASE}/register-business.html`, priority: '0.6', changefreq: 'monthly' },
+        ];
+
+        staticPages.forEach(p => {
+          urls.push(`  <url>\n    <loc>${p.loc}</loc>\n    <lastmod>${now}</lastmod>\n    <changefreq>${p.changefreq}</changefreq>\n    <priority>${p.priority}</priority>\n  </url>`);
+        });
+
+        // Place pages
+        let premiumCount = 0, proCount = 0;
+        places.forEach(p => {
+          const tier = p.tier || 'free';
+          const isPremium = tier === 'premium';
+          const isPro = tier === 'pro' || tier === 'basic' || tier === 'verified';
+          const priority = isPremium ? '1.0' : isPro ? '0.7' : '0.5';
+          const changefreq = isPremium ? 'daily' : isPro ? 'weekly' : 'monthly';
+          if (isPremium) premiumCount++;
+          else if (isPro) proCount++;
+          urls.push(`  <url>\n    <loc>${BASE}/place?id=${p.id}</loc>\n    <lastmod>${now}</lastmod>\n    <changefreq>${changefreq}</changefreq>\n    <priority>${priority}</priority>\n  </url>`);
+        });
+
+        xmlContent = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>`;
+
+        // Update UI
+        document.getElementById('statTotal').textContent   = places.length;
+        document.getElementById('statPremium').textContent = premiumCount;
+        document.getElementById('statPro').textContent     = proCount;
+        document.getElementById('stats').classList.remove('hidden');
+        document.getElementById('xmlOutput').textContent   = xmlContent;
+        document.getElementById('outputSection').classList.remove('hidden');
+        document.getElementById('instructions').classList.remove('hidden');
+
+      } catch (e) {
+        alert('Error: ' + e.message);
+      }
+
+      btn.textContent = '⚡ Generate อีกครั้ง';
+      btn.disabled = false;
+    };
+
+    window.copyXML = function() {
+      navigator.clipboard.writeText(xmlContent).then(() => alert('Copied! ✅'));
+    };
+
+    window.downloadXML = function() {
+      const blob = new Blob([xmlContent], { type: 'application/xml' });
+      const a    = document.createElement('a');
+      a.href     = URL.createObjectURL(blob);
+      a.download = 'sitemap.xml';
+      a.click();
+    };
+  </script>
+</body>
+</html>
