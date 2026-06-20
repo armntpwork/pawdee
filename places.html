@@ -1265,7 +1265,8 @@
       !(Math.abs(place.lat - DEFAULT_LAT) < 0.001 && Math.abs(place.lng - DEFAULT_LNG) < 0.001);
     const searchQ = encodeURIComponent([place.name, place.address, place.city || place.district, place.province].filter(Boolean).join(' '));
     if (hasRealCoords) {
-      mapEl.href = `https://www.google.com/maps/search/${searchQ}/@${place.lat},${place.lng},17z`;
+      // ปักหมุดตรงพิกัดเลย แสดงชื่อด้วย
+      mapEl.href = `https://maps.google.com/?q=${place.lat},${place.lng}`;
     } else {
       mapEl.href = `https://www.google.com/maps/search/?api=1&query=${searchQ}`;
     }
