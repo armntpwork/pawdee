@@ -189,11 +189,16 @@
   <div class="bg-white rounded-3xl p-6 max-w-lg w-full shadow-2xl">
     <h3 class="text-lg font-bold text-gray-900 mb-4" id="modalTitle">รายละเอียดการสมัคร</h3>
     <div id="modalBody" class="space-y-2 text-sm text-gray-700 mb-6 max-h-80 overflow-y-auto"></div>
-    <div class="flex gap-3">
+    <div id="modalViewBtns" class="flex gap-3">
       <button id="approveBtn" class="flex-1 bg-green-500 text-white py-3 rounded-xl font-bold hover:bg-green-600 transition-all">✓ อนุมัติ</button>
       <button id="rejectBtn" class="flex-1 bg-red-500 text-white py-3 rounded-xl font-bold hover:bg-red-600 transition-all">✗ ปฏิเสธ</button>
+      <button id="editBtn" class="px-4 py-3 rounded-xl bg-brand-orange text-white hover:bg-brand-orange-deep transition-all font-semibold text-sm">✏️ แก้ไข</button>
       <button id="deleteBtn" class="px-4 py-3 rounded-xl bg-gray-800 text-white hover:bg-black transition-all font-semibold text-sm">🗑️ ลบ</button>
       <button id="modalClose" class="px-4 py-3 rounded-xl border-2 border-gray-200 text-gray-600 hover:border-gray-300 transition-all font-semibold">ปิด</button>
+    </div>
+    <div id="modalEditBtns" class="hidden flex gap-3">
+      <button id="saveEditBtn" class="flex-1 bg-brand-orange text-white py-3 rounded-xl font-bold hover:bg-brand-orange-deep transition-all">💾 บันทึก</button>
+      <button id="cancelEditBtn" class="px-4 py-3 rounded-xl border-2 border-gray-200 text-gray-600 hover:border-gray-300 transition-all font-semibold">ยกเลิก</button>
     </div>
   </div>
 </div>
@@ -359,6 +364,8 @@ window.openModal = function(id) {
       </div>
     </div>`;
 
+  document.getElementById('modalViewBtns').classList.remove('hidden');
+  document.getElementById('modalEditBtns').classList.add('hidden');
   document.getElementById('modal').classList.remove('hidden');
 };
 
@@ -450,6 +457,152 @@ async function copyToPlaces(d) {
   };
   await addDoc(collection(db, 'places'), placeData);
 }
+
+// ── Edit form ─────────────────────────────────────────────────
+const FIELD_INPUT = 'w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm';
+const TYPE_OPTIONS = [
+  ['cafe','☕ คาเฟ่'],['restaurant','🍽️ ร้านอาหาร'],['hotel','🏨 โรงแรม/ที่พัก'],
+  ['clinic','🏥 คลินิกสัตว์'],['grooming','🛁 อาบน้ำ-ตัดขน'],['shop','🛍️ Pet Shop'],
+  ['condo','🏠 คอนโด/หมู่บ้าน'],['park','🌳 สวนสาธารณะ'],['other','📍 อื่นๆ']
+];
+
+window.openEditForm = function() {
+  const d = allDocs.find(x => x.id === currentDocId);
+  if (!d) return;
+  const mainType = (d.categories?.[0]) || d.type || '';
+  const typeOpts = TYPE_OPTIONS.map(([v,l]) => `<option value="${v}"${mainType===v?' selected':''}>${l}</option>`).join('');
+  document.getElementById('modalBody').innerHTML = `
+    <div class="space-y-3">
+      <div class="grid grid-cols-2 gap-3">
+        <div class="col-span-2">
+          <label class="block text-xs font-semibold text-gray-500 mb-1">ชื่อร้าน *</label>
+          <input id="ef_name" class="${FIELD_INPUT}" value="${escHtml(d.name||'')}"/>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 mb-1">ประเภท</label>
+          <select id="ef_type" class="${FIELD_INPUT}">${typeOpts}</select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 mb-1">ราคา</label>
+          <select id="ef_price" class="${FIELD_INPUT}">
+            ${['฿','฿฿','฿฿฿'].map(p=>`<option${(d.priceRange||'฿')===p?' selected':''}>${p}</option>`).join('')}
+          </select>
+        </div>
+        <div class="col-span-2">
+          <label class="block text-xs font-semibold text-gray-500 mb-1">ที่อยู่</label>
+          <input id="ef_address" class="${FIELD_INPUT}" value="${escHtml(d.address||'')}"/>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 mb-1">เขต/อำเภอ</label>
+          <input id="ef_city" class="${FIELD_INPUT}" value="${escHtml(d.city||'')}"/>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 mb-1">จังหวัด</label>
+          <input id="ef_province" class="${FIELD_INPUT}" value="${escHtml(d.province||'')}"/>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 mb-1">โทรศัพท์</label>
+          <input id="ef_phone" class="${FIELD_INPUT}" value="${escHtml(d.phone||'')}"/>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 mb-1">เวลาทำการ</label>
+          <input id="ef_hours" class="${FIELD_INPUT}" placeholder="เช่น 9:00-21:00" value="${escHtml(d.hours||'')}"/>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 mb-1">เว็บไซต์</label>
+          <input id="ef_website" class="${FIELD_INPUT}" value="${escHtml(d.website||'')}"/>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 mb-1">Facebook</label>
+          <input id="ef_facebook" class="${FIELD_INPUT}" value="${escHtml(d.facebook||'')}"/>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 mb-1">Latitude</label>
+          <input id="ef_lat" type="number" step="any" class="${FIELD_INPUT}" value="${d.lat||''}"/>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 mb-1">Longitude</label>
+          <input id="ef_lng" type="number" step="any" class="${FIELD_INPUT}" value="${d.lng||''}"/>
+        </div>
+        <div class="col-span-2">
+          <label class="block text-xs font-semibold text-gray-500 mb-1">สัตว์ที่รับ (คั่นด้วยจุลภาค)</label>
+          <input id="ef_pets" class="${FIELD_INPUT}" placeholder="เช่น หมา, แมว, กระต่าย" value="${escHtml((Array.isArray(d.pets)?d.pets.join(', '):d.pets)||'')}"/>
+        </div>
+        <div class="col-span-2">
+          <label class="block text-xs font-semibold text-gray-500 mb-1">บริการ (คั่นด้วยจุลภาค)</label>
+          <input id="ef_services" class="${FIELD_INPUT}" placeholder="เช่น อาบน้ำ, ตัดขน" value="${escHtml((Array.isArray(d.services)?d.services.join(', '):d.services)||'')}"/>
+        </div>
+        <div class="col-span-2">
+          <label class="block text-xs font-semibold text-gray-500 mb-1">รายละเอียด</label>
+          <textarea id="ef_desc" rows="3" class="${FIELD_INPUT}">${escHtml(d.description||'')}</textarea>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 mb-1">ชื่อผู้ติดต่อ</label>
+          <input id="ef_cname" class="${FIELD_INPUT}" value="${escHtml(d.contactName||'')}"/>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 mb-1">อีเมลผู้ติดต่อ</label>
+          <input id="ef_cemail" type="email" class="${FIELD_INPUT}" value="${escHtml(d.contactEmail||'')}"/>
+        </div>
+      </div>
+    </div>`;
+  document.getElementById('modalViewBtns').classList.add('hidden');
+  document.getElementById('modalEditBtns').classList.remove('hidden');
+};
+
+function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+window.cancelEdit = function() {
+  openModal(currentDocId); // re-render view mode
+};
+
+window.saveEdit = async function() {
+  const d = allDocs.find(x => x.id === currentDocId);
+  if (!d) return;
+  const btn = document.getElementById('saveEditBtn');
+  btn.disabled = true; btn.textContent = 'กำลังบันทึก...';
+  try {
+    const type = document.getElementById('ef_type').value;
+    const updates = {
+      name:         document.getElementById('ef_name').value.trim(),
+      type,
+      categories:   [type],
+      address:      document.getElementById('ef_address').value.trim(),
+      city:         document.getElementById('ef_city').value.trim(),
+      province:     document.getElementById('ef_province').value.trim(),
+      phone:        document.getElementById('ef_phone').value.trim(),
+      hours:        document.getElementById('ef_hours').value.trim(),
+      website:      document.getElementById('ef_website').value.trim(),
+      facebook:     document.getElementById('ef_facebook').value.trim(),
+      priceRange:   document.getElementById('ef_price').value,
+      description:  document.getElementById('ef_desc').value.trim(),
+      contactName:  document.getElementById('ef_cname').value.trim(),
+      contactEmail: document.getElementById('ef_cemail').value.trim(),
+      pets:         document.getElementById('ef_pets').value.split(',').map(s=>s.trim()).filter(Boolean),
+      services:     document.getElementById('ef_services').value.split(',').map(s=>s.trim()).filter(Boolean),
+      lat:          parseFloat(document.getElementById('ef_lat').value) || null,
+      lng:          parseFloat(document.getElementById('ef_lng').value) || null,
+      updatedAt:    serverTimestamp(),
+    };
+    // บันทึกลง pending_places
+    await updateDoc(doc(db, 'pending_places', currentDocId), updates);
+    // ถ้าอนุมัติแล้ว sync ไป places ด้วย
+    if (d.status === 'approved') {
+      const snap = await getDocs(query(collection(db, 'places'), where('name', '==', d.name)));
+      for (const p of snap.docs) await updateDoc(doc(db, 'places', p.id), updates);
+    }
+    // อัปเดต cache
+    Object.assign(d, updates);
+    openModal(currentDocId);
+  } catch (e) {
+    alert('บันทึกไม่สำเร็จ: ' + e.message);
+    btn.disabled = false; btn.textContent = '💾 บันทึก';
+  }
+};
+
+document.getElementById('editBtn').addEventListener('click', () => openEditForm());
+document.getElementById('saveEditBtn').addEventListener('click', () => saveEdit());
+document.getElementById('cancelEditBtn').addEventListener('click', () => cancelEdit());
 
 document.getElementById('approveBtn').addEventListener('click', async () => {
   if (!currentDocId) return;
