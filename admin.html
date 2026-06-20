@@ -530,6 +530,14 @@ window.openEditForm = function() {
           <label class="block text-xs font-semibold text-gray-500 mb-1">Facebook</label>
           <input id="ef_facebook" class="${FIELD_INPUT}" value="${escHtml(d.facebook||'')}"/>
         </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 mb-1">Instagram</label>
+          <input id="ef_instagram" class="${FIELD_INPUT}" placeholder="https://instagram.com/..." value="${escHtml(d.instagram||'')}"/>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 mb-1">LINE OA</label>
+          <input id="ef_line" class="${FIELD_INPUT}" placeholder="@lineid หรือ https://line.me/..." value="${escHtml(d.line||'')}"/>
+        </div>
         <div class="col-span-2">
           <label class="block text-xs font-semibold text-gray-500 mb-1">พิกัด GPS</label>
 
@@ -567,14 +575,55 @@ window.openEditForm = function() {
           <label class="block text-xs font-semibold text-gray-500 mb-1">สัตว์ที่รับ (คั่นด้วยจุลภาค)</label>
           <input id="ef_pets" class="${FIELD_INPUT}" placeholder="เช่น หมา, แมว, กระต่าย" value="${escHtml((Array.isArray(d.pets)?d.pets.join(', '):d.pets)||'')}"/>
         </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 mb-1">น้ำหนักสัตว์สูงสุด (กก.)</label>
+          <input id="ef_maxweight" type="number" min="0" max="200" class="${FIELD_INPUT}" placeholder="ปล่อยว่าง = ไม่จำกัด" value="${d.maxWeightKg||''}"/>
+        </div>
         <div class="col-span-2">
           <label class="block text-xs font-semibold text-gray-500 mb-1">บริการ (คั่นด้วยจุลภาค)</label>
           <input id="ef_services" class="${FIELD_INPUT}" placeholder="เช่น อาบน้ำ, ตัดขน" value="${escHtml((Array.isArray(d.services)?d.services.join(', '):d.services)||'')}"/>
         </div>
+
+        <!-- Checkboxes สิ่งอำนวยความสะดวก -->
+        <div class="col-span-2">
+          <label class="block text-xs font-semibold text-gray-500 mb-2">สิ่งอำนวยความสะดวก</label>
+          <div class="grid grid-cols-2 gap-2">
+            ${[
+              ['ef_carrier','needCarrier','🧳 ต้องใส่กรง/กระเป๋า'],
+              ['ef_indoor','indoorSeating','🪑 มีที่นั่งในร้าน'],
+              ['ef_emergency','emergency24hr','🚨 ฉุกเฉิน 24 ชม.'],
+              ['ef_parking','hasParking','🅿️ มีที่จอดรถ'],
+              ['ef_specialist','hasSpecialist','👨‍⚕️ หมอเฉพาะทาง'],
+              ['ef_xray','hasXray','🔬 เอกซเรย์/อัลตราซาวด์'],
+              ['ef_lab','hasLab','🧪 ห้อง Lab'],
+              ['ef_surgery','hasSurgery','🏥 ห้องผ่าตัด'],
+            ].map(([id,field,label]) => `
+              <label class="flex items-center gap-2 p-2.5 rounded-xl border-2 cursor-pointer text-xs font-medium transition-all ${d[field]?'border-brand-orange bg-orange-50 text-brand-orange':'border-gray-200 text-gray-600 hover:border-orange-200'}" onclick="toggleCheckbox(this)">
+                <input type="checkbox" id="${id}" name="ef_bool" data-field="${field}" ${d[field]?'checked':''} class="hidden"/> ${label}
+              </label>`).join('')}
+          </div>
+        </div>
+
         <div class="col-span-2">
           <label class="block text-xs font-semibold text-gray-500 mb-1">รายละเอียด</label>
           <textarea id="ef_desc" rows="3" class="${FIELD_INPUT}">${escHtml(d.description||'')}</textarea>
         </div>
+
+        <!-- รูปภาพ -->
+        <div class="col-span-2 border-t border-gray-100 pt-3">
+          <label class="block text-xs font-semibold text-gray-500 mb-2">🖼️ รูปภาพ (ใส่ URL)</label>
+          <div class="space-y-2">
+            <div>
+              <label class="block text-xs text-gray-400 mb-1">รูปปก (Cover)</label>
+              <input id="ef_imageurl" class="${FIELD_INPUT}" placeholder="https://..." value="${escHtml(d.imageUrl||'')}"/>
+            </div>
+            <div>
+              <label class="block text-xs text-gray-400 mb-1">โลโก้</label>
+              <input id="ef_logourl" class="${FIELD_INPUT}" placeholder="https://..." value="${escHtml(d.logoUrl||'')}"/>
+            </div>
+          </div>
+        </div>
+
         <div>
           <label class="block text-xs font-semibold text-gray-500 mb-1">ชื่อผู้ติดต่อ</label>
           <input id="ef_cname" class="${FIELD_INPUT}" value="${escHtml(d.contactName||'')}"/>
@@ -638,6 +687,18 @@ window.parseGmapsUrl = function() {
     status.textContent = '❌ ไม่พบพิกัดใน link นี้ — ลอง copy URL จาก address bar ของ Google Maps แทนครับ';
     status.classList.remove('hidden');
     mapLink.classList.add('hidden');
+  }
+};
+
+window.toggleCheckbox = function(label) {
+  const cb = label.querySelector('input[type=checkbox]');
+  cb.checked = !cb.checked;
+  if (cb.checked) {
+    label.classList.add('border-brand-orange','bg-orange-50','text-brand-orange');
+    label.classList.remove('border-gray-200','text-gray-600');
+  } else {
+    label.classList.remove('border-brand-orange','bg-orange-50','text-brand-orange');
+    label.classList.add('border-gray-200','text-gray-600');
   }
 };
 
@@ -711,6 +772,13 @@ window.saveEdit = async function() {
     const categories = [...document.querySelectorAll('input[name="ef_cat"]:checked')].map(cb => cb.value);
     if (!categories.length) { alert('กรุณาเลือกประเภทอย่างน้อย 1 อย่าง'); btn.disabled = false; btn.textContent = '💾 บันทึก'; return; }
     const type = categories[0];
+    // รวบ boolean checkboxes
+    const boolFields = {};
+    document.querySelectorAll('input[name="ef_bool"]').forEach(cb => {
+      boolFields[cb.dataset.field] = cb.checked;
+    });
+
+    const mw = parseFloat(document.getElementById('ef_maxweight').value);
     const updates = {
       name:         document.getElementById('ef_name').value.trim(),
       type,
@@ -720,16 +788,23 @@ window.saveEdit = async function() {
       province:     document.getElementById('ef_province').value.trim(),
       phone:        document.getElementById('ef_phone').value.trim(),
       hours:        document.getElementById('ef_hours').value.trim(),
+      openHours:    document.getElementById('ef_hours').value.trim(),
       website:      document.getElementById('ef_website').value.trim(),
       facebook:     document.getElementById('ef_facebook').value.trim(),
+      instagram:    document.getElementById('ef_instagram').value.trim(),
+      line:         document.getElementById('ef_line').value.trim(),
       priceRange:   document.getElementById('ef_price').value,
       description:  document.getElementById('ef_desc').value.trim(),
       contactName:  document.getElementById('ef_cname').value.trim(),
       contactEmail: document.getElementById('ef_cemail').value.trim(),
       pets:         document.getElementById('ef_pets').value.split(',').map(s=>s.trim()).filter(Boolean),
       services:     document.getElementById('ef_services').value.split(',').map(s=>s.trim()).filter(Boolean),
+      maxWeightKg:  isNaN(mw) ? null : mw,
+      imageUrl:     document.getElementById('ef_imageurl').value.trim() || null,
+      logoUrl:      document.getElementById('ef_logourl').value.trim() || null,
       lat:          parseFloat(document.getElementById('ef_lat').value) || null,
       lng:          parseFloat(document.getElementById('ef_lng').value) || null,
+      ...boolFields,
       updatedAt:    serverTimestamp(),
     };
     // บันทึกลง pending_places
