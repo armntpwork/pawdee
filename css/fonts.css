@@ -1,3 +1,35 @@
+/* LINE Seed TW — Traditional Chinese */
+@font-face {
+  font-family: 'LINE Seed TW';
+  src: url('/fonts/LINESeedTW_TTF_Th.ttf') format('truetype');
+  font-weight: 100 300;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'LINE Seed TW';
+  src: url('/fonts/LINESeedTW_TTF_Rg.ttf') format('truetype');
+  font-weight: 400 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'LINE Seed TW';
+  src: url('/fonts/LINESeedTW_TTF_Bd.ttf') format('truetype');
+  font-weight: 600 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'LINE Seed TW';
+  src: url('/fonts/LINESeedTW_TTF_Eb.ttf') format('truetype');
+  font-weight: 800 900;
+  font-display: swap;
+}
+
+/* Apply LINE Seed TW when language is Chinese */
+html[lang="zh-TW"] *,
+html[lang="zh"] * {
+  font-family: 'LINE Seed TW', sans-serif !important;
+}
+
 /* LINE Seed Sans TH — self-hosted */
 @font-face {
   font-family: 'LINE Seed Sans TH';
