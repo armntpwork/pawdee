@@ -1170,7 +1170,7 @@
       document.querySelector('#placeModal .relative.h-52').appendChild(badge);
     }
     document.getElementById('modalName').textContent    = place.name;
-    document.getElementById('modalAddress').textContent = `📍 ${place.address || ''}, ${place.district || ''}, ${place.city || ''}`;
+    document.getElementById('modalAddress').textContent = '📍 ' + [place.address, place.district || place.city, place.province].filter(Boolean).join(', ');
     document.getElementById('modalRating').textContent  = place.rating?.toFixed(1) || '-';
     document.getElementById('modalReviews').textContent = place.reviewCount ? `${place.reviewCount.toLocaleString()} รีวิว` : '';
     document.getElementById('modalHours').textContent   = place.openHours || place.hours || '-';

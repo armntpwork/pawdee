@@ -508,11 +508,11 @@ window.openEditForm = function() {
         </div>
         <div>
           <label class="block text-xs font-semibold text-gray-500 mb-1">เขต/อำเภอ</label>
-          <input id="ef_city" class="${FIELD_INPUT}" value="${escHtml(d.city||'')}"/>
+          <input id="ef_city" class="${FIELD_INPUT}" value="${escHtml(d.district||d.city||'')}"/>
         </div>
         <div>
           <label class="block text-xs font-semibold text-gray-500 mb-1">จังหวัด</label>
-          <input id="ef_province" class="${FIELD_INPUT}" value="${escHtml(d.province||'')}"/>
+          <input id="ef_province" class="${FIELD_INPUT}" value="${escHtml(d.province||(d.district?d.city:'')||'')}"/>
         </div>
         <div>
           <label class="block text-xs font-semibold text-gray-500 mb-1">โทรศัพท์</label>
@@ -784,6 +784,7 @@ window.saveEdit = async function() {
       type,
       categories,
       address:      document.getElementById('ef_address').value.trim(),
+      district:     document.getElementById('ef_city').value.trim(),
       city:         document.getElementById('ef_city').value.trim(),
       province:     document.getElementById('ef_province').value.trim(),
       phone:        document.getElementById('ef_phone').value.trim(),
