@@ -112,6 +112,7 @@
       <button class="main-tab active-main px-5 py-2.5 rounded-xl text-sm font-semibold border-2 border-brand-orange bg-brand-orange text-white transition-all" data-panel="places">🏪 สถานที่</button>
       <button class="main-tab px-5 py-2.5 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 transition-all" data-panel="waitlist">📋 Waitlist</button>
       <button class="main-tab px-5 py-2.5 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 transition-all" data-panel="notify">🔔 แจ้งเตือนพี่เลี้ยง</button>
+      <button class="main-tab px-5 py-2.5 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 transition-all" data-panel="claim">🏷️ อ้างสิทธิ์</button>
     </div>
 
     <!-- Panel: สถานที่ -->
@@ -177,6 +178,21 @@
         </button>
       </div>
       <div id="notifyList" class="bg-white rounded-2xl shadow-sm overflow-hidden">
+        <div class="text-center py-16 text-gray-400"><div class="text-4xl mb-3">⏳</div><p>กำลังโหลด...</p></div>
+      </div>
+    </div>
+
+    <!-- Panel: อ้างสิทธิ์ -->
+    <div id="panel-claim" class="hidden">
+      <div class="flex items-center justify-between mb-4">
+        <p class="text-sm text-gray-500">คำขออ้างสิทธิ์เจ้าของร้านที่รอการตรวจสอบ</p>
+        <div class="flex gap-2">
+          <button class="claim-filter-tab active-claim px-4 py-2 rounded-xl text-xs font-semibold border-2 border-brand-orange bg-brand-orange text-white" data-claim-status="pending">รอตรวจสอบ</button>
+          <button class="claim-filter-tab px-4 py-2 rounded-xl text-xs font-semibold border-2 border-gray-200 text-gray-600" data-claim-status="approved">อนุมัติแล้ว</button>
+          <button class="claim-filter-tab px-4 py-2 rounded-xl text-xs font-semibold border-2 border-gray-200 text-gray-600" data-claim-status="rejected">ปฏิเสธ</button>
+        </div>
+      </div>
+      <div id="claimList" class="space-y-3">
         <div class="text-center py-16 text-gray-400"><div class="text-4xl mb-3">⏳</div><p>กำลังโหลด...</p></div>
       </div>
     </div>
@@ -881,7 +897,7 @@ document.querySelectorAll('.filter-tab').forEach(btn => {
 });
 
 // ── Main Tab Switching ────────────────────────────────────────
-const panels = ['places', 'waitlist', 'notify'];
+const panels = ['places', 'waitlist', 'notify', 'claim'];
 document.querySelectorAll('.main-tab').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.main-tab').forEach(b => {
@@ -893,6 +909,71 @@ document.querySelectorAll('.main-tab').forEach(btn => {
     document.getElementById('panel-' + panel).classList.remove('hidden');
     if (panel === 'waitlist') loadEmailList('waitlist', 'waitlistList');
     if (panel === 'notify') loadEmailList('notify_list', 'notifyList');
+    if (panel === 'claim') loadClaims('pending');
+  });
+});
+
+// ── Claim Requests ────────────────────────────────────────────
+let currentClaimStatus = 'pending';
+
+async function loadClaims(status) {
+  currentClaimStatus = status;
+  const el = document.getElementById('claimList');
+  el.innerHTML = '<div class="text-center py-16 text-gray-400"><div class="text-4xl mb-3">⏳</div><p>กำลังโหลด...</p></div>';
+  try {
+    const snap = await getDocs(query(collection(db, 'claim_requests'), where('status', '==', status), orderBy('createdAt', 'desc')));
+    if (snap.empty) {
+      el.innerHTML = '<div class="text-center py-16 text-gray-400"><div class="text-4xl mb-3">📭</div><p>ไม่มีคำขอในหมวดนี้</p></div>';
+      return;
+    }
+    el.innerHTML = snap.docs.map(d => {
+      const c = d.data();
+      const date = c.createdAt?.toDate ? c.createdAt.toDate().toLocaleDateString('th-TH') : '—';
+      const statusBadge = status === 'approved'
+        ? '<span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-semibold">อนุมัติแล้ว</span>'
+        : status === 'rejected'
+        ? '<span class="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-semibold">ปฏิเสธ</span>'
+        : '<span class="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full font-semibold">รอตรวจสอบ</span>';
+      return `
+        <div class="bg-white rounded-2xl shadow-sm p-5 border border-gray-100">
+          <div class="flex items-start justify-between gap-3 mb-3">
+            <div>
+              <p class="font-bold text-gray-900 text-sm">🏪 ${escHtml(c.placeName || '—')}</p>
+              <p class="text-xs text-gray-500 mt-0.5">${date}</p>
+            </div>
+            ${statusBadge}
+          </div>
+          <div class="grid grid-cols-2 gap-2 text-xs text-gray-600 mb-3">
+            <div><span class="text-gray-400">ชื่อ:</span> ${escHtml(c.name || '—')}</div>
+            <div><span class="text-gray-400">อีเมล:</span> <a href="mailto:${escHtml(c.email)}" class="text-brand-orange hover:underline">${escHtml(c.email || '—')}</a></div>
+            <div><span class="text-gray-400">โทร:</span> ${c.phone ? `<a href="tel:${escHtml(c.phone)}" class="text-brand-orange hover:underline">${escHtml(c.phone)}</a>` : '—'}</div>
+            <div><span class="text-gray-400">หลักฐาน:</span> ${c.proof ? `<a href="${escHtml(c.proof)}" target="_blank" class="text-brand-orange hover:underline truncate block max-w-[120px]">ดูลิงก์</a>` : '—'}</div>
+          </div>
+          ${status === 'pending' ? `
+          <div class="flex gap-2 pt-2 border-t border-gray-100">
+            <button onclick="claimAction('${d.id}','approved')" class="flex-1 bg-green-500 hover:bg-green-600 text-white text-xs font-semibold py-2 rounded-xl transition-colors">✅ อนุมัติ</button>
+            <button onclick="claimAction('${d.id}','rejected')" class="flex-1 bg-red-400 hover:bg-red-500 text-white text-xs font-semibold py-2 rounded-xl transition-colors">✕ ปฏิเสธ</button>
+          </div>` : ''}
+        </div>`;
+    }).join('');
+  } catch (e) {
+    el.innerHTML = '<div class="text-center py-8 text-red-400 text-sm">โหลดข้อมูลไม่ได้</div>';
+    console.error('loadClaims:', e);
+  }
+}
+
+window.claimAction = async function(id, status) {
+  await updateDoc(doc(db, 'claim_requests', id), { status, updatedAt: serverTimestamp() });
+  loadClaims(currentClaimStatus);
+};
+
+document.querySelectorAll('.claim-filter-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.claim-filter-tab').forEach(b => {
+      b.className = 'claim-filter-tab px-4 py-2 rounded-xl text-xs font-semibold border-2 border-gray-200 text-gray-600';
+    });
+    btn.className = 'claim-filter-tab active-claim px-4 py-2 rounded-xl text-xs font-semibold border-2 border-brand-orange bg-brand-orange text-white';
+    loadClaims(btn.dataset.claimStatus);
   });
 });
 
