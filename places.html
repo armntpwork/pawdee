@@ -936,13 +936,23 @@
         })
       }).addTo(leafletMap);
 
+      const navQ = encodeURIComponent([p.name, p.address, p.city||p.district, p.province].filter(Boolean).join(' '));
+      const DEFAULT_LAT = 13.7563, DEFAULT_LNG = 100.5018;
+      const hasRealCoords = p.lat && p.lng && !(Math.abs(p.lat-DEFAULT_LAT)<0.001 && Math.abs(p.lng-DEFAULT_LNG)<0.001);
+      const navUrl = hasRealCoords
+        ? `https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}`
+        : `https://www.google.com/maps/dir/?api=1&destination=${navQ}`;
+
       marker.bindPopup(`
-        <div style="min-width:180px;font-family:'Poppins','LINE Seed Sans TH',sans-serif">
+        <div style="min-width:200px;font-family:'Poppins','LINE Seed Sans TH',sans-serif">
           <div style="font-weight:700;font-size:0.9rem;margin-bottom:4px">${p.name}</div>
           <div style="font-size:0.75rem;color:#6b7280;margin-bottom:2px">📍 ${[p.district||p.city, p.province].filter(Boolean).join(', ') || '—'}</div>
-          <div style="font-size:0.75rem;color:#6b7280;margin-bottom:6px">⭐ ${p.rating?.toFixed(1) || '-'} · 🕐 ${p.openHours || p.hours || '-'}</div>
-          ${p.phone ? `<div style="font-size:0.75rem;margin-bottom:6px">📞 ${p.phone}</div>` : ''}
-          ${p.phone ? `<a href="tel:${p.phone}"><button class="map-popup-btn">📞 โทรหาร้าน</button></a>` : ''}
+          <div style="font-size:0.75rem;color:#6b7280;margin-bottom:8px">⭐ ${p.rating?.toFixed(1) || '-'} · 🕐 ${p.openHours || p.hours || '-'}</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px">
+            ${p.phone ? `<a href="tel:${p.phone}" style="text-decoration:none"><button class="map-popup-btn" style="background:#fff;color:#F97316;border:2px solid #F97316">📞 โทร</button></a>` : '<div></div>'}
+            <a href="${navUrl}" target="_blank" rel="noopener" style="text-decoration:none"><button class="map-popup-btn" style="background:#10b981">🧭 นำทาง</button></a>
+          </div>
+          <button class="map-popup-btn" onclick="openModal('${p.id}')">📋 ดูรายละเอียด</button>
         </div>
       `);
       markers.push(marker);
