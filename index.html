@@ -1175,5 +1175,81 @@
   initI18n();
 </script>
 <script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js").catch(()=>{});}</script>
+
+<!-- ===== EVENT POPUP SYSTEM ===== -->
+<!-- เพิ่มวันสำคัญใหม่ได้ที่ EVENTS array ด้านล่าง -->
+<div id="eventPopupOverlay" class="hidden fixed inset-0 z-[9999] flex items-center justify-center p-4" style="background:rgba(0,0,0,0.85);">
+  <div class="relative max-w-2xl w-full">
+    <img id="eventPopupImg" src="" alt="" class="w-full rounded-2xl shadow-2xl block"/>
+    <button id="eventPopupClose"
+      class="absolute -top-4 -right-4 w-10 h-10 bg-white text-gray-800 rounded-full shadow-xl flex items-center justify-center text-lg font-bold hover:bg-gray-100 transition-colors"
+      aria-label="ปิด">✕</button>
+    <p class="text-center text-white/50 text-xs mt-3">กดปิดเพื่อดำเนินการต่อ</p>
+  </div>
+</div>
+
+<script>
+(function() {
+  // ══════════════════════════════════════════════════════════════
+  //  รายการวันสำคัญ — เพิ่มรายการใหม่ที่นี่
+  //  id        : unique string (ใช้ตรวจสอบว่าเคยแสดงวันนี้แล้วไหม)
+  //  start     : Date เริ่มแสดง (null = แสดงทันที)
+  //  end       : Date หยุดแสดง (null = ไม่มีวันหมด)
+  //  image     : path ไฟล์รูป
+  // ══════════════════════════════════════════════════════════════
+  const EVENTS = [
+    {
+      id:    'mourning_princess_2569',
+      start: null,
+      end:   new Date('2026-12-31T23:59:59'),
+      image: '/องภา_PawDee.jpg',
+    },
+    // ตัวอย่างวันสำคัญอื่นๆ (uncomment เมื่อต้องการใช้):
+    // {
+    //   id:    'songkran_2569',
+    //   start: new Date('2026-04-13'),
+    //   end:   new Date('2026-04-15T23:59:59'),
+    //   image: '/events/songkran-2569.jpg',
+    // },
+  ];
+
+  function checkAndShow() {
+    const now = new Date();
+    const today = now.toDateString();
+    for (const ev of EVENTS) {
+      if (ev.start && now < ev.start) continue;
+      if (ev.end   && now > ev.end)   continue;
+      const key = 'pawdee_event_' + ev.id;
+      if (localStorage.getItem(key) === today) continue; // แสดงแล้ววันนี้
+      showPopup(ev, key, today);
+      return;
+    }
+  }
+
+  function showPopup(ev, storageKey, today) {
+    const overlay = document.getElementById('eventPopupOverlay');
+    const img     = document.getElementById('eventPopupImg');
+    const closeBtn = document.getElementById('eventPopupClose');
+    img.src = ev.image;
+    overlay.classList.remove('hidden');
+    // ปิด popup
+    function close() {
+      overlay.classList.add('hidden');
+      localStorage.setItem(storageKey, today);
+    }
+    closeBtn.addEventListener('click', close, { once: true });
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay) close();
+    }, { once: true });
+  }
+
+  // รอให้ DOM โหลดก่อน
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', checkAndShow);
+  } else {
+    checkAndShow();
+  }
+})();
+</script>
 </body>
 </html>
