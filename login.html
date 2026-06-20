@@ -235,8 +235,7 @@
     });
 
     showBanner('คุณอยู่ใน app browser — กรุณากด "เปิดใน Chrome" ก่อนเข้าสู่ระบบด้วย Google', 'info');
-    return;
-  }
+  } else {
 
   // ── Google Login ──────────────────────────────────────────────
   document.getElementById('googleBtn').addEventListener('click', async () => {
@@ -292,6 +291,8 @@
       showBanner(friendlyError(err.code));
     }
   });
+
+  } // end else (not in-app browser)
 
   // ── Toggle Password Visibility ────────────────────────────────
   document.querySelectorAll('.toggle-pw').forEach(btn => {
