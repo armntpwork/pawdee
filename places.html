@@ -630,7 +630,8 @@
 
   // ── Build card HTML ───────────────────────────────────────────
   function buildCard(place) {
-    const petIcons = (place.allowedPets || []).map(p => PET_ICONS[p] || '🐾').join(' ');
+    const allowedPets = place.allowedPets || place.pets || [];
+    const petIcons = allowedPets.map(p => PET_ICONS[p] || '🐾').join(' ');
     const weightTag = place.maxWeightKg
       ? `<span class="text-xs text-gray-400">น้ำหนักไม่เกิน ${place.maxWeightKg} กก.</span>`
       : '';
@@ -639,7 +640,7 @@
       : '';
     const amenityTags = [];
     if (place.indoorSeating) amenityTags.push('🏠 ในร้าน');
-    if (!place.needCarrier && (place.allowedPets||[]).includes('dog') && (place.maxWeightKg == null || place.maxWeightKg >= 20)) amenityTags.push('🐕 พันธุ์ใหญ่ได้');
+    if (!place.needCarrier && allowedPets.includes('dog') && (place.maxWeightKg == null || place.maxWeightKg >= 20)) amenityTags.push('🐕 พันธุ์ใหญ่ได้');
     const amenityHtml = amenityTags.length
       ? `<div class="flex flex-wrap gap-1 mt-1">${amenityTags.map(t=>`<span class="text-[10px] font-semibold bg-purple-50 text-purple-600 px-2 py-0.5 rounded-full">${t}</span>`).join('')}</div>`
       : '';
@@ -1180,14 +1181,15 @@
     // สัตว์ที่รับ + amenity chips
     const petsEl = document.getElementById('modalPets');
     const PET_NAMES = { dog:'สุนัข', cat:'แมว', rabbit:'กระต่าย', bird:'นก', fish:'ปลา', exotic:'Exotic', other: place.customPet || 'อื่นๆ' };
-    petsEl.innerHTML = (place.allowedPets || []).map(p =>
+    const modalPetList = place.allowedPets || place.pets || [];
+    petsEl.innerHTML = modalPetList.map(p =>
       `<span class="inline-flex items-center gap-1 bg-orange-50 text-orange-700 text-xs font-semibold px-3 py-1.5 rounded-full">${PET_ICONS[p] || '🐾'} ${PET_NAMES[p] || p}</span>`
     ).join('');
     // Amenity chips (ข้อมูลที่ Google ไม่มี)
     const amenities = [];
     if (place.indoorSeating) amenities.push('🏠 นั่งในร้านได้');
     if (!place.needCarrier)  amenities.push('🚫 ไม่ต้องใส่กรง');
-    if ((place.allowedPets||[]).includes('dog') && (place.maxWeightKg == null || place.maxWeightKg >= 20)) amenities.push('🐕 รับพันธุ์ใหญ่');
+    if (modalPetList.includes('dog') && (place.maxWeightKg == null || place.maxWeightKg >= 20)) amenities.push('🐕 รับพันธุ์ใหญ่');
     if (place.hasParking)    amenities.push('🅿️ มีที่จอดรถ');
     if (place.hasSpecialist) amenities.push('👨‍⚕️ หมอเฉพาะทาง');
     if (place.hasXray)       amenities.push('🔬 เอกซเรย์/อัลตราซาวด์');

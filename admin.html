@@ -798,6 +798,7 @@ window.saveEdit = async function() {
       contactName:  document.getElementById('ef_cname').value.trim(),
       contactEmail: document.getElementById('ef_cemail').value.trim(),
       pets:         document.getElementById('ef_pets').value.split(',').map(s=>s.trim()).filter(Boolean),
+      allowedPets:  document.getElementById('ef_pets').value.split(',').map(s=>s.trim()).filter(Boolean),
       services:     document.getElementById('ef_services').value.split(',').map(s=>s.trim()).filter(Boolean),
       maxWeightKg:  isNaN(mw) ? null : mw,
       imageUrl:     document.getElementById('ef_imageurl').value.trim() || null,
