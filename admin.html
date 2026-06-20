@@ -448,14 +448,18 @@ async function copyToPlaces(d) {
     website: d.website || '', facebook: d.facebook || '',
     pets: d.pets || [], services: d.services || [], hours: d.hours || '',
     priceRange: d.priceRange || '฿', description: d.description || '',
-    rating: 0, reviews: 0, lat: 13.7563, lng: 100.5018,
+    rating: 0, reviews: 0, lat: d.lat || 13.7563, lng: d.lng || 100.5018,
     imageUrl: d.imageUrl || null,
     logoUrl: d.logoUrl || null,
     tier: d.tier || 'free',
     verified: true,
     createdAt: serverTimestamp()
   };
-  await addDoc(collection(db, 'places'), placeData);
+  const ref = await addDoc(collection(db, 'places'), placeData);
+  // เก็บ placeId กลับไปใน pending_places เพื่อใช้ sync เวลาแก้ไขทีหลัง
+  await updateDoc(doc(db, 'pending_places', d.id), { placeId: ref.id });
+  d.placeId = ref.id;
+  return ref.id;
 }
 
 // ── Edit form ─────────────────────────────────────────────────
@@ -588,8 +592,19 @@ window.saveEdit = async function() {
     await updateDoc(doc(db, 'pending_places', currentDocId), updates);
     // ถ้าอนุมัติแล้ว sync ไป places ด้วย
     if (d.status === 'approved') {
-      const snap = await getDocs(query(collection(db, 'places'), where('name', '==', d.name)));
-      for (const p of snap.docs) await updateDoc(doc(db, 'places', p.id), updates);
+      if (d.placeId) {
+        // วิธีที่ถูกต้อง — ใช้ ID ตรงๆ
+        await updateDoc(doc(db, 'places', d.placeId), updates);
+      } else {
+        // fallback สำหรับร้านเก่าที่ยังไม่มี placeId — ค้นหาด้วยชื่อเดิม
+        const snap = await getDocs(query(collection(db, 'places'), where('name', '==', d.name)));
+        for (const p of snap.docs) {
+          await updateDoc(doc(db, 'places', p.id), updates);
+          // บันทึก placeId ไว้เลยเพื่อครั้งถัดไป
+          await updateDoc(doc(db, 'pending_places', currentDocId), { placeId: p.id });
+          d.placeId = p.id;
+        }
+      }
     }
     // อัปเดต cache
     Object.assign(d, updates);
