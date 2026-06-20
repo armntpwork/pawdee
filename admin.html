@@ -485,9 +485,16 @@ window.openEditForm = function() {
           <label class="block text-xs font-semibold text-gray-500 mb-1">ชื่อร้าน *</label>
           <input id="ef_name" class="${FIELD_INPUT}" value="${escHtml(d.name||'')}"/>
         </div>
-        <div>
-          <label class="block text-xs font-semibold text-gray-500 mb-1">ประเภท</label>
-          <select id="ef_type" class="${FIELD_INPUT}">${typeOpts}</select>
+        <div class="col-span-2">
+          <label class="block text-xs font-semibold text-gray-500 mb-1">ประเภท <span class="font-normal text-gray-400">(เลือกได้หลายอย่าง)</span></label>
+          <div class="flex flex-wrap gap-2">
+            ${TYPE_OPTIONS.map(([v,l]) => {
+              const checked = (d.categories||[d.type]).includes(v) ? 'checked' : '';
+              return `<label class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-2 cursor-pointer text-xs font-semibold transition-all ${checked ? 'border-brand-orange bg-orange-50 text-brand-orange' : 'border-gray-200 text-gray-600 hover:border-orange-300'}" onclick="toggleCatLabel(this)">
+                <input type="checkbox" name="ef_cat" value="${v}" ${checked} class="hidden"/> ${l}
+              </label>`;
+            }).join('')}
+          </div>
         </div>
         <div>
           <label class="block text-xs font-semibold text-gray-500 mb-1">ราคา</label>
@@ -572,6 +579,18 @@ window.openEditForm = function() {
 
 function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
+window.toggleCatLabel = function(label) {
+  const cb = label.querySelector('input[type=checkbox]');
+  cb.checked = !cb.checked;
+  if (cb.checked) {
+    label.classList.add('border-brand-orange','bg-orange-50','text-brand-orange');
+    label.classList.remove('border-gray-200','text-gray-600');
+  } else {
+    label.classList.remove('border-brand-orange','bg-orange-50','text-brand-orange');
+    label.classList.add('border-gray-200','text-gray-600');
+  }
+};
+
 window.geocodeAddress = async function() {
   const name    = document.getElementById('ef_name')?.value.trim() || '';
   const address = document.getElementById('ef_address')?.value.trim() || '';
@@ -627,11 +646,13 @@ window.saveEdit = async function() {
   const btn = document.getElementById('saveEditBtn');
   btn.disabled = true; btn.textContent = 'กำลังบันทึก...';
   try {
-    const type = document.getElementById('ef_type').value;
+    const categories = [...document.querySelectorAll('input[name="ef_cat"]:checked')].map(cb => cb.value);
+    if (!categories.length) { alert('กรุณาเลือกประเภทอย่างน้อย 1 อย่าง'); btn.disabled = false; btn.textContent = '💾 บันทึก'; return; }
+    const type = categories[0];
     const updates = {
       name:         document.getElementById('ef_name').value.trim(),
       type,
-      categories:   [type],
+      categories,
       address:      document.getElementById('ef_address').value.trim(),
       city:         document.getElementById('ef_city').value.trim(),
       province:     document.getElementById('ef_province').value.trim(),
