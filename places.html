@@ -740,19 +740,19 @@
     const verified = place.ownerVerified
       ? `<span class="inline-flex items-center gap-1 text-xs text-blue-600 font-medium bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100">🏪 เจ้าของยืนยัน</span>`
       : place.verified
-      ? `<span class="inline-flex items-center gap-1 text-xs text-green-600 font-medium"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>Verified</span>`
+      ? `<span class="inline-flex items-center gap-1 text-xs text-green-600 font-medium"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>ยืนยันแล้ว</span>`
       : '';
     const demoTag = usingDemo
       ? `<div class="absolute top-2 right-2 bg-amber-400 text-white text-xs font-bold px-2 py-1 rounded-lg">Demo</div>`
       : '';
 
-    // Tier (รองรับทั้ง 'basic' เดิม และ 'verified' ใหม่)
+    // Tier (รองรับทั้ง 'basic' เดิม / 'verified' / 'pro' ใหม่)
     const tier = place.tier || 'free';
-    const isVerified = tier === 'basic' || tier === 'verified';
+    const isPro = tier === 'basic' || tier === 'verified' || tier === 'pro';
     const tierBadge = tier === 'premium'
       ? `<div class="absolute top-2 right-2 text-xs font-bold px-2.5 py-1 rounded-xl shadow-sm" style="background:linear-gradient(135deg,#F59E0B,#D97706);color:white;">🌟 Premium</div>`
-      : isVerified
-      ? `<div class="absolute top-2 right-2 bg-green-600 text-white text-xs font-bold px-2.5 py-1 rounded-xl shadow-sm">✅ Verified</div>`
+      : isPro
+      ? `<div class="absolute top-2 right-2 bg-brand-orange text-white text-xs font-bold px-2.5 py-1 rounded-xl shadow-sm">🔶 Pro</div>`
       : '';
     return `
       <article class="card-hover bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 flex flex-col">
