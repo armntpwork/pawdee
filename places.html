@@ -1276,6 +1276,12 @@
     document.body.style.overflow = 'hidden';
   }
 
+  // expose สำหรับเรียกจาก Leaflet popup inline onclick
+  window.openModal = function(id) {
+    const place = allPlaces.find(p => p.id === id);
+    if (place) showDetailModal(place);
+  };
+
   function closeModal() {
     modal.classList.add('hidden');
     document.body.style.overflow = '';
