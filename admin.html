@@ -398,14 +398,17 @@ window.setTier = async function(id, tier) {
 };
 
 window.quickAction = async function(id, status) {
+  const d = allDocs.find(x => x.id === id);
+  const isFirstApproval = status === 'approved' && d?.status !== 'approved';
+
   await updateDoc(doc(db, 'pending_places', id), { status, updatedAt: serverTimestamp() });
-  if (status === 'approved') {
-    const d = allDocs.find(x => x.id === id);
-    if (d) {
-      // ถ้ามี placeId แล้ว = เคยอนุมัติไปแล้ว ไม่ต้อง copy ซ้ำ
-      if (!d.placeId) {
-        await copyToPlaces(d);
-      }
+
+  if (status === 'approved' && d) {
+    if (!d.placeId) {
+      await copyToPlaces(d);
+    }
+    // ส่ง notification เฉพาะครั้งแรกที่อนุมัติเท่านั้น
+    if (isFirstApproval) {
       fetch('https://hook.us2.make.com/d6vkctkhkk763xd0trwkbsh6w9kmavbn', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
