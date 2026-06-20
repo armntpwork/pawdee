@@ -32,6 +32,7 @@
     }
   ],
   "rewrites": [
+    { "source": "/sitemap-places.xml", "destination": "/api/sitemap-places" },
     { "source": "/place/:id", "destination": "/place.html?id=:id" },
     { "source": "/__/auth/:path*", "destination": "https://pawdee-f082e.firebaseapp.com/__/auth/:path*" },
     { "source": "/__/firebase/:path*", "destination": "https://pawdee-f082e.firebaseapp.com/__/firebase/:path*" }
