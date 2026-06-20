@@ -522,6 +522,10 @@ window.openEditForm = function() {
           <label class="block text-xs font-semibold text-gray-500 mb-1">เวลาทำการ</label>
           <input id="ef_hours" class="${FIELD_INPUT}" placeholder="เช่น 9:00-21:00" value="${escHtml(d.hours||'')}"/>
         </div>
+        <div class="col-span-2">
+          <label class="block text-xs font-semibold text-gray-500 mb-1">📍 Google Maps URL <span class="font-normal text-gray-400">(วาง link จากหน้าร้านบน Google Maps)</span></label>
+          <input id="ef_gmapsplace" class="${FIELD_INPUT}" placeholder="https://maps.app.goo.gl/... หรือ https://www.google.com/maps/place/..." value="${escHtml(d.googleMapsUrl||'')}"/>
+        </div>
         <div>
           <label class="block text-xs font-semibold text-gray-500 mb-1">เว็บไซต์</label>
           <input id="ef_website" class="${FIELD_INPUT}" value="${escHtml(d.website||'')}"/>
@@ -792,6 +796,7 @@ window.saveEdit = async function() {
       openHours:    document.getElementById('ef_hours').value.trim(),
       website:      document.getElementById('ef_website').value.trim(),
       facebook:     document.getElementById('ef_facebook').value.trim(),
+      googleMapsUrl: document.getElementById('ef_gmapsplace').value.trim() || null,
       instagram:    document.getElementById('ef_instagram').value.trim(),
       line:         document.getElementById('ef_line').value.trim(),
       priceRange:   document.getElementById('ef_price').value,

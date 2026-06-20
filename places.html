@@ -942,6 +942,7 @@
       const navUrl = hasRealCoords
         ? `https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}`
         : `https://www.google.com/maps/dir/?api=1&destination=${navQ}`;
+      const viewUrl = p.googleMapsUrl || (hasRealCoords ? `https://maps.google.com/?q=${p.lat},${p.lng}` : `https://www.google.com/maps/search/?api=1&query=${navQ}`);
 
       marker.bindPopup(`
         <div style="min-width:200px;font-family:'Poppins','LINE Seed Sans TH',sans-serif">
@@ -952,7 +953,10 @@
             ${p.phone ? `<a href="tel:${p.phone}" style="text-decoration:none"><button class="map-popup-btn" style="background:#fff;color:#F97316;border:2px solid #F97316">📞 โทร</button></a>` : '<div></div>'}
             <a href="${navUrl}" target="_blank" rel="noopener" style="text-decoration:none"><button class="map-popup-btn" style="background:#10b981">🧭 นำทาง</button></a>
           </div>
-          <button class="map-popup-btn" onclick="openModal('${p.id}')">📋 ดูรายละเอียด</button>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+            <button class="map-popup-btn" onclick="openModal('${p.id}')" style="background:#fff;color:#F97316;border:2px solid #F97316">📋 รายละเอียด</button>
+            <a href="${viewUrl}" target="_blank" rel="noopener" style="text-decoration:none"><button class="map-popup-btn" style="background:#4285f4">🗺️ Google Maps</button></a>
+          </div>
         </div>
       `);
       markers.push(marker);
@@ -1264,8 +1268,9 @@
     const hasRealCoords = place.lat && place.lng &&
       !(Math.abs(place.lat - DEFAULT_LAT) < 0.001 && Math.abs(place.lng - DEFAULT_LNG) < 0.001);
     const searchQ = encodeURIComponent([place.name, place.address, place.city || place.district, place.province].filter(Boolean).join(' '));
-    if (hasRealCoords) {
-      // ปักหมุดตรงพิกัดเลย แสดงชื่อด้วย
+    if (place.googleMapsUrl) {
+      mapEl.href = place.googleMapsUrl;
+    } else if (hasRealCoords) {
       mapEl.href = `https://maps.google.com/?q=${place.lat},${place.lng}`;
     } else {
       mapEl.href = `https://www.google.com/maps/search/?api=1&query=${searchQ}`;
