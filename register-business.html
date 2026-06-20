@@ -59,6 +59,12 @@
     .logo-zone { border:2px dashed #e5e7eb; border-radius:0.875rem; text-align:center; cursor:pointer; transition:all 0.2s; background:#fafafa; width:110px; height:110px; display:flex; align-items:center; justify-content:center; flex-shrink:0; overflow:hidden; }
     .logo-zone:hover { border-color:#F97316; background:#FFFBEB; }
     .logo-zone.has-logo { border-style:solid; border-color:#F97316; padding:0; }
+    /* Gallery upload */
+    .gallery-thumb { position:relative; aspect-ratio:1; border-radius:0.75rem; overflow:hidden; background:#f3f4f6; }
+    .gallery-thumb img { width:100%; height:100%; object-fit:cover; }
+    .gallery-thumb .remove-btn { position:absolute; top:4px; right:4px; background:rgba(0,0,0,0.55); color:white; border:none; border-radius:50%; width:22px; height:22px; font-size:12px; cursor:pointer; display:flex; align-items:center; justify-content:center; line-height:1; }
+    .gallery-add-btn { aspect-ratio:1; border:2px dashed #e5e7eb; border-radius:0.75rem; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; background:#fafafa; transition:all 0.2s; font-size:11px; color:#9ca3af; gap:4px; }
+    .gallery-add-btn:hover { border-color:#F97316; background:#FFFBEB; color:#F97316; }
     /* Multi-step progress */
     .step-dot { width:2.25rem; height:2.25rem; border-radius:9999px; display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:700; transition:all 0.3s; border:2px solid transparent; flex-shrink:0; }
     .step-dot.active { background:#F97316; color:white; border-color:#F97316; box-shadow:0 0 0 3px #fed7aa; }
@@ -423,6 +429,23 @@
             </div>
           </div>
           <input type="file" id="logoInput" accept="image/*" class="hidden"/>
+        </div>
+
+        <!-- Gallery upload -->
+        <div class="mt-5 pt-5 border-t border-gray-100">
+          <div class="flex items-center gap-2 mb-1">
+            <label class="block text-sm font-medium text-gray-700">📸 รูปภาพแกลเลอรี่</label>
+            <span class="text-xs bg-amber-100 text-amber-700 font-bold px-2 py-0.5 rounded-full">🌟 Premium</span>
+          </div>
+          <p class="text-xs text-gray-400 mb-3">เพิ่มรูปภาพร้านสูงสุด 10 รูป · JPG, PNG, WEBP · ไม่เกิน 5 MB ต่อรูป</p>
+          <div id="galleryGrid" class="grid grid-cols-3 sm:grid-cols-5 gap-2 mb-2">
+            <div class="gallery-add-btn" onclick="document.getElementById('galleryInput').click()">
+              <span class="text-2xl">+</span>
+              <span>เพิ่มรูป</span>
+            </div>
+          </div>
+          <div id="galleryProgress" class="hidden text-xs text-gray-400 mt-1">⏳ กำลังอัปโหลดรูปแกลเลอรี่...</div>
+          <input type="file" id="galleryInput" accept="image/*" multiple class="hidden"/>
         </div>
       </div>
 
@@ -821,6 +844,58 @@
   logoInput.addEventListener('change', e => showLogoPreview(e.target.files[0]));
   removeLogoBtn.addEventListener('click', e => { e.stopPropagation(); clearLogo(); });
 
+  // ── Gallery upload ─────────────────────────────────────────────────────
+  let galleryFiles = []; // { file, previewUrl }
+
+  document.getElementById('galleryInput').addEventListener('change', e => {
+    const files = [...e.target.files];
+    e.target.value = '';
+    const remaining = 10 - galleryFiles.length;
+    files.slice(0, remaining).forEach(file => {
+      if (!file.type.startsWith('image/')) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        galleryFiles.push({ file, previewUrl: ev.target.result });
+        renderGalleryPreviews();
+      };
+      reader.readAsDataURL(file);
+    });
+  });
+
+  function renderGalleryPreviews() {
+    const grid = document.getElementById('galleryGrid');
+    grid.innerHTML = galleryFiles.map((item, i) => `
+      <div class="gallery-thumb">
+        <img src="${item.previewUrl}" alt="gallery ${i+1}"/>
+        <button class="remove-btn" onclick="removeGalleryItem(${i})">✕</button>
+      </div>
+    `).join('');
+    if (galleryFiles.length < 10) {
+      grid.innerHTML += `<div class="gallery-add-btn" onclick="document.getElementById('galleryInput').click()"><span class="text-2xl">+</span><span>เพิ่มรูป</span></div>`;
+    }
+  }
+
+  window.removeGalleryItem = function(i) {
+    galleryFiles.splice(i, 1);
+    renderGalleryPreviews();
+  };
+
+  async function uploadGalleryImages(uid) {
+    if (!galleryFiles.length) return [];
+    const urls = [];
+    for (let i = 0; i < galleryFiles.length; i++) {
+      const { file } = galleryFiles[i];
+      const ext = file.name.split('.').pop();
+      const storageRef = ref(storage, `business-gallery/${uid}/${Date.now()}_${i}.${ext}`);
+      await new Promise((resolve, reject) => {
+        const task = uploadBytesResumable(storageRef, file);
+        task.on('state_changed', null, reject,
+          async () => { urls.push(await getDownloadURL(task.snapshot.ref)); resolve(); });
+      });
+    }
+    return urls;
+  }
+
   async function uploadLogoImage(uid) {
     if (!logoFile) return null;
     const ext = logoFile.name.split('.').pop();
@@ -977,6 +1052,18 @@
         logoUrl = await uploadLogoImage(user?.uid || 'anonymous');
       } catch (_) {}
     }
+
+    // อัปโหลด gallery (ถ้ามี)
+    let galleryUrls = [];
+    if (galleryFiles.length > 0) {
+      try {
+        document.getElementById('galleryProgress').classList.remove('hidden');
+        btn.textContent = `⏳ กำลังอัปโหลดรูปแกลเลอรี่ (0/${galleryFiles.length})...`;
+        galleryUrls = await uploadGalleryImages(user?.uid || 'anonymous');
+      } catch (_) {}
+      document.getElementById('galleryProgress').classList.add('hidden');
+    }
+
     btn.textContent = '⏳ กำลังบันทึกข้อมูล...';
 
     const needCarrierVal = form.querySelector('[name=needCarrier]')?.checked || false;
@@ -1018,6 +1105,7 @@
       line:          val('line') || null,
       imageUrl:      imageUrl,
       logoUrl:       logoUrl,
+      gallery:       galleryUrls,
       tier:          'free',
       description:   val('description') || null,
       contactName,

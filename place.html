@@ -143,6 +143,11 @@
     <div id="emergencyBadge" class="hidden absolute top-4 left-4 bg-red-500 text-white text-xs font-bold px-3 py-1.5 rounded-xl">🚨 24 ชม.</div>
   </div>
 
+  <!-- Gallery -->
+  <div id="gallerySection" class="hidden">
+    <div id="galleryGrid" class="grid gap-1" style="grid-template-columns:repeat(auto-fill,minmax(120px,1fr))"></div>
+  </div>
+
   <div class="max-w-4xl mx-auto px-4 sm:px-6 py-8">
 
     <!-- Breadcrumb (SEO: helps Google understand page hierarchy) -->
@@ -531,6 +536,24 @@ function renderPlace(place) {
   // Verified badges
   if (place.verified) document.getElementById('verifiedBadge').classList.remove('hidden');
   if (place.ownerVerified) document.getElementById('ownerVerifiedBadge').classList.remove('hidden');
+
+  // ── Gallery ──
+  const gallery = place.gallery || [];
+  if (gallery.length > 0) {
+    const sec  = document.getElementById('gallerySection');
+    const grid = document.getElementById('galleryGrid');
+    sec.classList.remove('hidden');
+    grid.innerHTML = gallery.map((url, i) => `
+      <a href="${url}" target="_blank" rel="noopener" class="block" style="aspect-ratio:1;overflow:hidden;">
+        <img src="${url}" alt="gallery ${i+1}" loading="lazy"
+          class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+          onerror="this.parentElement.style.display='none'"/>
+      </a>
+    `).join('');
+    // แถวแรกใหญ่กว่าถ้ามีรูปเดียว
+    if (gallery.length === 1) grid.style.gridTemplateColumns = '1fr';
+    else if (gallery.length === 2) grid.style.gridTemplateColumns = '1fr 1fr';
+  }
 
   // ── H1 name ──
   document.getElementById('placeName').textContent = place.name;
