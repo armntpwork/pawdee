@@ -4,7 +4,7 @@
 //   2. Enable Google provider
 //   3. เพิ่ม localhost ใน Authorized domains (Settings → Authorized domains)
 
-import { auth } from './firebase-config.js';
+import { auth, db } from './firebase-config.js';
 import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
@@ -15,6 +15,7 @@ import {
   sendPasswordResetEmail,
   updateProfile,
 } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 const googleProvider = new GoogleAuthProvider();
 
@@ -67,6 +68,7 @@ export function initNavAuth() {
               </div>
               <a href="/profile.html" class="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-orange-50 hover:text-brand-orange transition-colors">👤 โปรไฟล์ของฉัน</a>
               <a href="/register-business.html" class="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-orange-50 hover:text-brand-orange transition-colors">🏪 ลงทะเบียนร้าน</a>
+              <div id="navAdminSlot"></div>
               <div class="border-t border-gray-100 mt-1 pt-1">
                 <button id="navSignOut" class="w-full text-left flex items-center gap-2 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors">🚪 ออกจากระบบ</button>
               </div>
@@ -85,6 +87,18 @@ export function initNavAuth() {
         document.getElementById('navDropdown')?.classList.add('hidden');
       }, { once: false });
       document.getElementById('navSignOut')?.addEventListener('click', () => signOut());
+
+      // ตรวจสอบ admin แบบ async — ใส่ลิงก์เพิ่มถ้าเป็น admin
+      getDoc(doc(db, 'admins', user.uid)).then(snap => {
+        if (!snap.exists()) return;
+        const slot = document.getElementById('navAdminSlot');
+        if (!slot) return;
+        slot.innerHTML = `
+          <div class="border-t border-gray-100 my-1"></div>
+          <a href="/admin.html" class="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-brand-orange hover:bg-orange-50 transition-colors">
+            🛡️ Admin Dashboard
+          </a>`;
+      }).catch(() => {});
     } else {
       navAuth.innerHTML = `
         <div class="flex items-center gap-2">
