@@ -164,6 +164,9 @@
           <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
           Verified
         </span>
+        <span id="ownerVerifiedBadge" class="hidden inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 bg-blue-50 px-3 py-1 rounded-full border border-blue-200">
+          🏪 เจ้าของยืนยัน
+        </span>
       </div>
 
       <h1 id="placeName" class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-2 leading-tight"></h1>
@@ -243,6 +246,9 @@
           <a id="mapsBtn" href="#" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-2 bg-white border-2 border-orange-200 text-gray-700 py-3 px-5 rounded-2xl font-semibold text-sm hover:border-brand-orange hover:text-brand-orange transition-colors w-full mb-3">
             🗺️ เปิดใน Google Maps
           </a>
+          <button id="favBtn" class="flex items-center justify-center gap-2 bg-red-50 text-red-400 py-3 px-5 rounded-2xl font-medium text-sm hover:bg-red-100 transition-colors w-full">
+            🤍 บันทึกร้านนี้
+          </button>
           <button id="shareBtn" class="flex items-center justify-center gap-2 bg-gray-50 text-gray-600 py-3 px-5 rounded-2xl font-medium text-sm hover:bg-gray-100 transition-colors w-full">
             🔗 แชร์สถานที่นี้
           </button>
@@ -314,8 +320,8 @@
 
 <script type="module">
 import { db, isConfigured } from './js/firebase-config.js';
-import { doc, getDoc, collection, query, where, getDocs, orderBy, limit } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-import { initNavAuth } from './js/auth.js';
+import { doc, getDoc, collection, query, where, getDocs, orderBy, limit, addDoc, deleteDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { initNavAuth, onAuthChange } from './js/auth.js';
 
 initNavAuth();
 
@@ -521,10 +527,9 @@ function renderPlace(place) {
   typeBadge.className = 'flex flex-wrap gap-1.5';
   typeBadge.innerHTML = categoryChipsHtml(place);
 
-  // Verified badge
-  if (place.verified) {
-    document.getElementById('verifiedBadge').classList.remove('hidden');
-  }
+  // Verified badges
+  if (place.verified) document.getElementById('verifiedBadge').classList.remove('hidden');
+  if (place.ownerVerified) document.getElementById('ownerVerifiedBadge').classList.remove('hidden');
 
   // ── H1 name ──
   document.getElementById('placeName').textContent = place.name;
@@ -619,6 +624,36 @@ function renderPlace(place) {
     const q = encodeURIComponent(`${place.name} ${place.city || ''}`);
     mapsBtn.href = `https://www.google.com/maps/search/?api=1&query=${q}`;
   }
+
+  // ── Fav button ──
+  let currentUser = null;
+  onAuthChange(async user => {
+    currentUser = user;
+    if (!user || !placeId) return;
+    const favSnap = await getDocs(query(collection(db, 'favorites'), where('userId','==',user.uid), where('placeId','==',placeId)));
+    const favBtn = document.getElementById('favBtn');
+    if (!favSnap.empty) {
+      favBtn.textContent = '❤️ บันทึกแล้ว';
+      favBtn.classList.replace('text-red-400','text-red-500');
+      favBtn.dataset.favDocId = favSnap.docs[0].id;
+    }
+  });
+
+  document.getElementById('favBtn').addEventListener('click', async () => {
+    if (!currentUser) { alert('กรุณาเข้าสู่ระบบก่อนบันทึกร้าน'); return; }
+    const btn = document.getElementById('favBtn');
+    const isFav = btn.textContent.includes('❤️');
+    if (isFav) {
+      await deleteDoc(doc(db, 'favorites', btn.dataset.favDocId));
+      btn.textContent = '🤍 บันทึกร้านนี้';
+      btn.classList.replace('text-red-500','text-red-400');
+    } else {
+      const ref = await addDoc(collection(db, 'favorites'), { userId: currentUser.uid, placeId, createdAt: serverTimestamp() });
+      btn.textContent = '❤️ บันทึกแล้ว';
+      btn.classList.replace('text-red-400','text-red-500');
+      btn.dataset.favDocId = ref.id;
+    }
+  });
 
   // ── Share button ──
   document.getElementById('shareBtn').addEventListener('click', () => {

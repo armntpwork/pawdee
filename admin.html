@@ -951,8 +951,8 @@ async function loadClaims(status) {
           </div>
           ${status === 'pending' ? `
           <div class="flex gap-2 pt-2 border-t border-gray-100">
-            <button onclick="claimAction('${d.id}','approved')" class="flex-1 bg-green-500 hover:bg-green-600 text-white text-xs font-semibold py-2 rounded-xl transition-colors">✅ อนุมัติ</button>
-            <button onclick="claimAction('${d.id}','rejected')" class="flex-1 bg-red-400 hover:bg-red-500 text-white text-xs font-semibold py-2 rounded-xl transition-colors">✕ ปฏิเสธ</button>
+            <button onclick="claimAction('${d.id}','${c.placeId||''}','approved')" class="flex-1 bg-green-500 hover:bg-green-600 text-white text-xs font-semibold py-2 rounded-xl transition-colors">✅ อนุมัติ</button>
+            <button onclick="claimAction('${d.id}','${c.placeId||''}','rejected')" class="flex-1 bg-red-400 hover:bg-red-500 text-white text-xs font-semibold py-2 rounded-xl transition-colors">✕ ปฏิเสธ</button>
           </div>` : ''}
         </div>`;
     }).join('');
@@ -962,8 +962,11 @@ async function loadClaims(status) {
   }
 }
 
-window.claimAction = async function(id, status) {
+window.claimAction = async function(id, placeId, status) {
   await updateDoc(doc(db, 'claim_requests', id), { status, updatedAt: serverTimestamp() });
+  if (status === 'approved' && placeId) {
+    try { await updateDoc(doc(db, 'places', placeId), { ownerVerified: true }); } catch(e) {}
+  }
   loadClaims(currentClaimStatus);
 };
 

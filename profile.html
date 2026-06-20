@@ -137,6 +137,7 @@
       <button class="tab-btn active flex-shrink-0 px-5 py-2.5 rounded-xl text-sm font-semibold border-2 border-brand-orange transition-all" data-tab="info">ข้อมูลส่วนตัว</button>
       <button class="tab-btn flex-shrink-0 px-5 py-2.5 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 transition-all" data-tab="places">ร้านที่ลงทะเบียน</button>
       <button class="tab-btn flex-shrink-0 px-5 py-2.5 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 transition-all" data-tab="security">ความปลอดภัย</button>
+      <button class="tab-btn flex-shrink-0 px-5 py-2.5 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 transition-all" data-tab="favorites">❤️ ร้านที่บันทึก</button>
     </div>
 
     <!-- Tab: ข้อมูลส่วนตัว -->
@@ -210,6 +211,20 @@
         </button>
       </div>
     </div>
+
+    <!-- Tab: ร้านที่บันทึก -->
+    <div id="tab-favorites" class="tab-content hidden">
+      <div class="bg-white rounded-3xl p-6 shadow-sm">
+        <h2 class="text-lg font-bold text-gray-900 mb-5">❤️ ร้านที่บันทึกไว้</h2>
+        <div id="favoritesList">
+          <div class="text-center py-12 text-gray-400">
+            <div class="text-4xl mb-3">❤️</div>
+            <p class="font-medium">กำลังโหลด...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </main>
 
@@ -256,7 +271,7 @@
 import { onAuthChange, signOut, initNavAuth } from './js/auth.js';
 import { updateProfile, updatePassword } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 import { db } from './js/firebase-config.js';
-import { doc, getDoc, setDoc, collection, query, where, getDocs, orderBy } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { doc, getDoc, setDoc, collection, query, where, getDocs, orderBy, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 initNavAuth();
 
@@ -410,6 +425,60 @@ async function loadMyPlaces(uid) {
   }
 }
 
+async function loadFavorites(uid) {
+  const list = document.getElementById('favoritesList');
+  try {
+    const favSnap = await getDocs(query(collection(db, 'favorites'), where('userId', '==', uid)));
+    if (favSnap.empty) {
+      list.innerHTML = `
+        <div class="text-center py-12 text-gray-400">
+          <div class="text-4xl mb-3">🤍</div>
+          <p class="font-medium mb-2">ยังไม่มีร้านที่บันทึกไว้</p>
+          <a href="places.html" class="text-brand-orange font-semibold hover:underline text-sm">ค้นหาร้านที่ชอบ →</a>
+        </div>`;
+      return;
+    }
+    const placeIds = favSnap.docs.map(d => d.data().placeId);
+    const placeDocs = await Promise.all(placeIds.map(id => getDoc(doc(db, 'places', id))));
+    const places = placeDocs.filter(d => d.exists()).map(d => ({ id: d.id, ...d.data() }));
+    if (places.length === 0) {
+      list.innerHTML = `<div class="text-center py-12 text-gray-400"><p class="text-sm">ร้านที่บันทึกไว้ถูกลบออกจากระบบแล้ว</p></div>`;
+      return;
+    }
+    list.innerHTML = places.map(p => {
+      const favDocId = favSnap.docs.find(d => d.data().placeId === p.id)?.id;
+      return `
+        <div class="flex items-center gap-4 p-4 border-2 border-gray-100 rounded-2xl hover:border-orange-200 transition-all bg-white">
+          <img src="${p.imageUrl || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=100&q=80'}"
+            class="w-16 h-16 rounded-xl object-cover flex-shrink-0" loading="lazy"
+            onerror="this.src='https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=100&q=80'"/>
+          <div class="flex-1 min-w-0">
+            <p class="font-bold text-gray-900 truncate">${p.name || '—'}</p>
+            <p class="text-xs text-gray-500 truncate">📍 ${[p.district || p.city, p.province].filter(Boolean).join(', ') || '—'}</p>
+            <p class="text-xs text-yellow-600 mt-0.5">⭐ ${(p.rating || 0).toFixed(1)} · ${p.reviewCount || 0} รีวิว</p>
+          </div>
+          <div class="flex flex-col gap-2 flex-shrink-0">
+            <a href="places.html?id=${p.id}" class="text-xs bg-brand-orange text-white px-3 py-1.5 rounded-xl font-semibold hover:bg-orange-600 transition-colors text-center">ดูร้าน</a>
+            <button onclick="removeFavorite('${favDocId}','${p.id}',this)" class="text-xs bg-red-50 text-red-400 px-3 py-1.5 rounded-xl font-semibold hover:bg-red-100 transition-colors">ลบออก</button>
+          </div>
+        </div>`;
+    }).join('');
+  } catch(e) {
+    list.innerHTML = `<p class="text-center text-gray-400 py-8 text-sm">เกิดข้อผิดพลาด กรุณาลองใหม่</p>`;
+    console.error('loadFavorites:', e);
+  }
+}
+
+window.removeFavorite = async function(favDocId, placeId, btn) {
+  btn.disabled = true;
+  await deleteDoc(doc(db, 'favorites', favDocId));
+  btn.closest('div.flex.items-center').remove();
+  const list = document.getElementById('favoritesList');
+  if (!list.querySelector('div.flex.items-center')) {
+    list.innerHTML = `<div class="text-center py-12 text-gray-400"><div class="text-4xl mb-3">🤍</div><p class="font-medium mb-2">ยังไม่มีร้านที่บันทึกไว้</p><a href="places.html" class="text-brand-orange font-semibold hover:underline text-sm">ค้นหาร้านที่ชอบ →</a></div>`;
+  }
+};
+
 // Tabs
 document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -419,6 +488,7 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.className = 'tab-btn active flex-shrink-0 px-5 py-2.5 rounded-xl text-sm font-semibold border-2 border-brand-orange transition-all';
     document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
     document.getElementById('tab-' + btn.dataset.tab).classList.remove('hidden');
+    if (btn.dataset.tab === 'favorites' && currentUser) loadFavorites(currentUser.uid);
   });
 });
 

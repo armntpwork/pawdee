@@ -476,6 +476,10 @@
       <a id="modalMap" href="#" target="_blank" class="flex-1 text-center bg-brand-orange text-white py-3 rounded-2xl font-semibold hover:bg-orange-600 transition-colors text-sm" data-i18n="places.modal_directions">
         🗺️ ดูแผนที่
       </a>
+      <button id="modalFav" title="บันทึกร้านนี้"
+        class="w-12 h-12 flex items-center justify-center bg-gray-100 hover:bg-red-50 text-gray-500 rounded-2xl transition-colors flex-shrink-0 text-lg">
+        🤍
+      </button>
       <button id="modalShare" title="แชร์ร้านนี้"
         class="w-12 h-12 flex items-center justify-center bg-gray-100 hover:bg-orange-50 hover:text-brand-orange text-gray-500 rounded-2xl transition-colors flex-shrink-0 text-lg">
         📤
@@ -592,7 +596,34 @@
   initNavAuth();
 
   let currentUser = null;
-  onAuthChange(user => { currentUser = user; });
+  let userFavorites = new Set();
+
+  async function loadFavorites(uid) {
+    if (!uid || !isConfigured) return;
+    const snap = await getDocs(query(collection(db, 'favorites'), where('userId', '==', uid)));
+    userFavorites = new Set(snap.docs.map(d => d.data().placeId));
+    render();
+  }
+
+  async function toggleFavorite(placeId) {
+    if (!currentUser) { alert('กรุณาเข้าสู่ระบบก่อนบันทึกร้าน'); return; }
+    const docId = `${currentUser.uid}_${placeId}`;
+    const ref = doc(db, 'favorites', docId);
+    if (userFavorites.has(placeId)) {
+      await deleteDoc(ref);
+      userFavorites.delete(placeId);
+    } else {
+      await addDoc(collection(db, 'favorites'), { userId: currentUser.uid, placeId, createdAt: serverTimestamp() });
+      userFavorites.add(placeId);
+    }
+    render();
+  }
+
+  onAuthChange(user => {
+    currentUser = user;
+    if (user) loadFavorites(user.uid);
+    else { userFavorites = new Set(); render(); }
+  });
 
   // ── ตรวจ config ก่อน import Firebase (ป้องกันการค้าง) ──────
   let db = null;
@@ -611,7 +642,7 @@
     } catch (_) { isConfigured = false; }
   }
 
-  const { collection, getDocs, query, orderBy, addDoc, where, serverTimestamp, limit, updateDoc, doc } = isConfigured
+  const { collection, getDocs, query, orderBy, addDoc, deleteDoc, where, serverTimestamp, limit, updateDoc, doc } = isConfigured
     ? await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js')
     : {};
 
@@ -703,7 +734,9 @@
     const emergency = place.emergency24hr
       ? `<div class="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-lg">🚨 24 ชม.</div>`
       : '';
-    const verified = place.verified
+    const verified = place.ownerVerified
+      ? `<span class="inline-flex items-center gap-1 text-xs text-blue-600 font-medium bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100">🏪 เจ้าของยืนยัน</span>`
+      : place.verified
       ? `<span class="inline-flex items-center gap-1 text-xs text-green-600 font-medium"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>Verified</span>`
       : '';
     const demoTag = usingDemo
@@ -735,6 +768,9 @@
                 <img src="${place.logoUrl}" alt="${place.name} logo" class="w-full h-full object-contain" loading="lazy"/>
               </div>
             </div>` : ''}
+          <button class="fav-btn absolute bottom-2 right-2 w-9 h-9 flex items-center justify-center bg-white/90 hover:bg-white rounded-full shadow-md text-lg z-10 hover:scale-110 transition-all" data-fav="${place.id}" title="${userFavorites.has(place.id) ? 'ลบออกจากที่บันทึก' : 'บันทึกร้านนี้'}">
+            ${userFavorites.has(place.id) ? '❤️' : '🤍'}
+          </button>
         </div>
         <div class="p-4 flex flex-col flex-1">
           <div class="flex items-start justify-between gap-2 mb-2">
@@ -1335,6 +1371,7 @@
     }
 
     currentPlaceId = place.id;
+    document.getElementById('modalFav').textContent = userFavorites.has(place.id) ? '❤️' : '🤍';
     loadReviews(place.id);
     modal.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
@@ -1360,6 +1397,13 @@
   document.getElementById('modalClose').addEventListener('click', closeModal);
   document.getElementById('modalBackdrop').addEventListener('click', closeModal);
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  // Modal Fav button
+  document.getElementById('modalFav').addEventListener('click', async () => {
+    await toggleFavorite(currentPlaceId);
+    const isFav = userFavorites.has(currentPlaceId);
+    document.getElementById('modalFav').textContent = isFav ? '❤️' : '🤍';
+  });
 
   // Share button
   document.getElementById('modalShare').addEventListener('click', async () => {
@@ -1454,6 +1498,8 @@
 
   // Event delegation บน grid
   document.getElementById('placesGrid').addEventListener('click', e => {
+    const favBtn = e.target.closest('.fav-btn');
+    if (favBtn) { e.stopPropagation(); toggleFavorite(favBtn.dataset.fav); return; }
     const btn = e.target.closest('.detail-btn');
     if (!btn) return;
     const place = allPlaces.find(p => p.id === btn.dataset.id);
