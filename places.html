@@ -816,7 +816,7 @@
     let filtered = allPlaces.filter(p => {
       const matchType   = activeType === 'all' || getCategories(p).includes(activeType);
       const q           = searchQuery.toLowerCase();
-      const matchSearch = !q || p.name.toLowerCase().includes(q)
+      const matchSearch = !q || (p.name||'').toLowerCase().includes(q)
                               || (p.district || '').toLowerCase().includes(q)
                               || (p.city    || '').toLowerCase().includes(q)
                               || (p.address || '').toLowerCase().includes(q);
@@ -1084,7 +1084,7 @@
     renderMapMarkers(allPlaces.filter(p => {
       const matchType = activeType === 'all' || getCategories(p).includes(activeType);
       const q = searchQuery.toLowerCase();
-      const matchSearch = !q || p.name.toLowerCase().includes(q) || (p.district||'').toLowerCase().includes(q) || (p.city||'').toLowerCase().includes(q);
+      const matchSearch = !q || (p.name||'').toLowerCase().includes(q) || (p.district||'').toLowerCase().includes(q) || (p.city||'').toLowerCase().includes(q);
       if (!matchType || !matchSearch) return false;
       if (activePetFilters.has('largeDogOk') && (!(p.allowedPets||[]).includes('dog') || (p.maxWeightKg != null && p.maxWeightKg < 20))) return false;
       if (activePetFilters.has('indoorSeating') && !p.indoorSeating) return false;
@@ -1215,7 +1215,8 @@
       });
       // คำนวณคะแนนเฉลี่ยใหม่
       const allSnap = await getDocs(query(collection(db, 'reviews'), where('placeId', '==', currentPlaceId)));
-      const ratings = allSnap.docs.map(d => d.data().rating);
+      const ratings = allSnap.docs.map(d => d.data().rating).filter(r => typeof r === 'number');
+      if (!ratings.length) return;
       const avg = Math.round((ratings.reduce((a, b) => a + b, 0) / ratings.length) * 10) / 10;
       await updateDoc(doc(db, 'places', currentPlaceId), { rating: avg, reviewCount: ratings.length });
       // อัปเดต local cache + modal display

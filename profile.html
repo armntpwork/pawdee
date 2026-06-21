@@ -470,6 +470,7 @@ async function loadFavorites(uid) {
 }
 
 window.removeFavorite = async function(favDocId, placeId, btn) {
+  if (!favDocId) return;
   btn.disabled = true;
   await deleteDoc(doc(db, 'favorites', favDocId));
   btn.closest('div.flex.items-center').remove();
