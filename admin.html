@@ -454,16 +454,17 @@
       </div>
 
       <!-- ── ผู้ติดต่อ ── -->
-      <div class="bg-gray-50 rounded-2xl p-4 space-y-3">
-        <p class="text-xs font-bold text-gray-400 uppercase tracking-wide">👤 ผู้ติดต่อ (ไม่แสดงสาธารณะ)</p>
+      <div class="bg-orange-50 border-2 border-orange-200 rounded-2xl p-4 space-y-3">
+        <p class="text-xs font-bold text-brand-orange uppercase tracking-wide">👤 ผู้ติดต่อ <span class="text-red-500">* จำเป็น</span></p>
+        <p class="text-xs text-gray-500">ระบบจะส่งอีเมลยืนยันไปหาเจ้าของร้านอัตโนมัติ</p>
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-semibold text-gray-600 mb-1">ชื่อผู้ติดต่อ</label>
-            <input id="an_cname" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm" placeholder="ชื่อ-นามสกุล"/>
+            <label class="block text-xs font-semibold text-gray-600 mb-1">ชื่อผู้ติดต่อ <span class="text-red-500">*</span></label>
+            <input id="an_cname" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm bg-white" placeholder="ชื่อ-นามสกุล"/>
           </div>
           <div>
-            <label class="block text-xs font-semibold text-gray-600 mb-1">อีเมลผู้ติดต่อ</label>
-            <input id="an_cemail" type="email" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm" placeholder="email@example.com"/>
+            <label class="block text-xs font-semibold text-gray-600 mb-1">อีเมลผู้ติดต่อ <span class="text-red-500">*</span></label>
+            <input id="an_cemail" type="email" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm bg-white" placeholder="email@example.com"/>
           </div>
         </div>
       </div>
@@ -1426,17 +1427,23 @@ window.parseAddGmaps = function() {
 };
 
 window.saveNewBusiness = async function() {
-  const name = document.getElementById('an_name').value.trim();
-  if (!name) { alert('กรุณาใส่ชื่อร้าน'); return; }
-  const categories = [...document.querySelectorAll('#addModal input[name=an_cat]:checked')].map(cb => cb.value);
+  const name         = document.getElementById('an_name').value.trim();
+  const contactName  = document.getElementById('an_cname').value.trim();
+  const contactEmail = document.getElementById('an_cemail').value.trim();
+  const categories   = [...document.querySelectorAll('#addModal input[name=an_cat]:checked')].map(cb => cb.value);
+
+  if (!name)         { alert('กรุณาใส่ชื่อร้าน'); return; }
   if (!categories.length) { alert('กรุณาเลือกประเภทร้านอย่างน้อย 1 อย่าง'); return; }
+  if (!contactName)  { alert('กรุณาใส่ชื่อผู้ติดต่อ'); document.getElementById('an_cname').focus(); return; }
+  if (!contactEmail) { alert('กรุณาใส่อีเมลผู้ติดต่อ'); document.getElementById('an_cemail').focus(); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail)) { alert('รูปแบบอีเมลไม่ถูกต้อง'); document.getElementById('an_cemail').focus(); return; }
 
   const btn = document.getElementById('saveNewBtn');
   btn.disabled = true; btn.textContent = '⏳ กำลังบันทึก...';
 
   try {
-    const lat  = parseFloat(document.getElementById('an_lat').value) || null;
-    const lng  = parseFloat(document.getElementById('an_lng').value) || null;
+    const lat  = parseFloat(document.getElementById('an_lat').value)  || null;
+    const lng  = parseFloat(document.getElementById('an_lng').value)  || null;
     const tier = document.getElementById('an_tier').value;
     const pets = [...document.querySelectorAll('#addModal input[name=an_pet]:checked')].map(cb => cb.value);
     const boolFields = {};
@@ -1444,34 +1451,34 @@ window.saveNewBusiness = async function() {
       boolFields[cb.dataset.field] = cb.checked;
     });
     const services = document.getElementById('an_services').value.trim();
-    const maxW = parseFloat(document.getElementById('an_maxweight').value) || null;
+    const maxW     = parseFloat(document.getElementById('an_maxweight').value) || null;
 
     const placeData = {
       name,
-      type:        categories[0],
+      type:         categories[0],
       categories,
-      address:     document.getElementById('an_address').value.trim(),
-      district:    document.getElementById('an_district').value.trim(),
-      city:        document.getElementById('an_district').value.trim(),
-      province:    document.getElementById('an_province').value.trim(),
-      phone:       document.getElementById('an_phone').value.trim(),
-      openHours:   document.getElementById('an_hours').value.trim(),
-      hours:       document.getElementById('an_hours').value.trim(),
-      facebook:    document.getElementById('an_facebook').value.trim(),
-      instagram:   document.getElementById('an_instagram').value.trim(),
-      line:        document.getElementById('an_line').value.trim(),
-      website:     document.getElementById('an_website').value.trim() || null,
+      address:      document.getElementById('an_address').value.trim(),
+      district:     document.getElementById('an_district').value.trim(),
+      city:         document.getElementById('an_district').value.trim(),
+      province:     document.getElementById('an_province').value.trim(),
+      phone:        document.getElementById('an_phone').value.trim(),
+      openHours:    document.getElementById('an_hours').value.trim(),
+      hours:        document.getElementById('an_hours').value.trim(),
+      facebook:     document.getElementById('an_facebook').value.trim(),
+      instagram:    document.getElementById('an_instagram').value.trim(),
+      line:         document.getElementById('an_line').value.trim(),
+      website:      document.getElementById('an_website').value.trim() || null,
       googleMapsUrl: document.getElementById('an_gmaps').value.trim() || null,
-      imageUrl:    document.getElementById('an_imageurl').value.trim() || null,
-      logoUrl:     document.getElementById('an_logourl').value.trim() || null,
-      description: document.getElementById('an_desc').value.trim(),
-      priceRange:  document.getElementById('an_price').value,
+      imageUrl:     document.getElementById('an_imageurl').value.trim() || null,
+      logoUrl:      document.getElementById('an_logourl').value.trim() || null,
+      description:  document.getElementById('an_desc').value.trim(),
+      priceRange:   document.getElementById('an_price').value,
       tier,
-      pets:        pets.length ? pets : null,
-      maxWeightKg: maxW,
-      services:    services ? services.split(',').map(s => s.trim()).filter(Boolean) : [],
-      contactName:  document.getElementById('an_cname').value.trim() || null,
-      contactEmail: document.getElementById('an_cemail').value.trim() || null,
+      pets:         pets.length ? pets : null,
+      maxWeightKg:  maxW,
+      services:     services ? services.split(',').map(s => s.trim()).filter(Boolean) : [],
+      contactName,
+      contactEmail,
       ...boolFields,
       lat, lng,
       rating: 0, reviewCount: 0,
@@ -1481,8 +1488,23 @@ window.saveNewBusiness = async function() {
     };
 
     const docRef = await addDoc(collection(db, 'places'), placeData);
+
+    // ยิงอีเมลแจ้งเจ้าของร้าน (Make.com webhook เดิม)
+    fetch('https://hook.us2.make.com/d6vkctkhkk763xd0trwkbsh6w9kmavbn', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        event:        'place_approved',
+        name,
+        type:         categories[0],
+        contactName,
+        contactEmail,
+        approvedAt:   new Date().toLocaleString('th-TH'),
+      })
+    }).catch(() => {});
+
     document.getElementById('addModal').classList.add('hidden');
-    alert(`✅ เพิ่มร้าน "${name}" สำเร็จ!\n\nสามารถแก้ไขเพิ่มเติมได้ในรายการ "ทั้งหมด" (ID: ${docRef.id})`);
+    alert(`✅ เพิ่มร้าน "${name}" สำเร็จ!\n📧 ส่งอีเมลแจ้ง ${contactEmail} แล้ว\n\nแก้ไขเพิ่มเติมได้ในรายการ "ทั้งหมด"`);
     loadApplications('all');
   } catch(e) {
     alert('เกิดข้อผิดพลาด: ' + e.message);
