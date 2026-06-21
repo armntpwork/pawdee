@@ -607,12 +607,15 @@ async function loadApplications(status) {
 
     list.innerHTML = allDocs.map(d => {
       const isAdminAdded = d._source === 'places';
+      const isAdminPending = !isAdminAdded && d.addedByAdmin && d.status === 'pending';
       const statusCls = isAdminAdded
         ? 'bg-blue-100 text-blue-700'
+        : isAdminPending ? 'bg-purple-100 text-purple-700'
         : d.status === 'approved' ? 'bg-green-100 text-green-700'
         : d.status === 'rejected' ? 'bg-red-100 text-red-700'
         : 'bg-yellow-100 text-yellow-700';
-      const statusTh = isAdminAdded ? '⚡ แอดมินเพิ่ม'
+      const statusTh = isAdminAdded ? '⚡ แอดมินเพิ่ม (live)'
+        : isAdminPending ? '🛡️ แอดมินเพิ่ม (รออนุมัติ)'
         : d.status === 'approved' ? 'อนุมัติแล้ว'
         : d.status === 'rejected' ? 'ถูกปฏิเสธ'
         : 'รอการอนุมัติ';
@@ -1562,29 +1565,16 @@ window.saveNewBusiness = async function() {
       lat, lng,
       rating: 0, reviewCount: 0,
       gallery: [],
-      verified: true,
+      status: 'pending',
+      addedByAdmin: true,
       createdAt: serverTimestamp(),
     };
 
-    const docRef = await addDoc(collection(db, 'places'), placeData);
-
-    // ยิงอีเมลแจ้งเจ้าของร้าน (Make.com webhook เดิม)
-    fetch('https://hook.us2.make.com/d6vkctkhkk763xd0trwkbsh6w9kmavbn', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        event:        'place_approved',
-        name,
-        type:         categories[0],
-        contactName,
-        contactEmail,
-        approvedAt:   new Date().toLocaleString('th-TH'),
-      })
-    }).catch(() => {});
+    await addDoc(collection(db, 'pending_places'), placeData);
 
     document.getElementById('addModal').classList.add('hidden');
-    alert(`✅ เพิ่มร้าน "${name}" สำเร็จ!\n📧 ส่งอีเมลแจ้ง ${contactEmail} แล้ว\n\nแก้ไขเพิ่มเติมได้ในรายการ "ทั้งหมด"`);
-    loadApplications('all');
+    alert(`✅ เพิ่มร้าน "${name}" เข้าคิวรอแล้ว!\n\nกด "อนุมัติ" เพื่อเผยแพร่และส่งอีเมลแจ้ง ${contactEmail} อัตโนมัติ`);
+    loadApplications('pending');
   } catch(e) {
     alert('เกิดข้อผิดพลาด: ' + e.message);
   }
