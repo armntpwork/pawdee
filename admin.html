@@ -934,16 +934,36 @@ window.openEditForm = function() {
         </div>
 
         <!-- รูปภาพ -->
-        <div class="col-span-2 border-t border-gray-100 pt-3">
-          <label class="block text-xs font-semibold text-gray-500 mb-2">🖼️ รูปภาพ (ใส่ URL)</label>
-          <div class="space-y-2">
-            <div>
-              <label class="block text-xs text-gray-400 mb-1">รูปปก (Cover)</label>
-              <input id="ef_imageurl" class="${FIELD_INPUT}" placeholder="https://..." value="${escHtml(d.imageUrl||'')}"/>
+        <div class="col-span-2 border-t border-gray-100 pt-3 space-y-3">
+          <label class="block text-xs font-semibold text-gray-500 mb-1">🖼️ รูปภาพ</label>
+          <!-- Cover -->
+          <div>
+            <label class="block text-xs text-gray-400 mb-1">รูปปก (Cover)</label>
+            <div class="flex gap-3 items-center">
+              <div id="ef_cover_preview" class="w-16 h-16 rounded-xl border-2 border-gray-200 bg-gray-100 flex items-center justify-center text-xl overflow-hidden flex-shrink-0">
+                ${d.imageUrl ? `<img src="${escHtml(d.imageUrl)}" class="w-full h-full object-cover"/>` : '🖼️'}
+              </div>
+              <div class="flex-1 space-y-1.5">
+                <input id="ef_imageurl" class="${FIELD_INPUT}" placeholder="https://..." value="${escHtml(d.imageUrl||'')}"/>
+                <button type="button" onclick="document.getElementById('ef_cover_file').click()" class="w-full py-1.5 rounded-xl border-2 border-dashed border-gray-300 hover:border-brand-orange text-xs text-gray-500 hover:text-brand-orange transition-colors font-medium">📁 เลือกไฟล์อัปโหลด</button>
+                <input type="file" id="ef_cover_file" accept="image/*" class="hidden" onchange="uploadEditImage(this,'cover')"/>
+                <div id="ef_cover_progress" class="hidden h-1 bg-gray-200 rounded-full"><div id="ef_cover_bar" class="h-1 bg-brand-orange rounded-full" style="width:0%"></div></div>
+              </div>
             </div>
-            <div>
-              <label class="block text-xs text-gray-400 mb-1">โลโก้</label>
-              <input id="ef_logourl" class="${FIELD_INPUT}" placeholder="https://..." value="${escHtml(d.logoUrl||'')}"/>
+          </div>
+          <!-- Logo -->
+          <div>
+            <label class="block text-xs text-gray-400 mb-1">โลโก้</label>
+            <div class="flex gap-3 items-center">
+              <div id="ef_logo_preview" class="w-16 h-16 rounded-xl border-2 border-gray-200 bg-gray-100 flex items-center justify-center text-xl overflow-hidden flex-shrink-0">
+                ${d.logoUrl ? `<img src="${escHtml(d.logoUrl)}" class="w-full h-full object-cover"/>` : '🏪'}
+              </div>
+              <div class="flex-1 space-y-1.5">
+                <input id="ef_logourl" class="${FIELD_INPUT}" placeholder="https://..." value="${escHtml(d.logoUrl||'')}"/>
+                <button type="button" onclick="document.getElementById('ef_logo_file').click()" class="w-full py-1.5 rounded-xl border-2 border-dashed border-gray-300 hover:border-brand-orange text-xs text-gray-500 hover:text-brand-orange transition-colors font-medium">📁 เลือกไฟล์อัปโหลด</button>
+                <input type="file" id="ef_logo_file" accept="image/*" class="hidden" onchange="uploadEditImage(this,'logo')"/>
+                <div id="ef_logo_progress" class="hidden h-1 bg-gray-200 rounded-full"><div id="ef_logo_bar" class="h-1 bg-brand-orange rounded-full" style="width:0%"></div></div>
+              </div>
             </div>
           </div>
         </div>
@@ -1418,6 +1438,40 @@ window.uploadAddImage = async function(input, type) {
     const storageRef = ref(storage, path);
     const url = await new Promise((resolve, reject) => {
       const task = uploadBytesResumable(storageRef, file);
+      task.on('state_changed',
+        snap => { progressBar.style.width = Math.round((snap.bytesTransferred / snap.totalBytes) * 100) + '%'; },
+        reject,
+        async () => resolve(await getDownloadURL(task.snapshot.ref))
+      );
+    });
+    urlInput.value = url;
+    previewEl.innerHTML = `<img src="${url}" class="w-full h-full object-cover"/>`;
+  } catch(e) {
+    alert('อัปโหลดไม่สำเร็จ: ' + e.message);
+  }
+  progressWrap.classList.add('hidden');
+  progressBar.style.width = '0%';
+};
+
+window.uploadEditImage = async function(input, type) {
+  const file = input.files[0];
+  if (!file) return;
+  input.value = '';
+  const urlInput   = document.getElementById(type === 'cover' ? 'ef_imageurl'       : 'ef_logourl');
+  const previewEl  = document.getElementById(type === 'cover' ? 'ef_cover_preview'  : 'ef_logo_preview');
+  const progressWrap = document.getElementById(type === 'cover' ? 'ef_cover_progress' : 'ef_logo_progress');
+  const progressBar  = document.getElementById(type === 'cover' ? 'ef_cover_bar'      : 'ef_logo_bar');
+  progressWrap.classList.remove('hidden');
+  progressBar.style.width = '10%';
+  try {
+    const { getAuth } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+    const { getStorage, ref, uploadBytesResumable, getDownloadURL } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js');
+    const storage  = getStorage();
+    const adminUid = getAuth().currentUser?.uid || 'admin';
+    const ext      = file.name.split('.').pop();
+    const path     = `business-${type === 'cover' ? 'covers' : 'logos'}/${adminUid}/${Date.now()}.${ext}`;
+    const url = await new Promise((resolve, reject) => {
+      const task = uploadBytesResumable(ref(storage, path), file);
       task.on('state_changed',
         snap => { progressBar.style.width = Math.round((snap.bytesTransferred / snap.totalBytes) * 100) + '%'; },
         reject,
