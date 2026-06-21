@@ -387,6 +387,10 @@
       <div id="modal24h" class="hidden absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-3 py-1.5 rounded-xl">🚨 24 ชม.</div>
       <button id="modalClose" class="absolute top-3 right-3 bg-white/90 backdrop-blur rounded-full w-9 h-9 flex items-center justify-center text-gray-700 hover:bg-white shadow-md text-lg">✕</button>
     </div>
+    <!-- Gallery strip (basic/premium) -->
+    <div id="modalGalleryWrap" class="hidden flex-shrink-0 bg-gray-50 border-t border-gray-100">
+      <div id="modalGalleryStrip" class="flex gap-1.5 overflow-x-auto px-3 py-2 scrollbar-hide"></div>
+    </div>
     <!-- Content -->
     <div id="modalContent" class="overflow-y-auto p-5 flex-1">
       <div class="flex items-start justify-between gap-3 mb-3">
@@ -1373,6 +1377,26 @@
       mapEl.href = `https://maps.google.com/?q=${place.lat},${place.lng}`;
     } else {
       mapEl.href = `https://www.google.com/maps/search/?api=1&query=${searchQ}`;
+    }
+
+    // Gallery strip
+    const galleryWrap  = document.getElementById('modalGalleryWrap');
+    const galleryStrip = document.getElementById('modalGalleryStrip');
+    const gallery = place.gallery || [];
+    const galleryLimit = tier === 'premium' ? 10 : tier === 'basic' ? 5 : 0;
+    const visibleGallery = gallery.slice(0, galleryLimit);
+    if (visibleGallery.length > 0) {
+      galleryStrip.innerHTML = visibleGallery.map((url, i) =>
+        `<a href="${url}" target="_blank" rel="noopener" class="flex-shrink-0">
+          <img src="${url}" alt="รูป ${i+1}" loading="lazy"
+            class="h-20 w-20 object-cover rounded-xl border border-gray-200 hover:opacity-90 transition-opacity"
+            onerror="this.parentElement.style.display='none'"/>
+        </a>`
+      ).join('');
+      galleryWrap.classList.remove('hidden');
+    } else {
+      galleryStrip.innerHTML = '';
+      galleryWrap.classList.add('hidden');
     }
 
     currentPlaceId = place.id;
