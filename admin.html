@@ -586,14 +586,36 @@ async function loadApplications(status) {
 
     allDocs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
 
-    if (snap.empty) {
+    // สำหรับ "ทั้งหมด" — รวมร้านที่แอดมินเพิ่มโดยตรงจาก places collection ด้วย
+    if (status === 'all') {
+      const pendingPlaceIds = new Set(allSnap.docs.map(d => d.data().placeId).filter(Boolean));
+      const adminAdded = placesSnap.docs
+        .filter(d => !pendingPlaceIds.has(d.id))
+        .map(d => ({ id: d.id, _source: 'places', status: 'approved', ...d.data() }));
+      allDocs = [...allDocs, ...adminAdded];
+      // sort by createdAt desc
+      allDocs.sort((a, b) => {
+        const toMs = v => v?.toMillis?.() ?? (v?.seconds ? v.seconds * 1000 : 0);
+        return toMs(b.createdAt) - toMs(a.createdAt);
+      });
+    }
+
+    if (!allDocs.length) {
       list.innerHTML = '<div class="text-center py-16 text-gray-400"><div class="text-4xl mb-3">✅</div><p>ไม่มีรายการในหมวดนี้</p></div>';
       return;
     }
 
     list.innerHTML = allDocs.map(d => {
-      const statusCls = d.status === 'approved' ? 'bg-green-100 text-green-700' : d.status === 'rejected' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700';
-      const statusTh = d.status === 'approved' ? 'อนุมัติแล้ว' : d.status === 'rejected' ? 'ถูกปฏิเสธ' : 'รอการอนุมัติ';
+      const isAdminAdded = d._source === 'places';
+      const statusCls = isAdminAdded
+        ? 'bg-blue-100 text-blue-700'
+        : d.status === 'approved' ? 'bg-green-100 text-green-700'
+        : d.status === 'rejected' ? 'bg-red-100 text-red-700'
+        : 'bg-yellow-100 text-yellow-700';
+      const statusTh = isAdminAdded ? '⚡ แอดมินเพิ่ม'
+        : d.status === 'approved' ? 'อนุมัติแล้ว'
+        : d.status === 'rejected' ? 'ถูกปฏิเสธ'
+        : 'รอการอนุมัติ';
       const date = d.createdAt?.toDate ? d.createdAt.toDate().toLocaleDateString('th-TH', { year:'numeric', month:'short', day:'numeric' }) : '—';
       const pets = Array.isArray(d.pets) ? d.pets.join(', ') : d.pets || '—';
       return `
@@ -612,8 +634,8 @@ async function loadApplications(status) {
               </div>
             </div>
             <div class="flex gap-2 flex-shrink-0">
-              ${d.status !== 'approved' ? `<button onclick="event.stopPropagation();quickAction('${d.id}','approved')" class="bg-green-500 text-white px-3 py-1.5 rounded-xl text-xs font-bold hover:bg-green-600 transition-all">✓ อนุมัติ</button>` : ''}
-              ${d.status !== 'rejected' ? `<button onclick="event.stopPropagation();quickAction('${d.id}','rejected')" class="bg-red-100 text-red-600 px-3 py-1.5 rounded-xl text-xs font-bold hover:bg-red-200 transition-all">✗</button>` : ''}
+              ${!isAdminAdded && d.status !== 'approved' ? `<button onclick="event.stopPropagation();quickAction('${d.id}','approved')" class="bg-green-500 text-white px-3 py-1.5 rounded-xl text-xs font-bold hover:bg-green-600 transition-all">✓ อนุมัติ</button>` : ''}
+              ${!isAdminAdded && d.status !== 'rejected' ? `<button onclick="event.stopPropagation();quickAction('${d.id}','rejected')" class="bg-red-100 text-red-600 px-3 py-1.5 rounded-xl text-xs font-bold hover:bg-red-200 transition-all">✗</button>` : ''}
             </div>
           </div>
         </div>`;
@@ -1176,21 +1198,22 @@ window.saveEdit = async function() {
       ...boolFields,
       updatedAt:    serverTimestamp(),
     };
-    // บันทึกลง pending_places
-    await updateDoc(doc(db, 'pending_places', currentDocId), updates);
-    // ถ้าอนุมัติแล้ว sync ไป places ด้วย
-    if (d.status === 'approved') {
-      if (d.placeId) {
-        // วิธีที่ถูกต้อง — ใช้ ID ตรงๆ
-        await updateDoc(doc(db, 'places', d.placeId), updates);
-      } else {
-        // fallback สำหรับร้านเก่าที่ยังไม่มี placeId — ค้นหาด้วยชื่อเดิม
-        const snap = await getDocs(query(collection(db, 'places'), where('name', '==', d.name)));
-        for (const p of snap.docs) {
-          await updateDoc(doc(db, 'places', p.id), updates);
-          // บันทึก placeId ไว้เลยเพื่อครั้งถัดไป
-          await updateDoc(doc(db, 'pending_places', currentDocId), { placeId: p.id });
-          d.placeId = p.id;
+    if (d._source === 'places') {
+      // ร้านที่แอดมินเพิ่มโดยตรง — save ตรงไปที่ places collection
+      await updateDoc(doc(db, 'places', currentDocId), updates);
+    } else {
+      // ร้านจาก pending_places — save แล้ว sync ไป places ถ้า approved
+      await updateDoc(doc(db, 'pending_places', currentDocId), updates);
+      if (d.status === 'approved') {
+        if (d.placeId) {
+          await updateDoc(doc(db, 'places', d.placeId), updates);
+        } else {
+          const snap = await getDocs(query(collection(db, 'places'), where('name', '==', d.name)));
+          for (const p of snap.docs) {
+            await updateDoc(doc(db, 'places', p.id), updates);
+            await updateDoc(doc(db, 'pending_places', currentDocId), { placeId: p.id });
+            d.placeId = p.id;
+          }
         }
       }
     }
@@ -1386,10 +1409,12 @@ window.uploadAddImage = async function(input, type) {
   progressWrap.classList.remove('hidden');
   progressBar.style.width = '10%';
   try {
+    const { getAuth } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
     const { getStorage, ref, uploadBytesResumable, getDownloadURL } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js');
     const storage = getStorage();
+    const adminUid = getAuth().currentUser?.uid || 'admin';
     const ext = file.name.split('.').pop();
-    const path = `business-${type === 'cover' ? 'covers' : 'logos'}/admin/${Date.now()}.${ext}`;
+    const path = `business-${type === 'cover' ? 'covers' : 'logos'}/${adminUid}/${Date.now()}.${ext}`;
     const storageRef = ref(storage, path);
     const url = await new Promise((resolve, reject) => {
       const task = uploadBytesResumable(storageRef, file);
