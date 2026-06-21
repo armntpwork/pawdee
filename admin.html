@@ -265,123 +265,212 @@
 
 <!-- Add New Business Modal -->
 <div id="addModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 hidden">
-  <div class="bg-white rounded-3xl p-6 max-w-2xl w-full shadow-2xl max-h-[90vh] flex flex-col">
-    <div class="flex items-center justify-between mb-4">
+  <div class="bg-white rounded-3xl p-6 max-w-2xl w-full shadow-2xl max-h-[92vh] flex flex-col">
+    <div class="flex items-center justify-between mb-4 flex-shrink-0">
       <h3 class="text-lg font-bold text-gray-900">➕ เพิ่มร้านใหม่</h3>
       <button onclick="document.getElementById('addModal').classList.add('hidden')" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
     </div>
     <div class="overflow-y-auto flex-1 space-y-3 pr-1 text-sm" id="addModalBody">
-      <!-- Row: ชื่อ + ประเภท -->
-      <div class="grid grid-cols-2 gap-3">
+
+      <!-- ── ข้อมูลพื้นฐาน ── -->
+      <div class="bg-gray-50 rounded-2xl p-4 space-y-3">
+        <p class="text-xs font-bold text-gray-400 uppercase tracking-wide">📋 ข้อมูลพื้นฐาน</p>
         <div>
-          <label class="block text-xs font-semibold text-gray-500 mb-1">ชื่อร้าน <span class="text-red-500">*</span></label>
+          <label class="block text-xs font-semibold text-gray-600 mb-1">ชื่อร้าน <span class="text-red-500">*</span></label>
           <input id="an_name" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm" placeholder="เช่น Catsual Cat Hotel"/>
         </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-gray-600 mb-1">Tier</label>
+            <select id="an_tier" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm">
+              <option value="free">Starter (ฟรี)</option>
+              <option value="basic">🔶 Pro</option>
+              <option value="premium">🌟 Premium</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-600 mb-1">ราคา</label>
+            <select id="an_price" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm">
+              <option value="฿">฿ (ราคาประหยัด)</option>
+              <option value="฿฿">฿฿ (ราคากลาง)</option>
+              <option value="฿฿฿">฿฿฿ (ราคาสูง)</option>
+            </select>
+          </div>
+        </div>
         <div>
-          <label class="block text-xs font-semibold text-gray-500 mb-1">ประเภท <span class="text-red-500">*</span></label>
-          <select id="an_type" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm">
-            <option value="cafe">☕ คาเฟ่</option>
-            <option value="restaurant">🍽️ ร้านอาหาร</option>
-            <option value="hotel">🏨 โรงแรม/ที่พัก</option>
-            <option value="clinic">🏥 คลินิกสัตว์</option>
-            <option value="grooming">🛁 อาบน้ำ-ตัดขน</option>
-            <option value="shop">🛍️ Pet Shop</option>
-            <option value="condo">🏠 คอนโด/หมู่บ้าน</option>
-            <option value="park">🌳 สวนสาธารณะ</option>
-            <option value="other">📍 อื่นๆ</option>
-          </select>
+          <label class="block text-xs font-semibold text-gray-600 mb-2">ประเภท <span class="text-gray-400 font-normal">(เลือกได้หลายอย่าง)</span> <span class="text-red-500">*</span></label>
+          <div class="flex flex-wrap gap-2" id="an_cat_wrap">
+            <label class="an-tag-label flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-2 border-gray-200 text-gray-600 cursor-pointer text-xs font-semibold hover:border-orange-300 transition-all" onclick="toggleAddTag(this)"><input type="checkbox" name="an_cat" value="cafe" class="hidden"/>☕ คาเฟ่</label>
+            <label class="an-tag-label flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-2 border-gray-200 text-gray-600 cursor-pointer text-xs font-semibold hover:border-orange-300 transition-all" onclick="toggleAddTag(this)"><input type="checkbox" name="an_cat" value="restaurant" class="hidden"/>🍽️ ร้านอาหาร</label>
+            <label class="an-tag-label flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-2 border-gray-200 text-gray-600 cursor-pointer text-xs font-semibold hover:border-orange-300 transition-all" onclick="toggleAddTag(this)"><input type="checkbox" name="an_cat" value="hotel" class="hidden"/>🏨 โรงแรม/ที่พัก</label>
+            <label class="an-tag-label flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-2 border-gray-200 text-gray-600 cursor-pointer text-xs font-semibold hover:border-orange-300 transition-all" onclick="toggleAddTag(this)"><input type="checkbox" name="an_cat" value="clinic" class="hidden"/>🏥 คลินิกสัตว์</label>
+            <label class="an-tag-label flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-2 border-gray-200 text-gray-600 cursor-pointer text-xs font-semibold hover:border-orange-300 transition-all" onclick="toggleAddTag(this)"><input type="checkbox" name="an_cat" value="grooming" class="hidden"/>🛁 อาบน้ำ-ตัดขน</label>
+            <label class="an-tag-label flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-2 border-gray-200 text-gray-600 cursor-pointer text-xs font-semibold hover:border-orange-300 transition-all" onclick="toggleAddTag(this)"><input type="checkbox" name="an_cat" value="shop" class="hidden"/>🛍️ Pet Shop</label>
+            <label class="an-tag-label flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-2 border-gray-200 text-gray-600 cursor-pointer text-xs font-semibold hover:border-orange-300 transition-all" onclick="toggleAddTag(this)"><input type="checkbox" name="an_cat" value="condo" class="hidden"/>🏠 คอนโด/หมู่บ้าน</label>
+            <label class="an-tag-label flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-2 border-gray-200 text-gray-600 cursor-pointer text-xs font-semibold hover:border-orange-300 transition-all" onclick="toggleAddTag(this)"><input type="checkbox" name="an_cat" value="park" class="hidden"/>🌳 สวนสาธารณะ</label>
+            <label class="an-tag-label flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-2 border-gray-200 text-gray-600 cursor-pointer text-xs font-semibold hover:border-orange-300 transition-all" onclick="toggleAddTag(this)"><input type="checkbox" name="an_cat" value="other" class="hidden"/>📍 อื่นๆ</label>
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-600 mb-1">คำอธิบาย</label>
+          <textarea id="an_desc" rows="3" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm resize-none" placeholder="บรรยายร้านสั้นๆ"></textarea>
         </div>
       </div>
-      <!-- ที่อยู่ -->
-      <div>
-        <label class="block text-xs font-semibold text-gray-500 mb-1">ที่อยู่</label>
-        <input id="an_address" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm" placeholder="เลขที่ ถนน ซอย"/>
-      </div>
-      <div class="grid grid-cols-2 gap-3">
+
+      <!-- ── ที่ตั้ง ── -->
+      <div class="bg-gray-50 rounded-2xl p-4 space-y-3">
+        <p class="text-xs font-bold text-gray-400 uppercase tracking-wide">📍 ที่ตั้ง</p>
         <div>
-          <label class="block text-xs font-semibold text-gray-500 mb-1">เขต/อำเภอ</label>
-          <input id="an_district" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm" placeholder="เช่น สวนหลวง"/>
+          <label class="block text-xs font-semibold text-gray-600 mb-1">ที่อยู่</label>
+          <input id="an_address" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm" placeholder="เลขที่ ถนน ซอย"/>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-gray-600 mb-1">เขต/อำเภอ</label>
+            <input id="an_district" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm" placeholder="เช่น สวนหลวง"/>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-600 mb-1">จังหวัด</label>
+            <input id="an_province" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm" placeholder="เช่น กรุงเทพมหานคร"/>
+          </div>
         </div>
         <div>
-          <label class="block text-xs font-semibold text-gray-500 mb-1">จังหวัด</label>
-          <input id="an_province" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm" placeholder="เช่น กรุงเทพมหานคร"/>
-        </div>
-      </div>
-      <!-- ติดต่อ -->
-      <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label class="block text-xs font-semibold text-gray-500 mb-1">เบอร์โทร</label>
-          <input id="an_phone" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm" placeholder="0xx-xxx-xxxx"/>
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-gray-500 mb-1">เวลาเปิด-ปิด</label>
-          <input id="an_hours" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm" placeholder="10:00–20:00"/>
-        </div>
-      </div>
-      <div class="grid grid-cols-3 gap-3">
-        <div>
-          <label class="block text-xs font-semibold text-gray-500 mb-1">Facebook</label>
-          <input id="an_facebook" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm" placeholder="https://facebook.com/..."/>
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-gray-500 mb-1">Instagram</label>
-          <input id="an_instagram" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm" placeholder="@username"/>
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-gray-500 mb-1">Line OA</label>
-          <input id="an_line" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm" placeholder="@lineoa"/>
+          <label class="block text-xs font-semibold text-gray-600 mb-1">Google Maps URL → ดึงพิกัดอัตโนมัติ</label>
+          <div class="flex gap-2">
+            <input id="an_gmaps" class="flex-1 px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm" placeholder="วาง URL Google Maps ที่นี่"/>
+            <button type="button" onclick="parseAddGmaps()" class="px-4 py-2 bg-green-50 border-2 border-green-200 hover:bg-green-100 rounded-xl text-xs font-bold text-green-700 transition-colors whitespace-nowrap">📍 ดึงพิกัด</button>
+          </div>
+          <div class="flex gap-2 mt-1.5">
+            <input id="an_lat" class="flex-1 px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange bg-white text-sm" placeholder="Latitude"/>
+            <input id="an_lng" class="flex-1 px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange bg-white text-sm" placeholder="Longitude"/>
+          </div>
         </div>
       </div>
-      <!-- Google Maps -->
-      <div>
-        <label class="block text-xs font-semibold text-gray-500 mb-1">Google Maps URL → ดึงพิกัดอัตโนมัติ</label>
-        <div class="flex gap-2">
-          <input id="an_gmaps" class="flex-1 px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm" placeholder="วาง URL Google Maps ที่นี่"/>
-          <button type="button" onclick="parseAddGmaps()" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-xl text-xs font-semibold transition-colors whitespace-nowrap">ดึงพิกัด</button>
+
+      <!-- ── ช่องทางติดต่อ ── -->
+      <div class="bg-gray-50 rounded-2xl p-4 space-y-3">
+        <p class="text-xs font-bold text-gray-400 uppercase tracking-wide">📞 ช่องทางติดต่อ</p>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-gray-600 mb-1">เบอร์โทร</label>
+            <input id="an_phone" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm" placeholder="0xx-xxx-xxxx"/>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-600 mb-1">เวลาเปิด-ปิด</label>
+            <input id="an_hours" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm" placeholder="10:00–20:00"/>
+          </div>
         </div>
-        <div class="flex gap-2 mt-1.5">
-          <input id="an_lat" class="flex-1 px-3 py-2 rounded-xl border-2 border-gray-100 bg-gray-50 text-sm" placeholder="Lat" readonly/>
-          <input id="an_lng" class="flex-1 px-3 py-2 rounded-xl border-2 border-gray-100 bg-gray-50 text-sm" placeholder="Lng" readonly/>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-gray-600 mb-1">Facebook</label>
+            <input id="an_facebook" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm" placeholder="https://facebook.com/..."/>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-600 mb-1">Instagram</label>
+            <input id="an_instagram" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm" placeholder="@username"/>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-gray-600 mb-1">LINE OA</label>
+            <input id="an_line" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm" placeholder="@lineoa"/>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-600 mb-1">เว็บไซต์</label>
+            <input id="an_website" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm" placeholder="https://..."/>
+          </div>
         </div>
       </div>
-      <!-- รูป -->
-      <div class="grid grid-cols-2 gap-3">
+
+      <!-- ── นโยบายสัตว์เลี้ยง ── -->
+      <div class="bg-gray-50 rounded-2xl p-4 space-y-3">
+        <p class="text-xs font-bold text-gray-400 uppercase tracking-wide">🐾 นโยบายสัตว์เลี้ยง</p>
         <div>
-          <label class="block text-xs font-semibold text-gray-500 mb-1">รูปปก (Cover URL)</label>
-          <input id="an_imageurl" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm" placeholder="https://..."/>
+          <label class="block text-xs font-semibold text-gray-600 mb-2">สัตว์ที่รับ</label>
+          <div class="flex flex-wrap gap-2">
+            <label class="an-tag-label flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-2 border-gray-200 text-gray-600 cursor-pointer text-xs font-semibold hover:border-orange-300 transition-all" onclick="toggleAddTag(this)"><input type="checkbox" name="an_pet" value="dog" class="hidden"/>🐕 สุนัข</label>
+            <label class="an-tag-label flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-2 border-gray-200 text-gray-600 cursor-pointer text-xs font-semibold hover:border-orange-300 transition-all" onclick="toggleAddTag(this)"><input type="checkbox" name="an_pet" value="cat" class="hidden"/>🐈 แมว</label>
+            <label class="an-tag-label flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-2 border-gray-200 text-gray-600 cursor-pointer text-xs font-semibold hover:border-orange-300 transition-all" onclick="toggleAddTag(this)"><input type="checkbox" name="an_pet" value="rabbit" class="hidden"/>🐇 กระต่าย</label>
+            <label class="an-tag-label flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-2 border-gray-200 text-gray-600 cursor-pointer text-xs font-semibold hover:border-orange-300 transition-all" onclick="toggleAddTag(this)"><input type="checkbox" name="an_pet" value="bird" class="hidden"/>🦜 นก</label>
+            <label class="an-tag-label flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-2 border-gray-200 text-gray-600 cursor-pointer text-xs font-semibold hover:border-orange-300 transition-all" onclick="toggleAddTag(this)"><input type="checkbox" name="an_pet" value="fish" class="hidden"/>🐟 ปลา</label>
+            <label class="an-tag-label flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-2 border-gray-200 text-gray-600 cursor-pointer text-xs font-semibold hover:border-orange-300 transition-all" onclick="toggleAddTag(this)"><input type="checkbox" name="an_pet" value="exotic" class="hidden"/>🦎 Exotic</label>
+            <label class="an-tag-label flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-2 border-gray-200 text-gray-600 cursor-pointer text-xs font-semibold hover:border-orange-300 transition-all" onclick="toggleAddTag(this)"><input type="checkbox" name="an_pet" value="other" class="hidden"/>🐾 อื่นๆ</label>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-gray-600 mb-1">น้ำหนักสัตว์สูงสุด (กก.)</label>
+            <input id="an_maxweight" type="number" min="0" max="200" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm" placeholder="ปล่อยว่าง = ไม่จำกัด"/>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-600 mb-1">บริการ</label>
+            <input id="an_services" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm" placeholder="เช่น อาบน้ำ, ตัดขน"/>
+          </div>
         </div>
         <div>
-          <label class="block text-xs font-semibold text-gray-500 mb-1">โลโก้ (URL)</label>
-          <input id="an_logourl" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm" placeholder="https://..."/>
+          <label class="block text-xs font-semibold text-gray-600 mb-2">สิ่งอำนวยความสะดวก</label>
+          <div class="grid grid-cols-2 gap-2">
+            <label class="an-bool-label flex items-center gap-2 p-2.5 rounded-xl border-2 border-gray-200 text-gray-600 cursor-pointer text-xs font-medium hover:border-orange-200 transition-all" onclick="toggleAddBool(this)"><input type="checkbox" name="an_bool" data-field="needCarrier" class="hidden"/>🧳 ต้องใส่กรง/กระเป๋า</label>
+            <label class="an-bool-label flex items-center gap-2 p-2.5 rounded-xl border-2 border-gray-200 text-gray-600 cursor-pointer text-xs font-medium hover:border-orange-200 transition-all" onclick="toggleAddBool(this)"><input type="checkbox" name="an_bool" data-field="indoorSeating" class="hidden"/>🪑 มีที่นั่งในร้าน</label>
+            <label class="an-bool-label flex items-center gap-2 p-2.5 rounded-xl border-2 border-gray-200 text-gray-600 cursor-pointer text-xs font-medium hover:border-orange-200 transition-all" onclick="toggleAddBool(this)"><input type="checkbox" name="an_bool" data-field="emergency24hr" class="hidden"/>🚨 ฉุกเฉิน 24 ชม.</label>
+            <label class="an-bool-label flex items-center gap-2 p-2.5 rounded-xl border-2 border-gray-200 text-gray-600 cursor-pointer text-xs font-medium hover:border-orange-200 transition-all" onclick="toggleAddBool(this)"><input type="checkbox" name="an_bool" data-field="hasParking" class="hidden"/>🅿️ มีที่จอดรถ</label>
+            <label class="an-bool-label flex items-center gap-2 p-2.5 rounded-xl border-2 border-gray-200 text-gray-600 cursor-pointer text-xs font-medium hover:border-orange-200 transition-all" onclick="toggleAddBool(this)"><input type="checkbox" name="an_bool" data-field="hasSpecialist" class="hidden"/>👨‍⚕️ หมอเฉพาะทาง</label>
+            <label class="an-bool-label flex items-center gap-2 p-2.5 rounded-xl border-2 border-gray-200 text-gray-600 cursor-pointer text-xs font-medium hover:border-orange-200 transition-all" onclick="toggleAddBool(this)"><input type="checkbox" name="an_bool" data-field="hasXray" class="hidden"/>🔬 เอกซเรย์/อัลตราซาวด์</label>
+            <label class="an-bool-label flex items-center gap-2 p-2.5 rounded-xl border-2 border-gray-200 text-gray-600 cursor-pointer text-xs font-medium hover:border-orange-200 transition-all" onclick="toggleAddBool(this)"><input type="checkbox" name="an_bool" data-field="hasLab" class="hidden"/>🧪 ห้อง Lab</label>
+            <label class="an-bool-label flex items-center gap-2 p-2.5 rounded-xl border-2 border-gray-200 text-gray-600 cursor-pointer text-xs font-medium hover:border-orange-200 transition-all" onclick="toggleAddBool(this)"><input type="checkbox" name="an_bool" data-field="hasSurgery" class="hidden"/>🏥 ห้องผ่าตัด</label>
+          </div>
         </div>
       </div>
-      <!-- Description -->
-      <div>
-        <label class="block text-xs font-semibold text-gray-500 mb-1">คำอธิบาย</label>
-        <textarea id="an_desc" rows="3" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm resize-none" placeholder="บรรยายร้านสั้นๆ"></textarea>
-      </div>
-      <!-- Tier + ราคา -->
-      <div class="grid grid-cols-2 gap-3">
+
+      <!-- ── รูปภาพ ── -->
+      <div class="bg-gray-50 rounded-2xl p-4 space-y-3">
+        <p class="text-xs font-bold text-gray-400 uppercase tracking-wide">🖼️ รูปภาพ</p>
+        <!-- Cover -->
         <div>
-          <label class="block text-xs font-semibold text-gray-500 mb-1">Tier</label>
-          <select id="an_tier" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm">
-            <option value="free">Starter (ฟรี)</option>
-            <option value="basic">🔶 Pro</option>
-            <option value="premium">🌟 Premium</option>
-          </select>
+          <label class="block text-xs font-semibold text-gray-600 mb-1">รูปปก (Cover)</label>
+          <div class="flex gap-3 items-center">
+            <div id="an_cover_preview" class="w-16 h-16 rounded-xl border-2 border-gray-200 bg-gray-100 flex items-center justify-center text-2xl overflow-hidden flex-shrink-0">🖼️</div>
+            <div class="flex-1 space-y-1.5">
+              <input id="an_imageurl" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm" placeholder="https://... หรืออัปโหลดไฟล์" oninput="previewAddUrl(this.value,'cover')"/>
+              <button type="button" onclick="document.getElementById('an_cover_file').click()" class="w-full py-2 rounded-xl border-2 border-dashed border-gray-300 hover:border-brand-orange text-xs text-gray-500 hover:text-brand-orange transition-colors font-medium">📁 เลือกไฟล์อัปโหลด</button>
+              <input type="file" id="an_cover_file" accept="image/*" class="hidden" onchange="uploadAddImage(this,'cover')"/>
+              <div id="an_cover_progress" class="hidden h-1 bg-gray-200 rounded-full"><div id="an_cover_bar" class="h-1 bg-brand-orange rounded-full" style="width:0%"></div></div>
+            </div>
+          </div>
         </div>
+        <!-- Logo -->
         <div>
-          <label class="block text-xs font-semibold text-gray-500 mb-1">ราคา</label>
-          <select id="an_price" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm">
-            <option value="฿">฿ (ราคาประหยัด)</option>
-            <option value="฿฿">฿฿ (ราคากลาง)</option>
-            <option value="฿฿฿">฿฿฿ (ราคาสูง)</option>
-          </select>
+          <label class="block text-xs font-semibold text-gray-600 mb-1">โลโก้ร้าน</label>
+          <div class="flex gap-3 items-center">
+            <div id="an_logo_preview" class="w-16 h-16 rounded-xl border-2 border-gray-200 bg-gray-100 flex items-center justify-center text-2xl overflow-hidden flex-shrink-0">🏪</div>
+            <div class="flex-1 space-y-1.5">
+              <input id="an_logourl" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm" placeholder="https://... หรืออัปโหลดไฟล์" oninput="previewAddUrl(this.value,'logo')"/>
+              <button type="button" onclick="document.getElementById('an_logo_file').click()" class="w-full py-2 rounded-xl border-2 border-dashed border-gray-300 hover:border-brand-orange text-xs text-gray-500 hover:text-brand-orange transition-colors font-medium">📁 เลือกไฟล์อัปโหลด</button>
+              <input type="file" id="an_logo_file" accept="image/*" class="hidden" onchange="uploadAddImage(this,'logo')"/>
+              <div id="an_logo_progress" class="hidden h-1 bg-gray-200 rounded-full"><div id="an_logo_bar" class="h-1 bg-brand-orange rounded-full" style="width:0%"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── ผู้ติดต่อ ── -->
+      <div class="bg-gray-50 rounded-2xl p-4 space-y-3">
+        <p class="text-xs font-bold text-gray-400 uppercase tracking-wide">👤 ผู้ติดต่อ (ไม่แสดงสาธารณะ)</p>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-gray-600 mb-1">ชื่อผู้ติดต่อ</label>
+            <input id="an_cname" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm" placeholder="ชื่อ-นามสกุล"/>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-600 mb-1">อีเมลผู้ติดต่อ</label>
+            <input id="an_cemail" type="email" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm" placeholder="email@example.com"/>
+          </div>
         </div>
       </div>
     </div>
+
     <!-- Buttons -->
-    <div class="flex gap-3 mt-5 pt-4 border-t border-gray-100">
+    <div class="flex gap-3 mt-4 pt-4 border-t border-gray-100 flex-shrink-0">
       <button onclick="saveNewBusiness()" id="saveNewBtn" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-xl transition-colors">✅ บันทึกและเผยแพร่เลย</button>
       <button onclick="document.getElementById('addModal').classList.add('hidden')" class="px-5 py-3 rounded-xl border-2 border-gray-200 text-gray-600 font-semibold hover:border-gray-300 transition-colors">ยกเลิก</button>
     </div>
@@ -1225,17 +1314,97 @@ window.claimAction = async function(id, placeId, status) {
 
 // ── Add New Business ──────────────────────────────────────────────────────
 window.openAddModal = function() {
-  // clear all fields
   ['an_name','an_address','an_district','an_province','an_phone','an_hours',
-   'an_facebook','an_instagram','an_line','an_gmaps','an_lat','an_lng',
-   'an_imageurl','an_logourl','an_desc'].forEach(id => {
+   'an_facebook','an_instagram','an_line','an_website','an_gmaps','an_lat','an_lng',
+   'an_imageurl','an_logourl','an_desc','an_maxweight','an_services',
+   'an_cname','an_cemail'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
-  document.getElementById('an_type').value  = 'cafe';
   document.getElementById('an_tier').value  = 'free';
   document.getElementById('an_price').value = '฿';
+  // reset category + pet checkboxes
+  document.querySelectorAll('#addModal input[type=checkbox]').forEach(cb => {
+    cb.checked = false;
+    const lbl = cb.closest('label');
+    if (lbl) {
+      lbl.classList.remove('border-brand-orange','bg-orange-50','text-brand-orange');
+      lbl.classList.add('border-gray-200','text-gray-600');
+    }
+  });
+  // reset image previews
+  const cp = document.getElementById('an_cover_preview');
+  const lp = document.getElementById('an_logo_preview');
+  if (cp) cp.innerHTML = '🖼️';
+  if (lp) lp.innerHTML = '🏪';
   document.getElementById('addModal').classList.remove('hidden');
+};
+
+window.toggleAddTag = function(lbl) {
+  const cb = lbl.querySelector('input[type=checkbox]');
+  cb.checked = !cb.checked;
+  if (cb.checked) {
+    lbl.classList.add('border-brand-orange','bg-orange-50','text-brand-orange');
+    lbl.classList.remove('border-gray-200','text-gray-600');
+  } else {
+    lbl.classList.remove('border-brand-orange','bg-orange-50','text-brand-orange');
+    lbl.classList.add('border-gray-200','text-gray-600');
+  }
+};
+
+window.toggleAddBool = function(lbl) {
+  const cb = lbl.querySelector('input[type=checkbox]');
+  cb.checked = !cb.checked;
+  if (cb.checked) {
+    lbl.classList.add('border-brand-orange','bg-orange-50','text-brand-orange');
+    lbl.classList.remove('border-gray-200','text-gray-600');
+  } else {
+    lbl.classList.remove('border-brand-orange','bg-orange-50','text-brand-orange');
+    lbl.classList.add('border-gray-200','text-gray-600');
+  }
+};
+
+window.previewAddUrl = function(url, type) {
+  const previewEl = document.getElementById(type === 'cover' ? 'an_cover_preview' : 'an_logo_preview');
+  if (!previewEl) return;
+  if (url) {
+    previewEl.innerHTML = `<img src="${url}" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='❌'"/>`;
+  } else {
+    previewEl.innerHTML = type === 'cover' ? '🖼️' : '🏪';
+  }
+};
+
+window.uploadAddImage = async function(input, type) {
+  const file = input.files[0];
+  if (!file) return;
+  input.value = '';
+  const urlInput = document.getElementById(type === 'cover' ? 'an_imageurl' : 'an_logourl');
+  const previewEl = document.getElementById(type === 'cover' ? 'an_cover_preview' : 'an_logo_preview');
+  const progressWrap = document.getElementById(type === 'cover' ? 'an_cover_progress' : 'an_logo_progress');
+  const progressBar = document.getElementById(type === 'cover' ? 'an_cover_bar' : 'an_logo_bar');
+  progressWrap.classList.remove('hidden');
+  progressBar.style.width = '10%';
+  try {
+    const { getStorage, ref, uploadBytesResumable, getDownloadURL } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js');
+    const storage = getStorage();
+    const ext = file.name.split('.').pop();
+    const path = `business-${type === 'cover' ? 'covers' : 'logos'}/admin/${Date.now()}.${ext}`;
+    const storageRef = ref(storage, path);
+    const url = await new Promise((resolve, reject) => {
+      const task = uploadBytesResumable(storageRef, file);
+      task.on('state_changed',
+        snap => { progressBar.style.width = Math.round((snap.bytesTransferred / snap.totalBytes) * 100) + '%'; },
+        reject,
+        async () => resolve(await getDownloadURL(task.snapshot.ref))
+      );
+    });
+    urlInput.value = url;
+    previewEl.innerHTML = `<img src="${url}" class="w-full h-full object-cover"/>`;
+  } catch(e) {
+    alert('อัปโหลดไม่สำเร็จ: ' + e.message);
+  }
+  progressWrap.classList.add('hidden');
+  progressBar.style.width = '0%';
 };
 
 window.parseAddGmaps = function() {
@@ -1258,36 +1427,52 @@ window.parseAddGmaps = function() {
 
 window.saveNewBusiness = async function() {
   const name = document.getElementById('an_name').value.trim();
-  const type = document.getElementById('an_type').value;
   if (!name) { alert('กรุณาใส่ชื่อร้าน'); return; }
+  const categories = [...document.querySelectorAll('#addModal input[name=an_cat]:checked')].map(cb => cb.value);
+  if (!categories.length) { alert('กรุณาเลือกประเภทร้านอย่างน้อย 1 อย่าง'); return; }
 
   const btn = document.getElementById('saveNewBtn');
   btn.disabled = true; btn.textContent = '⏳ กำลังบันทึก...';
 
   try {
-    const lat = parseFloat(document.getElementById('an_lat').value) || null;
-    const lng = parseFloat(document.getElementById('an_lng').value) || null;
+    const lat  = parseFloat(document.getElementById('an_lat').value) || null;
+    const lng  = parseFloat(document.getElementById('an_lng').value) || null;
     const tier = document.getElementById('an_tier').value;
+    const pets = [...document.querySelectorAll('#addModal input[name=an_pet]:checked')].map(cb => cb.value);
+    const boolFields = {};
+    document.querySelectorAll('#addModal input[name=an_bool]').forEach(cb => {
+      boolFields[cb.dataset.field] = cb.checked;
+    });
+    const services = document.getElementById('an_services').value.trim();
+    const maxW = parseFloat(document.getElementById('an_maxweight').value) || null;
 
     const placeData = {
       name,
-      type,
-      categories: [type],
-      address:    document.getElementById('an_address').value.trim(),
-      district:   document.getElementById('an_district').value.trim(),
-      city:       document.getElementById('an_district').value.trim(),
-      province:   document.getElementById('an_province').value.trim(),
-      phone:      document.getElementById('an_phone').value.trim(),
-      openHours:  document.getElementById('an_hours').value.trim(),
-      hours:      document.getElementById('an_hours').value.trim(),
-      facebook:   document.getElementById('an_facebook').value.trim(),
-      instagram:  document.getElementById('an_instagram').value.trim(),
-      line:       document.getElementById('an_line').value.trim(),
-      imageUrl:   document.getElementById('an_imageurl').value.trim() || null,
-      logoUrl:    document.getElementById('an_logourl').value.trim() || null,
+      type:        categories[0],
+      categories,
+      address:     document.getElementById('an_address').value.trim(),
+      district:    document.getElementById('an_district').value.trim(),
+      city:        document.getElementById('an_district').value.trim(),
+      province:    document.getElementById('an_province').value.trim(),
+      phone:       document.getElementById('an_phone').value.trim(),
+      openHours:   document.getElementById('an_hours').value.trim(),
+      hours:       document.getElementById('an_hours').value.trim(),
+      facebook:    document.getElementById('an_facebook').value.trim(),
+      instagram:   document.getElementById('an_instagram').value.trim(),
+      line:        document.getElementById('an_line').value.trim(),
+      website:     document.getElementById('an_website').value.trim() || null,
+      googleMapsUrl: document.getElementById('an_gmaps').value.trim() || null,
+      imageUrl:    document.getElementById('an_imageurl').value.trim() || null,
+      logoUrl:     document.getElementById('an_logourl').value.trim() || null,
       description: document.getElementById('an_desc').value.trim(),
-      priceRange: document.getElementById('an_price').value,
+      priceRange:  document.getElementById('an_price').value,
       tier,
+      pets:        pets.length ? pets : null,
+      maxWeightKg: maxW,
+      services:    services ? services.split(',').map(s => s.trim()).filter(Boolean) : [],
+      contactName:  document.getElementById('an_cname').value.trim() || null,
+      contactEmail: document.getElementById('an_cemail').value.trim() || null,
+      ...boolFields,
       lat, lng,
       rating: 0, reviewCount: 0,
       gallery: [],
@@ -1295,10 +1480,10 @@ window.saveNewBusiness = async function() {
       createdAt: serverTimestamp(),
     };
 
-    const ref = await addDoc(collection(db, 'places'), placeData);
+    const docRef = await addDoc(collection(db, 'places'), placeData);
     document.getElementById('addModal').classList.add('hidden');
-    alert(`✅ เพิ่มร้าน "${name}" สำเร็จ! (ID: ${ref.id})`);
-    loadApplications(currentFilter);
+    alert(`✅ เพิ่มร้าน "${name}" สำเร็จ!\n\nสามารถแก้ไขเพิ่มเติมได้ในรายการ "ทั้งหมด" (ID: ${docRef.id})`);
+    loadApplications('all');
   } catch(e) {
     alert('เกิดข้อผิดพลาด: ' + e.message);
   }
