@@ -400,7 +400,8 @@
         </span>
       </div>
       <h2 id="modalName" class="text-xl font-extrabold text-gray-900 mb-1"></h2>
-      <p id="modalAddress" class="text-sm text-gray-500 mb-3"></p>
+      <p id="modalAddress" class="text-sm text-gray-500 mb-2"></p>
+      <p id="modalDesc" class="hidden text-sm text-gray-600 leading-relaxed mb-3 bg-gray-50 rounded-2xl px-4 py-3"></p>
 
       <div class="grid grid-cols-2 gap-3 mb-4">
         <div class="bg-orange-50 rounded-2xl p-3">
@@ -1278,6 +1279,15 @@
     }
     document.getElementById('modalName').textContent    = place.name;
     document.getElementById('modalAddress').textContent = '📍 ' + [place.address, place.district || place.city, place.province].filter(Boolean).join(', ');
+
+    // คำอธิบาย
+    const descEl = document.getElementById('modalDesc');
+    if (place.description) {
+      descEl.textContent = place.description;
+      descEl.classList.remove('hidden');
+    } else {
+      descEl.classList.add('hidden');
+    }
     document.getElementById('modalRating').textContent  = place.rating?.toFixed(1) || '-';
     document.getElementById('modalReviews').textContent = place.reviewCount ? `${place.reviewCount.toLocaleString()} รีวิว` : '';
     document.getElementById('modalHours').textContent   = place.openHours || place.hours || '-';
