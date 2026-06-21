@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>เกี่ยวกับเรา | PawDee — ทำไมถึงสร้าง PawDee</title>
+  <link rel="icon" href="Pawdee Logo.png" type="image/png"/>
+  <link rel="manifest" href="/manifest.json"/>
+  <meta name="description" content="PawDee เกิดขึ้นเพราะเราเชื่อว่าสัตว์เลี้ยงคือครอบครัว — รู้จักทีมงานและเรื่องราวเบื้องหลังแพลตฟอร์ม Pet-Friendly อันดับหนึ่งในไทย"/>
+  <meta property="og:title" content="เกี่ยวกับเรา | PawDee"/>
+  <meta property="og:description" content="PawDee เกิดขึ้นเพราะเราเชื่อว่าสัตว์เลี้ยงคือครอบครัว"/>
+  <meta property="og:image" content="https://www.pawdeepet.com/animals-hero.png.png"/>
+  <meta property="og:url" content="https://www.pawdeepet.com/about"/>
+  <link rel="canonical" href="https://www.pawdeepet.com/about"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/css/fonts.css"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              orange: '#F97316',
+              'orange-deep': '#EA580C',
+              'orange-light': '#FFFBEB',
+              cream: '#FFFBEB',
+            }
+          },
+          fontFamily: { sans: ['Poppins', 'LINE Seed Sans TH', 'ui-sans-serif'] },
+        }
+      }
+    }
+  </script>
+  <style>
+    * { font-family: 'Poppins', 'LINE Seed Sans TH', sans-serif; }
+    html { scroll-behavior: smooth; }
+    .nav-glass { background: rgba(255,255,255,0.95); backdrop-filter: blur(12px); }
+    .gradient-text {
+      background: linear-gradient(135deg, #F97316 0%, #FFB347 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .team-card:hover .team-img { transform: scale(1.05); }
+    .team-img { transition: transform 0.3s ease; }
+    .stat-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    .stat-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(249,115,22,0.15); }
+    .value-card { transition: all 0.25s ease; }
+    .value-card:hover { background: #FFFBEB; border-color: #F97316; }
+  </style>
+</head>
+<body class="bg-white text-gray-900">
+
+<!-- ── Navbar ── -->
+<nav class="nav-glass fixed top-0 left-0 right-0 z-50 border-b border-orange-100">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      <a href="/" class="flex items-center gap-2">
+        <img src="Pawdee Logo.png" alt="PawDee" class="h-8 w-auto"/>
+        <span class="text-xl font-bold text-gray-900">Paw<span class="text-brand-orange">Dee</span></span>
+      </a>
+      <div class="hidden md:flex items-center gap-8">
+        <a href="places.html" class="text-gray-600 hover:text-brand-orange transition-colors font-medium text-sm">🗺️ สถานที่</a>
+        <a href="about.html" class="text-brand-orange font-semibold text-sm border-b-2 border-brand-orange pb-0.5">เกี่ยวกับเรา</a>
+        <a href="register-business.html" class="text-gray-600 hover:text-brand-orange transition-colors font-medium text-sm">สำหรับธุรกิจ</a>
+        <a href="contact.html" class="text-gray-600 hover:text-brand-orange transition-colors font-medium text-sm">ติดต่อ</a>
+      </div>
+      <div class="flex items-center gap-3">
+        <div id="navAuth">
+          <a href="login.html" class="hidden sm:inline-flex text-sm font-medium text-gray-600 hover:text-brand-orange transition-colors">เข้าสู่ระบบ</a>
+          <a href="login.html?tab=signup" class="bg-brand-orange text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-brand-orange-deep transition-all shadow-md ml-2">เข้าร่วมฟรี ✨</a>
+        </div>
+        <button id="mobileMenuBtn" class="md:hidden p-2 rounded-lg hover:bg-orange-50">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- Mobile menu -->
+  <div id="mobileMenu" class="hidden md:hidden border-t border-orange-100 bg-white px-4 py-4 space-y-3">
+    <a href="places.html" class="block text-sm font-medium text-gray-700 hover:text-brand-orange">🗺️ สถานที่</a>
+    <a href="about.html" class="block text-sm font-semibold text-brand-orange">เกี่ยวกับเรา</a>
+    <a href="register-business.html" class="block text-sm font-medium text-gray-700 hover:text-brand-orange">สำหรับธุรกิจ</a>
+    <a href="contact.html" class="block text-sm font-medium text-gray-700 hover:text-brand-orange">ติดต่อ</a>
+  </div>
+</nav>
+
+<!-- ── Hero ── -->
+<section class="pt-32 pb-20 px-4 bg-gradient-to-b from-brand-orange-light to-white overflow-hidden">
+  <div class="max-w-4xl mx-auto text-center">
+    <div class="inline-flex items-center gap-2 bg-white border border-orange-200 rounded-full px-4 py-1.5 text-sm font-medium text-brand-orange mb-6 shadow-sm">
+      🐾 เรื่องราวของเรา
+    </div>
+    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-tight mb-6">
+      เพราะสัตว์เลี้ยง<br/>
+      <span class="gradient-text">คือครอบครัว</span>
+    </h1>
+    <p class="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+      PawDee เกิดจากความเชื่อว่าทุกคนควรหาที่ที่ดีสำหรับน้องได้ง่ายๆ — ไม่ต้องเสียเวลาถามกลุ่ม Line ทุกครั้ง
+    </p>
+    <!-- Paw decoration -->
+    <div class="flex justify-center gap-4 mt-10 text-4xl opacity-60 select-none">
+      <span style="animation: float 3s ease-in-out infinite">🐶</span>
+      <span style="animation: float 3s ease-in-out 0.8s infinite">🐱</span>
+      <span style="animation: float 3s ease-in-out 1.6s infinite">🐾</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── Story ── -->
+<section class="py-20 px-4">
+  <div class="max-w-6xl mx-auto">
+    <div class="grid lg:grid-cols-2 gap-16 items-center">
+      <!-- Text -->
+      <div>
+        <p class="text-brand-orange font-semibold text-sm uppercase tracking-wider mb-3">ทำไมถึงสร้าง PawDee</p>
+        <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-6 leading-snug">
+          เริ่มจากปัญหา<br/>ที่เราเจอเอง
+        </h2>
+        <div class="space-y-4 text-gray-600 leading-relaxed">
+          <p>
+            วันหนึ่งเราอยากพาน้องหมาไปนั่งคาเฟ่ด้วย แต่หาข้อมูลไม่ได้เลย — Google Maps ไม่บอกว่ารับสัตว์เลี้ยงไหม รีวิวก็ไม่มี ต้องโทรถามทีละร้าน หรือโพสต์ถามในกลุ่มเฟซบุ๊กแล้วรอหลายชั่วโมง
+          </p>
+          <p>
+            เราคิดว่านี่คือปัญหาที่เจ้าของสัตว์เลี้ยงทุกคนเจอ <span class="text-gray-900 font-semibold">PawDee</span> จึงเกิดขึ้น — เป็น directory ที่รวบรวมข้อมูลสถานที่ Pet-Friendly ไว้ในที่เดียว พร้อมนโยบายจริง รีวิวจริง และพิกัดที่ใช้งานได้จริง
+          </p>
+          <p>
+            เราเชื่อว่าการพาน้องออกไปข้างนอกไม่ควรเป็นเรื่องยาก — และนั่นคือสิ่งที่เราทำอยู่ทุกวัน 🐾
+          </p>
+        </div>
+      </div>
+      <!-- Visual -->
+      <div class="relative">
+        <div class="bg-brand-orange-light rounded-3xl p-8 relative overflow-hidden">
+          <div class="absolute top-0 right-0 text-9xl opacity-10 select-none">🐾</div>
+          <div class="space-y-4 relative z-10">
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-orange-100">
+              <div class="flex items-center gap-3 mb-2">
+                <span class="text-2xl">😩</span>
+                <span class="font-semibold text-gray-800 text-sm">ก่อนมี PawDee</span>
+              </div>
+              <p class="text-sm text-gray-500">"โทรถามร้าน 5 ร้าน กว่าจะรู้ว่ารับสุนัขก็หมดแรงแล้ว…"</p>
+            </div>
+            <div class="flex justify-center text-2xl">↓</div>
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-orange-200 ring-2 ring-brand-orange/20">
+              <div class="flex items-center gap-3 mb-2">
+                <span class="text-2xl">🎉</span>
+                <span class="font-semibold text-brand-orange text-sm">หลังมี PawDee</span>
+              </div>
+              <p class="text-sm text-gray-600">"ค้นหา กรอง เจอร้านที่ใช่ใน 30 วินาที พร้อมรีวิวจริง"</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Stats ── -->
+<section class="py-16 px-4 bg-gray-50">
+  <div class="max-w-4xl mx-auto text-center">
+    <p class="text-brand-orange font-semibold text-sm uppercase tracking-wider mb-2">ตัวเลขจริง อัปเดตแบบ Live</p>
+    <h2 class="text-2xl font-bold text-gray-900 mb-10">PawDee วันนี้</h2>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div class="stat-card bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+        <div id="statPlaces" class="text-3xl font-extrabold text-brand-orange mb-1">–</div>
+        <div class="text-sm text-gray-500 font-medium">ร้านที่อนุมัติแล้ว</div>
+      </div>
+      <div class="stat-card bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+        <div id="statReviews" class="text-3xl font-extrabold text-brand-orange mb-1">–</div>
+        <div class="text-sm text-gray-500 font-medium">รีวิวทั้งหมด</div>
+      </div>
+      <div class="stat-card bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+        <div id="statProvinces" class="text-3xl font-extrabold text-brand-orange mb-1">–</div>
+        <div class="text-sm text-gray-500 font-medium">จังหวัด</div>
+      </div>
+      <div class="stat-card bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+        <div class="text-3xl font-extrabold text-brand-orange mb-1">100%</div>
+        <div class="text-sm text-gray-500 font-medium">ฟรีสำหรับผู้ใช้</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Mission & Vision ── -->
+<section class="py-20 px-4">
+  <div class="max-w-5xl mx-auto">
+    <div class="text-center mb-14">
+      <p class="text-brand-orange font-semibold text-sm uppercase tracking-wider mb-2">สิ่งที่ขับเคลื่อนเรา</p>
+      <h2 class="text-3xl sm:text-4xl font-bold text-gray-900">Mission & Vision</h2>
+    </div>
+    <div class="grid sm:grid-cols-2 gap-6">
+      <!-- Mission -->
+      <div class="bg-gradient-to-br from-orange-50 to-amber-50 rounded-3xl p-8 border border-orange-100">
+        <div class="w-12 h-12 bg-brand-orange rounded-2xl flex items-center justify-center text-2xl mb-5">🎯</div>
+        <h3 class="text-xl font-bold text-gray-900 mb-3">พันธกิจ (Mission)</h3>
+        <p class="text-gray-600 leading-relaxed">
+          ให้เจ้าของสัตว์เลี้ยงทุกคนในไทยหาสถานที่ที่ "รับน้อง" ได้ง่ายและมั่นใจ ผ่านข้อมูลที่ถูกต้อง โปร่งใส และอัปเดตอยู่เสมอ
+        </p>
+      </div>
+      <!-- Vision -->
+      <div class="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-3xl p-8 border border-amber-100">
+        <div class="w-12 h-12 bg-amber-400 rounded-2xl flex items-center justify-center text-2xl mb-5">🔭</div>
+        <h3 class="text-xl font-bold text-gray-900 mb-3">วิสัยทัศน์ (Vision)</h3>
+        <p class="text-gray-600 leading-relaxed">
+          เป็น "Google Maps สำหรับคนรักสัตว์เลี้ยง" ของไทย — แหล่งอ้างอิงอันดับหนึ่งเมื่อพูดถึงสถานที่ Pet-Friendly ทั่วประเทศ
+        </p>
+      </div>
+    </div>
+
+    <!-- Values -->
+    <div class="mt-8 grid sm:grid-cols-3 gap-4">
+      <div class="value-card bg-white rounded-2xl p-5 border-2 border-gray-100 cursor-default">
+        <div class="text-2xl mb-3">🔍</div>
+        <h4 class="font-bold text-gray-900 mb-1">ข้อมูลจริง</h4>
+        <p class="text-sm text-gray-500">ทุกร้านผ่านการตรวจสอบจากทีมงานก่อนขึ้นแสดง</p>
+      </div>
+      <div class="value-card bg-white rounded-2xl p-5 border-2 border-gray-100 cursor-default">
+        <div class="text-2xl mb-3">🤝</div>
+        <h4 class="font-bold text-gray-900 mb-1">ชุมชนแท้จริง</h4>
+        <p class="text-sm text-gray-500">รีวิวจากเจ้าของสัตว์เลี้ยงที่ไปมาจริง ไม่ใช่โฆษณา</p>
+      </div>
+      <div class="value-card bg-white rounded-2xl p-5 border-2 border-gray-100 cursor-default">
+        <div class="text-2xl mb-3">💛</div>
+        <h4 class="font-bold text-gray-900 mb-1">รักสัตว์จริงๆ</h4>
+        <p class="text-sm text-gray-500">ทีมงานทุกคนเป็นเจ้าของสัตว์เลี้ยง เข้าใจปัญหาจากภายใน</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Team ── -->
+<section class="py-20 px-4 bg-brand-orange-light">
+  <div class="max-w-5xl mx-auto">
+    <div class="text-center mb-14">
+      <p class="text-brand-orange font-semibold text-sm uppercase tracking-wider mb-2">คนที่อยู่เบื้องหลัง</p>
+      <h2 class="text-3xl sm:text-4xl font-bold text-gray-900">ทีมงาน PawDee</h2>
+      <p class="text-gray-500 mt-3 max-w-xl mx-auto">เราเป็นทีมเล็กๆ ที่รักสัตว์เลี้ยง และเชื่อว่าเทคโนโลยีทำให้ชีวิตของน้องๆ ดีขึ้นได้</p>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
+
+      <!-- Team member 1 — ปรับชื่อ/รูปได้เลย -->
+      <div class="team-card bg-white rounded-3xl overflow-hidden shadow-sm border border-orange-100 w-full max-w-xs">
+        <div class="h-52 overflow-hidden bg-orange-50">
+          <img src="ภาพอาร์ม.JPG" alt="นัฐพงษ์ แก้วประพันธ์" class="w-full h-full object-cover team-img"/>
+        </div>
+        <div class="p-5 text-center">
+          <h3 class="font-bold text-gray-900 text-lg">นัฐพงษ์ แก้วประพันธ์</h3>
+          <p class="text-brand-orange text-sm font-medium mt-0.5">Founder & Developer</p>
+          <p class="text-gray-500 text-xs mt-2 leading-relaxed">สร้าง PawDee เพราะอยากพาหมาไปคาเฟ่ด้วยโดยไม่ต้องโทรถาม 5 ร้านก่อน</p>
+        </div>
+      </div>
+
+      <!-- Placeholder สำหรับทีมงานคนต่อไป — ลบออกได้ -->
+      <div class="team-card bg-white rounded-3xl overflow-hidden shadow-sm border border-dashed border-orange-300 w-full max-w-xs opacity-60">
+        <div class="h-52 bg-orange-50 flex items-center justify-center">
+          <div class="text-center">
+            <div class="text-5xl mb-2">➕</div>
+            <p class="text-xs text-gray-400 font-medium">คนต่อไปคือคุณ?</p>
+          </div>
+        </div>
+        <div class="p-5 text-center">
+          <h3 class="font-semibold text-gray-400 text-lg">เรากำลังโต</h3>
+          <p class="text-gray-400 text-sm font-medium mt-0.5">ร่วมทีมกับเรา</p>
+          <a href="contact.html" class="inline-block mt-3 text-xs text-brand-orange font-semibold hover:underline">ติดต่อเรา →</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ── -->
+<section class="py-20 px-4 bg-gray-900 text-white">
+  <div class="max-w-3xl mx-auto text-center">
+    <div class="text-5xl mb-6">🐾</div>
+    <h2 class="text-3xl sm:text-4xl font-bold mb-4">พร้อมพาน้องออกไปแล้วใช่ไหม?</h2>
+    <p class="text-gray-400 text-lg mb-8">ค้นหาสถานที่ที่รับน้องได้เลยตอนนี้ — ฟรี ไม่ต้องสมัครสมาชิก</p>
+    <div class="flex flex-col sm:flex-row gap-3 justify-center">
+      <a href="places.html" class="bg-brand-orange hover:bg-brand-orange-deep text-white px-8 py-4 rounded-2xl font-bold text-base transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5">
+        🗺️ ค้นหาสถานที่ Pet-Friendly
+      </a>
+      <a href="register-business.html" class="bg-white/10 hover:bg-white/20 text-white border border-white/20 px-8 py-4 rounded-2xl font-semibold text-base transition-all">
+        🏪 ลงทะเบียนร้านฟรี
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ── -->
+<footer class="bg-gray-900 text-gray-300 py-16 border-t border-white/5">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid md:grid-cols-4 gap-10 mb-12">
+      <div class="md:col-span-2">
+        <div class="flex items-center gap-2 mb-4">
+          <div class="w-9 h-9 bg-brand-orange rounded-xl flex items-center justify-center text-xl">🐾</div>
+          <span class="text-xl font-bold text-white">Paw<span class="text-brand-orange">Dee</span></span>
+        </div>
+        <p class="text-sm leading-relaxed text-gray-400 max-w-xs">ศูนย์กลางข้อมูล รีวิว และชุมชนสำหรับเจ้าของสัตว์เลี้ยงในไทย เพราะสัตว์เลี้ยงคือสมาชิกในครอบครัว</p>
+        <div class="flex gap-3 mt-6">
+          <a href="https://www.facebook.com/pawdeepet/" target="_blank" rel="noopener" class="w-9 h-9 bg-white/10 rounded-xl hover:bg-brand-orange transition-colors flex items-center justify-center text-sm">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+          <a href="https://www.instagram.com/pawdeepet" target="_blank" rel="noopener" class="w-9 h-9 bg-white/10 rounded-xl hover:bg-brand-orange transition-colors flex items-center justify-center">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z"/></svg>
+          </a>
+        </div>
+      </div>
+      <div>
+        <h4 class="text-white font-semibold mb-4">สำรวจ</h4>
+        <ul class="space-y-3 text-sm">
+          <li><a href="places.html" class="hover:text-brand-orange transition-colors">🗺️ ค้นหาสถานที่</a></li>
+          <li><a href="register-business.html" class="hover:text-brand-orange transition-colors">🏪 ลงทะเบียนร้าน</a></li>
+          <li><a href="about.html" class="hover:text-brand-orange transition-colors">ℹ️ เกี่ยวกับเรา</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="text-white font-semibold mb-4">ติดต่อ</h4>
+        <ul class="space-y-3 text-sm">
+          <li><a href="contact.html" class="hover:text-brand-orange transition-colors">✉️ ส่งข้อความหาเรา</a></li>
+          <li class="flex items-center gap-2">📧 <a href="mailto:armntp.work@gmail.com" class="hover:text-brand-orange transition-colors">armntp.work@gmail.com</a></li>
+          <li class="flex items-center gap-2">📱 LINE: <a href="https://line.me/R/ti/p/@237mvbgf" target="_blank" rel="noopener" class="hover:text-brand-orange transition-colors">@237mvbgf</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="border-t border-white/10 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+      <p class="text-xs text-gray-500">© 2026 PawDee. Made with ❤️ สำหรับทาสหมาทาสแมวทุกคน</p>
+      <div class="flex gap-4 text-xs text-gray-500">
+        <a href="privacy.html" class="hover:text-brand-orange transition-colors">นโยบายความเป็นส่วนตัว</a>
+        <a href="terms.html" class="hover:text-brand-orange transition-colors">เงื่อนไขการใช้งาน</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+</style>
+
+<script type="module">
+  import { initNavAuth } from './js/auth.js';
+  initNavAuth();
+
+  // Mobile menu
+  const mBtn = document.getElementById('mobileMenuBtn');
+  if (mBtn) mBtn.addEventListener('click', () => {
+    document.getElementById('mobileMenu')?.classList.toggle('hidden');
+  });
+
+  // Live stats from Firestore
+  (async () => {
+    try {
+      const { db, isConfigured } = await import('./js/firebase-config.js');
+      if (!isConfigured) return;
+      const { collection, getDocs, query } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+
+      const [placesSnap, reviewsSnap] = await Promise.all([
+        getDocs(collection(db, 'places')),
+        getDocs(collection(db, 'reviews')),
+      ]);
+
+      const places = placesSnap.docs.map(d => d.data());
+      const provinces = new Set(places.map(p => p.province || p.city).filter(Boolean));
+
+      const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+      setEl('statPlaces',    places.length.toLocaleString());
+      setEl('statReviews',   reviewsSnap.size.toLocaleString());
+      setEl('statProvinces', provinces.size.toLocaleString());
+    } catch (_) {}
+  })();
+</script>
+</body>
+</html>
