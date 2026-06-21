@@ -119,11 +119,12 @@
     <!-- Panel: สถานที่ -->
     <div id="panel-places">
     <!-- Filter tabs -->
-    <div class="flex gap-2 mb-6 overflow-x-auto">
+    <div class="flex gap-2 mb-6 overflow-x-auto items-center">
       <button class="filter-tab active px-5 py-2.5 rounded-xl text-sm font-semibold border-2 border-brand-orange bg-brand-orange text-white transition-all" data-status="pending">รอการอนุมัติ</button>
       <button class="filter-tab px-5 py-2.5 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 transition-all" data-status="approved">อนุมัติแล้ว</button>
       <button class="filter-tab px-5 py-2.5 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 transition-all" data-status="rejected">ถูกปฏิเสธ</button>
       <button class="filter-tab px-5 py-2.5 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 transition-all" data-status="all">ทั้งหมด</button>
+      <button onclick="openAddModal()" class="ml-auto flex-shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold bg-green-500 hover:bg-green-600 text-white transition-all shadow-sm">➕ เพิ่มร้านใหม่</button>
     </div>
 
     <!-- Applications list -->
@@ -261,6 +262,131 @@
 
   </div>
 </main>
+
+<!-- Add New Business Modal -->
+<div id="addModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 hidden">
+  <div class="bg-white rounded-3xl p-6 max-w-2xl w-full shadow-2xl max-h-[90vh] flex flex-col">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-lg font-bold text-gray-900">➕ เพิ่มร้านใหม่</h3>
+      <button onclick="document.getElementById('addModal').classList.add('hidden')" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+    </div>
+    <div class="overflow-y-auto flex-1 space-y-3 pr-1 text-sm" id="addModalBody">
+      <!-- Row: ชื่อ + ประเภท -->
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 mb-1">ชื่อร้าน <span class="text-red-500">*</span></label>
+          <input id="an_name" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm" placeholder="เช่น Catsual Cat Hotel"/>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 mb-1">ประเภท <span class="text-red-500">*</span></label>
+          <select id="an_type" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm">
+            <option value="cafe">☕ คาเฟ่</option>
+            <option value="restaurant">🍽️ ร้านอาหาร</option>
+            <option value="hotel">🏨 โรงแรม/ที่พัก</option>
+            <option value="clinic">🏥 คลินิกสัตว์</option>
+            <option value="grooming">🛁 อาบน้ำ-ตัดขน</option>
+            <option value="shop">🛍️ Pet Shop</option>
+            <option value="condo">🏠 คอนโด/หมู่บ้าน</option>
+            <option value="park">🌳 สวนสาธารณะ</option>
+            <option value="other">📍 อื่นๆ</option>
+          </select>
+        </div>
+      </div>
+      <!-- ที่อยู่ -->
+      <div>
+        <label class="block text-xs font-semibold text-gray-500 mb-1">ที่อยู่</label>
+        <input id="an_address" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm" placeholder="เลขที่ ถนน ซอย"/>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 mb-1">เขต/อำเภอ</label>
+          <input id="an_district" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm" placeholder="เช่น สวนหลวง"/>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 mb-1">จังหวัด</label>
+          <input id="an_province" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm" placeholder="เช่น กรุงเทพมหานคร"/>
+        </div>
+      </div>
+      <!-- ติดต่อ -->
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 mb-1">เบอร์โทร</label>
+          <input id="an_phone" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm" placeholder="0xx-xxx-xxxx"/>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 mb-1">เวลาเปิด-ปิด</label>
+          <input id="an_hours" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm" placeholder="10:00–20:00"/>
+        </div>
+      </div>
+      <div class="grid grid-cols-3 gap-3">
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 mb-1">Facebook</label>
+          <input id="an_facebook" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm" placeholder="https://facebook.com/..."/>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 mb-1">Instagram</label>
+          <input id="an_instagram" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm" placeholder="@username"/>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 mb-1">Line OA</label>
+          <input id="an_line" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm" placeholder="@lineoa"/>
+        </div>
+      </div>
+      <!-- Google Maps -->
+      <div>
+        <label class="block text-xs font-semibold text-gray-500 mb-1">Google Maps URL → ดึงพิกัดอัตโนมัติ</label>
+        <div class="flex gap-2">
+          <input id="an_gmaps" class="flex-1 px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm" placeholder="วาง URL Google Maps ที่นี่"/>
+          <button type="button" onclick="parseAddGmaps()" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-xl text-xs font-semibold transition-colors whitespace-nowrap">ดึงพิกัด</button>
+        </div>
+        <div class="flex gap-2 mt-1.5">
+          <input id="an_lat" class="flex-1 px-3 py-2 rounded-xl border-2 border-gray-100 bg-gray-50 text-sm" placeholder="Lat" readonly/>
+          <input id="an_lng" class="flex-1 px-3 py-2 rounded-xl border-2 border-gray-100 bg-gray-50 text-sm" placeholder="Lng" readonly/>
+        </div>
+      </div>
+      <!-- รูป -->
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 mb-1">รูปปก (Cover URL)</label>
+          <input id="an_imageurl" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm" placeholder="https://..."/>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 mb-1">โลโก้ (URL)</label>
+          <input id="an_logourl" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm" placeholder="https://..."/>
+        </div>
+      </div>
+      <!-- Description -->
+      <div>
+        <label class="block text-xs font-semibold text-gray-500 mb-1">คำอธิบาย</label>
+        <textarea id="an_desc" rows="3" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm resize-none" placeholder="บรรยายร้านสั้นๆ"></textarea>
+      </div>
+      <!-- Tier + ราคา -->
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 mb-1">Tier</label>
+          <select id="an_tier" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm">
+            <option value="free">Starter (ฟรี)</option>
+            <option value="basic">🔶 Pro</option>
+            <option value="premium">🌟 Premium</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 mb-1">ราคา</label>
+          <select id="an_price" class="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-brand-orange text-sm">
+            <option value="฿">฿ (ราคาประหยัด)</option>
+            <option value="฿฿">฿฿ (ราคากลาง)</option>
+            <option value="฿฿฿">฿฿฿ (ราคาสูง)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <!-- Buttons -->
+    <div class="flex gap-3 mt-5 pt-4 border-t border-gray-100">
+      <button onclick="saveNewBusiness()" id="saveNewBtn" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-xl transition-colors">✅ บันทึกและเผยแพร่เลย</button>
+      <button onclick="document.getElementById('addModal').classList.add('hidden')" class="px-5 py-3 rounded-xl border-2 border-gray-200 text-gray-600 font-semibold hover:border-gray-300 transition-colors">ยกเลิก</button>
+    </div>
+  </div>
+</div>
 
 <!-- Approve modal -->
 <div id="modal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 hidden">
@@ -1095,6 +1221,89 @@ window.claimAction = async function(id, placeId, status) {
     try { await updateDoc(doc(db, 'places', placeId), { ownerVerified: true }); } catch(e) {}
   }
   loadClaims(currentClaimStatus);
+};
+
+// ── Add New Business ──────────────────────────────────────────────────────
+window.openAddModal = function() {
+  // clear all fields
+  ['an_name','an_address','an_district','an_province','an_phone','an_hours',
+   'an_facebook','an_instagram','an_line','an_gmaps','an_lat','an_lng',
+   'an_imageurl','an_logourl','an_desc'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('an_type').value  = 'cafe';
+  document.getElementById('an_tier').value  = 'free';
+  document.getElementById('an_price').value = '฿';
+  document.getElementById('addModal').classList.remove('hidden');
+};
+
+window.parseAddGmaps = function() {
+  const url = document.getElementById('an_gmaps').value.trim();
+  const patterns = [
+    /@(-?\d+\.?\d*),(-?\d+\.?\d*)/,
+    /[?&]q=(-?\d+\.?\d*),(-?\d+\.?\d*)/,
+    /\/(-?\d{1,3}\.\d+),(-?\d{1,3}\.\d+)/,
+  ];
+  for (const p of patterns) {
+    const m = url.match(p);
+    if (m) {
+      document.getElementById('an_lat').value = m[1];
+      document.getElementById('an_lng').value = m[2];
+      return;
+    }
+  }
+  alert('ไม่พบพิกัดใน URL นี้ ลองเปิด Google Maps แล้ว copy URL ตรงๆ จาก address bar');
+};
+
+window.saveNewBusiness = async function() {
+  const name = document.getElementById('an_name').value.trim();
+  const type = document.getElementById('an_type').value;
+  if (!name) { alert('กรุณาใส่ชื่อร้าน'); return; }
+
+  const btn = document.getElementById('saveNewBtn');
+  btn.disabled = true; btn.textContent = '⏳ กำลังบันทึก...';
+
+  try {
+    const lat = parseFloat(document.getElementById('an_lat').value) || null;
+    const lng = parseFloat(document.getElementById('an_lng').value) || null;
+    const tier = document.getElementById('an_tier').value;
+
+    const placeData = {
+      name,
+      type,
+      categories: [type],
+      address:    document.getElementById('an_address').value.trim(),
+      district:   document.getElementById('an_district').value.trim(),
+      city:       document.getElementById('an_district').value.trim(),
+      province:   document.getElementById('an_province').value.trim(),
+      phone:      document.getElementById('an_phone').value.trim(),
+      openHours:  document.getElementById('an_hours').value.trim(),
+      hours:      document.getElementById('an_hours').value.trim(),
+      facebook:   document.getElementById('an_facebook').value.trim(),
+      instagram:  document.getElementById('an_instagram').value.trim(),
+      line:       document.getElementById('an_line').value.trim(),
+      imageUrl:   document.getElementById('an_imageurl').value.trim() || null,
+      logoUrl:    document.getElementById('an_logourl').value.trim() || null,
+      description: document.getElementById('an_desc').value.trim(),
+      priceRange: document.getElementById('an_price').value,
+      tier,
+      lat, lng,
+      rating: 0, reviewCount: 0,
+      gallery: [],
+      verified: true,
+      createdAt: serverTimestamp(),
+    };
+
+    const ref = await addDoc(collection(db, 'places'), placeData);
+    document.getElementById('addModal').classList.add('hidden');
+    alert(`✅ เพิ่มร้าน "${name}" สำเร็จ! (ID: ${ref.id})`);
+    loadApplications(currentFilter);
+  } catch(e) {
+    alert('เกิดข้อผิดพลาด: ' + e.message);
+  }
+
+  btn.disabled = false; btn.textContent = '✅ บันทึกและเผยแพร่เลย';
 };
 
 // ── Sitemap Generator ──────────────────────────────────────────────────────
