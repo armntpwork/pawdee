@@ -11,17 +11,19 @@ import {
   createUserWithEmailAndPassword,
   signInWithPopup,
   GoogleAuthProvider,
+  FacebookAuthProvider,
   signOut as fbSignOut,
   sendPasswordResetEmail,
   updateProfile,
 } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
-const googleProvider = new GoogleAuthProvider();
+const googleProvider   = new GoogleAuthProvider();
+const facebookProvider = new FacebookAuthProvider();
 
 // ── Auth actions ──────────────────────────────────────────────
-// ใช้ popup ทุก platform — iOS Safari อนุญาต popup เมื่อ trigger จาก user click
-export const signInWithGoogle = () => signInWithPopup(auth, googleProvider);
+export const signInWithGoogle   = () => signInWithPopup(auth, googleProvider);
+export const signInWithFacebook = () => signInWithPopup(auth, facebookProvider);
 
 export const signInWithEmail  = (email, password) =>
   signInWithEmailAndPassword(auth, email, password);
