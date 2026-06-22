@@ -106,7 +106,7 @@ export function initNavAuth() {
         <div class="flex items-center gap-2">
           <a href="/login.html" class="text-sm font-medium text-gray-600 hover:text-brand-orange transition-colors">เข้าสู่ระบบ</a>
           <a href="/login.html?tab=signup" class="hidden sm:inline-flex items-center bg-brand-orange text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-brand-orange-deep transition-all shadow-md">
-            เข้าร่วม Waitlist ✨
+            สมัครสมาชิกฟรี ✨
           </a>
         </div>
       `;
