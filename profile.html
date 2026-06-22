@@ -58,6 +58,11 @@
     .avatar-circle { width:3.5rem; height:3.5rem; border-radius:0.75rem; display:flex; align-items:center; justify-content:center; font-size:1.75rem; }
     @keyframes modalUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
     .modal-up { animation:modalUp 0.22s ease forwards; }
+    @keyframes progressFill { from { width:0% } }
+    .progress-fill { animation:progressFill 1.2s cubic-bezier(0.4,0,0.2,1) forwards; }
+    .sticker-card { transition:transform 0.15s ease, box-shadow 0.15s ease; }
+    .sticker-card:hover { transform:scale(1.12); }
+    .sticker-locked { filter:grayscale(1); opacity:0.35; }
   </style>
 </head>
 <body class="bg-brand-cream paw-bg text-gray-800 antialiased">
@@ -135,6 +140,37 @@
             <span id="memberSince" class="bg-white/20 px-3 py-1 rounded-2xl text-sm font-medium"></span>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- Level Card -->
+    <div class="bg-white rounded-3xl p-6 shadow-sm mb-6">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-3">
+          <div id="levelEmojiWrap" class="w-14 h-14 rounded-2xl bg-gradient-to-br from-orange-100 to-amber-50 border-2 border-orange-200 flex items-center justify-center text-3xl shadow-sm">🐣</div>
+          <div>
+            <p class="text-xs text-gray-400 font-medium uppercase tracking-wide">ระดับสมาชิก</p>
+            <h3 id="levelName" class="text-lg font-extrabold text-gray-900">น้องใหม่</h3>
+            <p id="levelDays" class="text-xs text-gray-400"></p>
+          </div>
+        </div>
+        <div class="text-right hidden sm:block">
+          <p class="text-xs text-gray-400 mb-0.5">ระดับถัดไป</p>
+          <p id="nextLevelName" class="text-sm font-bold text-brand-orange"></p>
+        </div>
+      </div>
+      <div class="bg-gray-100 rounded-full h-3 overflow-hidden">
+        <div id="levelProgress" class="h-full bg-gradient-to-r from-orange-400 to-amber-400 rounded-full progress-fill" style="width:0%"></div>
+      </div>
+      <div class="flex justify-between mt-1.5">
+        <p id="nextLevelMobile" class="text-xs font-bold text-brand-orange sm:hidden"></p>
+        <p id="levelProgressText" class="text-xs text-gray-400 ml-auto"></p>
+      </div>
+
+      <!-- Stickers -->
+      <div class="mt-5 pt-4 border-t border-gray-100">
+        <p class="text-xs text-gray-500 font-semibold mb-3">🏅 สติ๊กเกอร์ที่ได้รับ</p>
+        <div id="stickersRow" class="flex flex-wrap gap-3"></div>
       </div>
     </div>
 
@@ -284,6 +320,95 @@ initNavAuth();
 let currentUser = null;
 let currentAvatarKey = null;
 
+// ── Level & Sticker config ────────────────────────────────────
+const LEVELS = [
+  { emoji:'🐣', name:'น้องใหม่',       bg:'from-yellow-100 to-amber-50',   border:'border-yellow-200', minDays:0   },
+  { emoji:'🐱', name:'ลูกแมว',        bg:'from-purple-100 to-violet-50',  border:'border-purple-200', minDays:8   },
+  { emoji:'🐶', name:'น้องหมา',       bg:'from-orange-100 to-amber-50',   border:'border-orange-200', minDays:31  },
+  { emoji:'🦮', name:'สหายขนฟู',     bg:'from-blue-100 to-cyan-50',      border:'border-blue-200',   minDays:91  },
+  { emoji:'🏆', name:'เจ้าของตัวจริง', bg:'from-yellow-200 to-amber-100', border:'border-yellow-300', minDays:181 },
+  { emoji:'👑', name:'ตำนาน PawDee',  bg:'from-pink-100 to-rose-50',      border:'border-pink-200',   minDays:365 },
+];
+
+const STICKERS = [
+  { emoji:'🌱', name:'จุดเริ่มต้น',   desc:'สมัครสมาชิก PawDee',          check:(d,f,p)=>true        },
+  { emoji:'📅', name:'ครบสัปดาห์',    desc:'อยู่กับ PawDee ครบ 7 วัน',    check:(d)=>d>=7            },
+  { emoji:'🌙', name:'ครบเดือน',      desc:'สมาชิกครบ 30 วัน',             check:(d)=>d>=30           },
+  { emoji:'🔥', name:'3 เดือน',       desc:'สมาชิกครบ 90 วัน',             check:(d)=>d>=90           },
+  { emoji:'💎', name:'6 เดือน',       desc:'สมาชิกครบ 180 วัน',            check:(d)=>d>=180          },
+  { emoji:'👑', name:'1 ปีเต็ม',      desc:'สมาชิกครบ 1 ปี',               check:(d)=>d>=365          },
+  { emoji:'📌', name:'นักสำรวจ',      desc:'บันทึกร้านแรก',                check:(d,f)=>f>=1          },
+  { emoji:'🗺️', name:'นักสะสม',      desc:'บันทึกครบ 5 ร้าน',             check:(d,f)=>f>=5          },
+  { emoji:'❤️', name:'ขาประจำ',       desc:'บันทึกครบ 10 ร้าน',            check:(d,f)=>f>=10         },
+  { emoji:'🏪', name:'เจ้าของร้าน',   desc:'ลงทะเบียนร้านแรก',             check:(d,f,p)=>p>=1        },
+];
+
+let memberDays = 0, favCount = 0, placeCount = 0;
+
+function getMemberDays(user) {
+  const created = user.metadata?.creationTime ? new Date(user.metadata.creationTime) : new Date();
+  return Math.max(0, Math.floor((Date.now() - created.getTime()) / 86400000));
+}
+
+function renderLevel(days) {
+  let idx = LEVELS.length - 1;
+  for (let i = 0; i < LEVELS.length - 1; i++) {
+    if (days < LEVELS[i + 1].minDays) { idx = i; break; }
+  }
+  const cur = LEVELS[idx];
+  const next = LEVELS[idx + 1];
+
+  document.getElementById('levelEmojiWrap').className =
+    `w-14 h-14 rounded-2xl bg-gradient-to-br ${cur.bg} border-2 ${cur.border} flex items-center justify-center text-3xl shadow-sm`;
+  document.getElementById('levelEmojiWrap').textContent = cur.emoji;
+  document.getElementById('levelName').textContent = cur.name;
+  document.getElementById('levelDays').textContent = `สมาชิก ${days} วัน`;
+
+  if (next) {
+    const pct = Math.min(100, ((days - cur.minDays) / (next.minDays - cur.minDays)) * 100);
+    document.getElementById('levelProgress').style.width = pct + '%';
+    document.getElementById('levelProgressText').textContent = `${days - cur.minDays} / ${next.minDays - cur.minDays} วัน`;
+    document.getElementById('nextLevelName').textContent = `${next.emoji} ${next.name}`;
+    document.getElementById('nextLevelMobile').textContent = `${next.emoji} ${next.name}`;
+  } else {
+    document.getElementById('levelProgress').style.width = '100%';
+    document.getElementById('levelProgressText').textContent = '✨ ระดับสูงสุด!';
+    document.getElementById('nextLevelName').textContent = '✨ ระดับสูงสุดแล้ว!';
+    document.getElementById('nextLevelMobile').textContent = '✨ ระดับสูงสุดแล้ว!';
+  }
+}
+
+function renderStickers(days, favs, places) {
+  const row = document.getElementById('stickersRow');
+  const unlocked = STICKERS.filter(s => s.check(days, favs, places));
+  const locked   = STICKERS.filter(s => !s.check(days, favs, places));
+  if (unlocked.length === 0 && locked.length === 0) return;
+  row.innerHTML = [
+    ...unlocked.map(s => `
+      <div class="sticker-card flex flex-col items-center gap-1 cursor-default" title="${s.desc}">
+        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-orange-50 to-amber-50 border-2 border-orange-200 flex items-center justify-center text-2xl shadow-sm">${s.emoji}</div>
+        <span class="text-[9px] font-bold text-gray-600 text-center leading-tight w-12">${s.name}</span>
+      </div>`),
+    ...locked.map(s => `
+      <div class="sticker-card sticker-locked flex flex-col items-center gap-1 cursor-default" title="${s.desc} (ยังไม่ได้รับ)">
+        <div class="w-12 h-12 rounded-2xl bg-gray-100 border-2 border-gray-200 flex items-center justify-center text-2xl">${s.emoji}</div>
+        <span class="text-[9px] font-bold text-gray-300 text-center leading-tight w-12">${s.name}</span>
+      </div>`)
+  ].join('');
+}
+
+async function loadCounts(uid) {
+  try {
+    const [favSnap, placeSnap] = await Promise.all([
+      getDocs(query(collection(db, 'favorites'), where('userId', '==', uid))),
+      getDocs(query(collection(db, 'pending_places'), where('ownerUid', '==', uid))),
+    ]);
+    favCount   = favSnap.size;
+    placeCount = placeSnap.size;
+    renderStickers(memberDays, favCount, placeCount);
+  } catch(_) {}
+}
+
 // ── Avatar config ─────────────────────────────────────────────
 const AVATARS = [
   { key:'google',  emoji:null,  bg:'bg-gradient-to-br from-blue-400 to-indigo-500',   label:'Google'    },
@@ -374,10 +499,14 @@ onAuthChange(async user => {
     return;
   }
   currentUser = user;
+  memberDays = getMemberDays(user);
   document.getElementById('profileContent').classList.remove('hidden');
   renderProfile(user);
+  renderLevel(memberDays);
+  renderStickers(memberDays, 0, 0);
   await loadAvatar(user);
   loadMyPlaces(user.uid);
+  loadCounts(user.uid);
 });
 
 function renderProfile(user) {
