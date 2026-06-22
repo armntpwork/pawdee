@@ -78,39 +78,7 @@
 <body class="bg-gray-50">
 
 <!-- NAV -->
-<nav class="nav-glass fixed top-0 left-0 right-0 z-50 border-b border-orange-100">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex items-center justify-between h-16">
-      <a href="index.html" class="flex items-center gap-2">
-        <img src="Pawdee Logo.png" alt="PawDee" class="h-8 w-auto"/>
-        <span class="text-xl font-bold text-gray-900">Paw<span class="text-brand-orange">Dee</span></span>
-      </a>
-      <div class="hidden md:flex items-center gap-8">
-        <a href="places.html" class="text-gray-600 hover:text-brand-orange transition-colors font-medium text-sm">🗺️ สถานที่</a>
-        <a href="sitters.html" class="text-gray-600 hover:text-brand-orange transition-colors font-medium text-sm">🧑 พี่เลี้ยง</a>
-        <a href="emergency.html" class="text-gray-600 hover:text-red-500 transition-colors font-medium text-sm">🚨 คลินิกฉุกเฉิน</a>
-        <a href="register-business.html" class="text-gray-600 hover:text-brand-orange transition-colors font-medium text-sm">สำหรับธุรกิจ</a>
-      </div>
-      <div class="flex items-center gap-1">
-        <div id="navAuth"></div>
-        <div class="flex items-center gap-0.5 bg-gray-100 rounded-xl p-1 ml-1">
-          <button class="lang-btn px-2 py-1 text-xs font-bold rounded-lg bg-brand-orange text-white" data-lang="th" title="ภาษาไทย">🇹🇭</button>
-          <button class="lang-btn px-2 py-1 text-xs font-semibold rounded-lg text-gray-500 hover:bg-orange-50 transition-colors" data-lang="en" title="English">🇬🇧</button>
-          <button class="lang-btn px-2 py-1 text-xs font-semibold rounded-lg text-gray-500 hover:bg-orange-50 transition-colors" data-lang="zh" title="中文">🇨🇳</button>
-        </div>
-        <button id="mobileMenuBtn" class="md:hidden p-2.5 rounded-lg hover:bg-orange-50 ml-1">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
-        </button>
-      </div>
-    </div>
-  </div>
-  <div id="mobileMenu" class="hidden md:hidden border-t border-orange-100 bg-white px-4 py-4 space-y-3">
-    <a href="places.html" class="block text-gray-700 hover:text-brand-orange font-medium py-1">🗺️ สถานที่ Pet-Friendly</a>
-    <a href="sitters.html" class="block text-gray-700 hover:text-brand-orange font-medium py-1">🧑 พี่เลี้ยงสัตว์</a>
-    <a href="emergency.html" class="block text-gray-700 hover:text-red-500 font-medium py-1">🚨 คลินิกฉุกเฉิน</a>
-    <a href="register-business.html" class="block text-gray-700 hover:text-brand-orange font-medium py-1">🏪 สำหรับธุรกิจ</a>
-  </div>
-</nav>
+<div id="nav-root"></div>
 
 <!-- HERO -->
 <section class="pt-28 pb-12 paw-bg bg-brand-cream relative overflow-hidden">
@@ -317,13 +285,9 @@
 </footer>
 
 <script type="module">
+  import '/js/navbar.js';
   import { initNavAuth } from './js/auth.js';
   initNavAuth();
-
-  // Mobile menu
-  document.getElementById('mobileMenuBtn').addEventListener('click', () => {
-    document.getElementById('mobileMenu').classList.toggle('hidden');
-  });
 
   // ── Firebase setup ──────────────────────────────────────────
   let db = null;
@@ -429,17 +393,8 @@
     document.getElementById('successMsg').classList.add('hidden');
   }
 
-  // Language switcher
-  document.querySelectorAll('.lang-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.lang-btn').forEach(b => {
-        b.classList.remove('bg-brand-orange','text-white');
-        b.classList.add('text-gray-500');
-      });
-      btn.classList.add('bg-brand-orange','text-white');
-      btn.classList.remove('text-gray-500');
-    });
-  });
+  import { initI18n } from './js/i18n.js';
+  initI18n();
 </script>
 </body>
 </html>

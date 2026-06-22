@@ -55,45 +55,7 @@
 <body class="bg-white text-gray-900">
 
 <!-- ── Navbar ── -->
-<nav class="nav-glass fixed top-0 left-0 right-0 z-50 border-b border-orange-100">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex items-center justify-between h-16">
-      <a href="/" class="flex items-center gap-2">
-        <img src="Pawdee Logo.png" alt="PawDee" class="h-8 w-auto"/>
-        <span class="text-xl font-bold text-gray-900">Paw<span class="text-brand-orange">Dee</span></span>
-      </a>
-      <div class="hidden md:flex items-center gap-8">
-        <a href="places.html" class="text-gray-600 hover:text-brand-orange transition-colors font-medium text-sm">🗺️ สถานที่</a>
-        <a href="about.html" class="text-brand-orange font-semibold text-sm border-b-2 border-brand-orange pb-0.5">เกี่ยวกับเรา</a>
-        <a href="register-business.html" class="text-gray-600 hover:text-brand-orange transition-colors font-medium text-sm">สำหรับธุรกิจ</a>
-        <a href="contact.html" class="text-gray-600 hover:text-brand-orange transition-colors font-medium text-sm">ติดต่อเรา</a>
-      </div>
-      <div class="flex items-center gap-2">
-        <div id="navAuth">
-          <a href="login.html" class="hidden sm:inline-flex text-sm font-medium text-gray-600 hover:text-brand-orange transition-colors">เข้าสู่ระบบ</a>
-          <a href="login.html?tab=signup" class="bg-brand-orange text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-brand-orange-deep transition-all shadow-md ml-2">เข้าร่วมฟรี ✨</a>
-        </div>
-        <div class="flex items-center gap-0.5 bg-gray-100 rounded-xl p-1">
-          <button class="lang-btn px-2 py-1 rounded-lg bg-brand-orange" data-lang="th" title="ภาษาไทย"><img src="https://flagcdn.com/20x15/th.png" width="20" height="15" alt="TH" class="rounded-sm"/></button>
-          <button class="lang-btn px-2 py-1 rounded-lg hover:bg-orange-50 transition-colors" data-lang="en" title="English"><img src="https://flagcdn.com/20x15/gb.png" width="20" height="15" alt="EN" class="rounded-sm"/></button>
-          <button class="lang-btn px-2 py-1 rounded-lg hover:bg-orange-50 transition-colors" data-lang="zh" title="中文"><img src="https://flagcdn.com/20x15/cn.png" width="20" height="15" alt="CN" class="rounded-sm"/></button>
-        </div>
-        <button id="mobileMenuBtn" class="md:hidden p-2 rounded-lg hover:bg-orange-50">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-          </svg>
-        </button>
-      </div>
-    </div>
-  </div>
-  <!-- Mobile menu -->
-  <div id="mobileMenu" class="hidden md:hidden border-t border-orange-100 bg-white px-4 py-4 space-y-3">
-    <a href="places.html" class="block text-sm font-medium text-gray-700 hover:text-brand-orange">🗺️ สถานที่</a>
-    <a href="about.html" class="block text-sm font-semibold text-brand-orange">เกี่ยวกับเรา</a>
-    <a href="register-business.html" class="block text-sm font-medium text-gray-700 hover:text-brand-orange">สำหรับธุรกิจ</a>
-    <a href="contact.html" class="block text-sm font-medium text-gray-700 hover:text-brand-orange">📬 ติดต่อเรา</a>
-  </div>
-</nav>
+<div id="nav-root"></div>
 
 <!-- ── Hero ── -->
 <section class="pt-32 pb-20 px-4 bg-gradient-to-b from-brand-orange-light to-white overflow-hidden">
@@ -353,14 +315,9 @@
 </style>
 
 <script type="module">
+  import '/js/navbar.js';
   import { initNavAuth } from './js/auth.js';
   initNavAuth();
-
-  // Mobile menu
-  const mBtn = document.getElementById('mobileMenuBtn');
-  if (mBtn) mBtn.addEventListener('click', () => {
-    document.getElementById('mobileMenu')?.classList.toggle('hidden');
-  });
 
   // Live stats from Firestore
   (async () => {
@@ -383,6 +340,9 @@
       setEl('statProvinces', provinces.size.toLocaleString());
     } catch (_) {}
   })();
+
+  import { initI18n } from './js/i18n.js';
+  initI18n();
 </script>
 </body>
 </html>

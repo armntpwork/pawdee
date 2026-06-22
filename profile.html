@@ -68,44 +68,7 @@
 <body class="bg-brand-cream paw-bg text-gray-800 antialiased">
 
 <!-- Navbar -->
-<nav class="nav-glass fixed top-0 left-0 right-0 z-50 border-b border-orange-100">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex items-center justify-between h-16">
-      <a href="index.html" class="flex items-center gap-2">
-        <img src="Pawdee Logo.png" alt="PawDee" class="h-8 w-auto"/>
-        <span class="text-xl font-bold text-gray-900">Paw<span class="text-brand-orange">Dee</span></span>
-      </a>
-      <div class="hidden md:flex items-center gap-6 text-sm font-medium text-gray-600">
-        <a href="places.html" class="hover:text-brand-orange transition-colors" data-i18n="nav.places">🗺️ สถานที่</a>
-        <a href="sitters.html" class="hover:text-brand-orange transition-colors" data-i18n="nav.sitters">🧑 พี่เลี้ยง</a>
-        <a href="emergency.html" class="hover:text-brand-orange transition-colors" data-i18n="nav.emergency">🚨 คลินิกฉุกเฉิน</a>
-        <a href="register-business.html" class="hover:text-brand-orange transition-colors">สำหรับธุรกิจ</a>
-        <a href="about.html" class="hover:text-brand-orange transition-colors">เกี่ยวกับเรา</a>
-        <a href="contact.html" class="hover:text-brand-orange transition-colors">ติดต่อเรา</a>
-      </div>
-      <div class="flex items-center gap-1">
-        <div id="navAuth"></div>
-        <!-- Language Switcher -->
-        <div class="flex items-center gap-0.5 bg-gray-100 rounded-xl p-1 ml-1">
-          <button class="lang-btn px-2 py-1 rounded-lg bg-brand-orange" data-lang="th" title="ภาษาไทย"><img src="https://flagcdn.com/20x15/th.png" width="20" height="15" alt="TH" class="rounded-sm"/></button>
-          <button class="lang-btn px-2 py-1 rounded-lg hover:bg-orange-50 transition-colors" data-lang="en" title="English"><img src="https://flagcdn.com/20x15/gb.png" width="20" height="15" alt="EN" class="rounded-sm"/></button>
-          <button class="lang-btn px-2 py-1 rounded-lg hover:bg-orange-50 transition-colors" data-lang="zh" title="中文"><img src="https://flagcdn.com/20x15/cn.png" width="20" height="15" alt="CN" class="rounded-sm"/></button>
-        </div>
-        <button id="mobileMenuBtn" class="md:hidden p-2.5 rounded-lg hover:bg-orange-50 ml-1">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
-        </button>
-      </div>
-    </div>
-  </div>
-  <div id="mobileMenu" class="hidden md:hidden border-t border-orange-100 bg-white px-4 py-4 space-y-3">
-    <a href="places.html" class="block text-gray-700 hover:text-brand-orange font-medium py-1" data-i18n="nav.places_mobile">🗺️ สถานที่ Pet-Friendly</a>
-    <a href="sitters.html" class="block text-gray-700 hover:text-brand-orange font-medium py-1" data-i18n="nav.sitters_mobile">🧑 พี่เลี้ยงสัตว์</a>
-    <a href="emergency.html" class="block text-gray-700 hover:text-red-500 font-medium py-1" data-i18n="nav.emergency">🚨 คลินิกฉุกเฉิน</a>
-    <a href="register-business.html" class="block text-gray-700 hover:text-brand-orange font-medium py-1">🏪 สำหรับธุรกิจ</a>
-    <a href="about.html" class="block text-gray-700 hover:text-brand-orange font-medium py-1">ℹ️ เกี่ยวกับเรา</a>
-    <a href="contact.html" class="block text-gray-700 hover:text-brand-orange font-medium py-1">📬 ติดต่อเรา</a>
-  </div>
-</nav>
+<div id="nav-root"></div>
 
 <main class="pt-20 pb-16">
   <!-- Not logged in -->
@@ -310,6 +273,7 @@
 </script>
 
 <script type="module">
+import '/js/navbar.js';
 import { onAuthChange, signOut, initNavAuth } from './js/auth.js';
 import { updateProfile, updatePassword } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 import { db } from './js/firebase-config.js';

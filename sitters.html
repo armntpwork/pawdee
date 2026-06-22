@@ -55,32 +55,7 @@
 <body class="bg-brand-cream antialiased">
 
 <!-- Navbar -->
-<nav class="nav-glass fixed top-0 left-0 right-0 z-50 border-b border-orange-100">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex items-center justify-between h-16">
-      <a href="index.html" class="flex items-center gap-2">
-        <img src="Pawdee Logo.png" alt="PawDee" class="h-8 w-auto"/>
-        <span class="text-xl font-bold text-gray-900">Paw<span class="text-brand-orange">Dee</span></span>
-      </a>
-      <div class="hidden md:flex items-center gap-8">
-        <a href="places.html" class="text-gray-600 hover:text-brand-orange transition-colors font-medium text-sm">🗺️ สถานที่</a>
-        <a href="sitters.html" class="text-brand-orange font-semibold text-sm">🧑 พี่เลี้ยง</a>
-        <a href="emergency.html" class="text-gray-600 hover:text-red-500 transition-colors font-medium text-sm">🚨 คลินิกฉุกเฉิน</a>
-        <a href="register-business.html" class="text-gray-600 hover:text-brand-orange transition-colors font-medium text-sm">สำหรับธุรกิจ</a>
-      </div>
-      <div id="navAuth"></div>
-      <button id="mobileMenuBtn" class="md:hidden p-2.5 rounded-lg hover:bg-orange-50 ml-2">
-  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
-</button>
-    </div>
-  </div>
-<div id="mobileMenu" class="hidden md:hidden border-t border-orange-100 bg-white px-4 py-4 space-y-3">
-  <a href="places.html" class="block text-gray-700 hover:text-brand-orange font-medium py-1">🗺️ สถานที่ Pet-Friendly</a>
-  <a href="sitters.html" class="block text-brand-orange font-semibold py-1">🧑 พี่เลี้ยงสัตว์</a>
-  <a href="emergency.html" class="block text-gray-700 hover:text-red-500 font-medium py-1">🚨 คลินิกฉุกเฉิน</a>
-  <a href="register-business.html" class="block text-gray-700 hover:text-brand-orange font-medium py-1">🏪 สำหรับธุรกิจ</a>
-</div>
-</nav>
+<div id="nav-root"></div>
 
 <!-- Hero Coming Soon -->
 <main class="pt-16 min-h-screen paw-bg">
@@ -310,6 +285,7 @@
 </footer>
 
 <script type="module">
+import '/js/navbar.js';
 import { initNavAuth } from './js/auth.js';
 initNavAuth();
 
@@ -342,22 +318,9 @@ document.getElementById('sitterForm').addEventListener('submit', async e => {
   document.getElementById('sitterForm').classList.add('hidden');
   document.getElementById('sitterSuccess').classList.remove('hidden');
 });
-</script>
-<script>
-  const _mb = document.getElementById('mobileMenuBtn');
-  const _mm = document.getElementById('mobileMenu');
-  if (_mb) {
-    _mb.addEventListener('click', () => {
-      const hidden = _mm.classList.contains('hidden');
-      _mm.classList.toggle('hidden', !hidden);
-      if (hidden) _mm.classList.add('menu-slide-in');
-    });
-    document.addEventListener('click', e => {
-      if (!_mm.classList.contains('hidden') && !_mm.contains(e.target) && !_mb.contains(e.target))
-        _mm.classList.add('hidden');
-    });
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') _mm.classList.add('hidden'); });
-  }
+
+import { initI18n } from './js/i18n.js';
+initI18n();
 </script>
 <script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js").catch(()=>{});}</script>
 </body>
