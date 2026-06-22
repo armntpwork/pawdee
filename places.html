@@ -62,8 +62,9 @@
     .badge-clinic   { background:#FCE4EC; color:#AD1457; }
     .badge-grooming { background:#E8F5E9; color:#2E7D32; }
     .badge-condo    { background:#E0F2F1; color:#00695C; }
-    .badge-park     { background:#F1F8E9; color:#558B2F; }
-    .badge-shop     { background:#FFF8E1; color:#F57F17; }
+    .badge-park      { background:#F1F8E9; color:#558B2F; }
+    .badge-transport { background:#E8EAF6; color:#283593; }
+    .badge-shop      { background:#FFF8E1; color:#F57F17; }
     .filter-btn { transition: all 0.2s; }
     .filter-btn.active { background: #F97316; color: white; border-color: #F97316; }
     .pet-filter-btn { transition: all 0.2s; }
@@ -238,6 +239,9 @@
     </button>
     <button class="filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 hover:border-brand-orange hover:text-brand-orange" data-type="park" data-i18n="places.filter_park">
       🌳 สวนสาธารณะ
+    </button>
+    <button class="filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 hover:border-brand-orange hover:text-brand-orange" data-type="transport">
+      🚗 รับส่ง/ขนส่ง
     </button>
     <button class="filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-600 hover:border-brand-orange hover:text-brand-orange" data-type="shop" data-i18n="places.filter_shop">
       🛍️ Pet Shop
@@ -667,6 +671,7 @@
     grooming:   { label: 'อาบน้ำตัดขน', icon: '🛁', cls: 'badge-grooming'   },
     condo:      { label: 'คอนโด',        icon: '🏠', cls: 'badge-condo'      },
     park:       { label: 'สวนสาธารณะ',  icon: '🌳', cls: 'badge-park'       },
+    transport:  { label: 'รับส่ง/ขนส่ง', icon: '🚗', cls: 'badge-transport'  },
     shop:       { label: 'Pet Shop',     icon: '🛍️', cls: 'badge-shop'       },
   };
 
@@ -1011,7 +1016,7 @@
 
   const TYPE_ICONS = {
     cafe:'☕', hotel:'🏨', restaurant:'🍽️', clinic:'🏥',
-    grooming:'🛁', condo:'🏠', park:'🌳', shop:'🛍️'
+    grooming:'🛁', condo:'🏠', park:'🌳', shop:'🛍️', transport:'🚗'
   };
 
   function initMap() {
