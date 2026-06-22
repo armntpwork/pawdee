@@ -1031,12 +1031,26 @@
         })
       }).addTo(leafletMap);
 
-      const navQ    = encodeURIComponent([p.name, p.address, p.city||p.district, p.province].filter(Boolean).join(' '));
-      const best    = getBestCoords(p);
-      const navUrl  = best
-        ? `https://www.google.com/maps/dir/?api=1&destination=${best.lat},${best.lng}`
-        : `https://www.google.com/maps/dir/?api=1&destination=${navQ}`;
-      const viewUrl = p.googleMapsUrl || (best ? `https://maps.google.com/?q=${best.lat},${best.lng}` : `https://www.google.com/maps/search/?api=1&query=${navQ}`);
+      const navQ      = encodeURIComponent([p.name, p.address, p.city||p.district, p.province].filter(Boolean).join(' '));
+      const urlCoords = extractCoordsFromUrl(p.googleMapsUrl);
+
+      // ลำดับความสำคัญ navUrl:
+      // 1) พิกัดที่ parse ได้จาก googleMapsUrl (เชื่อถือสูงสุด)
+      // 2) มี googleMapsUrl แต่เป็น short URL ดึงพิกัดไม่ได้ → ใช้ชื่อ+ที่อยู่ค้นหา (แม่นกว่า lat/lng ที่กรอกเอง)
+      // 3) ไม่มี googleMapsUrl → ใช้ lat/lng ที่เก็บไว้
+      // 4) Fallback → ค้นหาด้วยชื่อ
+      let navUrl;
+      if (urlCoords) {
+        navUrl = `https://www.google.com/maps/dir/?api=1&destination=${urlCoords.lat},${urlCoords.lng}`;
+      } else if (p.googleMapsUrl) {
+        navUrl = `https://www.google.com/maps/dir/?api=1&destination=${navQ}`;
+      } else if (p.lat && p.lng) {
+        navUrl = `https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}`;
+      } else {
+        navUrl = `https://www.google.com/maps/dir/?api=1&destination=${navQ}`;
+      }
+
+      const viewUrl = p.googleMapsUrl || (urlCoords ? `https://maps.google.com/?q=${urlCoords.lat},${urlCoords.lng}` : `https://www.google.com/maps/search/?api=1&query=${navQ}`);
 
       marker.bindPopup(`
         <div style="min-width:200px;font-family:'Poppins','LINE Seed Sans TH',sans-serif">
