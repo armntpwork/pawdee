@@ -669,6 +669,30 @@
     easyParking:      '🅿️ ที่จอดสะดวก',
   };
 
+  // ดึง lat/lng จาก Google Maps URL เพื่อ navigation ที่แม่นยำ
+  function extractCoordsFromUrl(url) {
+    if (!url) return null;
+    const at = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+    if (at) return { lat: parseFloat(at[1]), lng: parseFloat(at[2]) };
+    const d3 = url.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/);
+    if (d3) return { lat: parseFloat(d3[1]), lng: parseFloat(d3[2]) };
+    const q = url.match(/[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/);
+    if (q) return { lat: parseFloat(q[1]), lng: parseFloat(q[2]) };
+    const ll = url.match(/[?&]ll=(-?\d+\.\d+),(-?\d+\.\d+)/);
+    if (ll) return { lat: parseFloat(ll[1]), lng: parseFloat(ll[2]) };
+    return null;
+  }
+
+  // หาพิกัดที่ดีที่สุด: 1) จาก googleMapsUrl  2) จาก lat/lng ตรงๆ
+  const DEFAULT_LAT = 13.7563, DEFAULT_LNG = 100.5018;
+  function getBestCoords(p) {
+    const fromUrl = extractCoordsFromUrl(p.googleMapsUrl);
+    if (fromUrl) return fromUrl;
+    if (p.lat && p.lng && !(Math.abs(p.lat - DEFAULT_LAT) < 0.001 && Math.abs(p.lng - DEFAULT_LNG) < 0.001))
+      return { lat: p.lat, lng: p.lng };
+    return null;
+  }
+
   function haversineKm(lat1, lng1, lat2, lng2) {
     const R = 6371, toRad = d => d * Math.PI / 180;
     const dLat = toRad(lat2 - lat1), dLng = toRad(lng2 - lng1);
@@ -804,7 +828,8 @@
     // คำนวณระยะทางถ้ามี userLocation
     if (userLocation) {
       filtered.forEach(p => {
-        p._distKm = (p.lat && p.lng) ? haversineKm(userLocation.lat, userLocation.lng, p.lat, p.lng) : Infinity;
+        const bc = getBestCoords(p);
+        p._distKm = bc ? haversineKm(userLocation.lat, userLocation.lng, bc.lat, bc.lng) : Infinity;
       });
     }
 
@@ -1006,13 +1031,12 @@
         })
       }).addTo(leafletMap);
 
-      const navQ = encodeURIComponent([p.name, p.address, p.city||p.district, p.province].filter(Boolean).join(' '));
-      const DEFAULT_LAT = 13.7563, DEFAULT_LNG = 100.5018;
-      const hasRealCoords = p.lat && p.lng && !(Math.abs(p.lat-DEFAULT_LAT)<0.001 && Math.abs(p.lng-DEFAULT_LNG)<0.001);
-      const navUrl = hasRealCoords
-        ? `https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}`
+      const navQ    = encodeURIComponent([p.name, p.address, p.city||p.district, p.province].filter(Boolean).join(' '));
+      const best    = getBestCoords(p);
+      const navUrl  = best
+        ? `https://www.google.com/maps/dir/?api=1&destination=${best.lat},${best.lng}`
         : `https://www.google.com/maps/dir/?api=1&destination=${navQ}`;
-      const viewUrl = p.googleMapsUrl || (hasRealCoords ? `https://maps.google.com/?q=${p.lat},${p.lng}` : `https://www.google.com/maps/search/?api=1&query=${navQ}`);
+      const viewUrl = p.googleMapsUrl || (best ? `https://maps.google.com/?q=${best.lat},${best.lng}` : `https://www.google.com/maps/search/?api=1&query=${navQ}`);
 
       marker.bindPopup(`
         <div style="min-width:200px;font-family:'Poppins','LINE Seed Sans TH',sans-serif">
@@ -1352,14 +1376,12 @@
       mapEl.classList.add('hidden');
     } else {
       mapEl.classList.remove('hidden');
-      const DEFAULT_LAT = 13.7563, DEFAULT_LNG = 100.5018;
-      const hasRealCoords = place.lat && place.lng &&
-        !(Math.abs(place.lat - DEFAULT_LAT) < 0.001 && Math.abs(place.lng - DEFAULT_LNG) < 0.001);
-      const searchQ = encodeURIComponent([place.name, place.address, place.city || place.district, place.province].filter(Boolean).join(' '));
+      const searchQ   = encodeURIComponent([place.name, place.address, place.city || place.district, place.province].filter(Boolean).join(' '));
+      const bestCoords = getBestCoords(place);
       if (place.googleMapsUrl) {
         mapEl.href = place.googleMapsUrl;
-      } else if (hasRealCoords) {
-        mapEl.href = `https://maps.google.com/?q=${place.lat},${place.lng}`;
+      } else if (bestCoords) {
+        mapEl.href = `https://maps.google.com/?q=${bestCoords.lat},${bestCoords.lng}`;
       } else {
         mapEl.href = `https://www.google.com/maps/search/?api=1&query=${searchQ}`;
       }

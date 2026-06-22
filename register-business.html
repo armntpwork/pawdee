@@ -433,21 +433,49 @@
       <div class="section-card">
         <h2 class="font-bold text-gray-900 text-base mb-4">📍 ตำแหน่งและรายละเอียด<span class="optional-badge">(ไม่บังคับ)</span></h2>
 
-        <!-- GPS -->
+        <!-- Google Maps URL (วิธีแม่นที่สุด) -->
         <div class="mb-4">
           <label class="block text-sm font-medium text-gray-700 mb-2">
-            พิกัด GPS
-            <span class="text-gray-400 font-normal text-xs ml-1">(ช่วยให้ฟีเจอร์ "หาใกล้ฉัน" ทำงานได้แม่นยำ)</span>
+            📍 ลิงก์ Google Maps ของร้าน
+            <span class="text-brand-orange font-semibold text-xs ml-1">← แนะนำ! แม่นยำที่สุด</span>
           </label>
-          <div class="flex gap-2 items-center flex-wrap">
-            <input type="number" name="lat" id="latInput" placeholder="Latitude เช่น 13.7563" step="any" class="input-field flex-1 min-w-0" style="min-width:130px"/>
-            <input type="number" name="lng" id="lngInput" placeholder="Longitude เช่น 100.5018" step="any" class="input-field flex-1 min-w-0" style="min-width:130px"/>
-            <button type="button" id="gpsAutoBtn" class="flex-shrink-0 flex items-center gap-1.5 bg-orange-50 border-2 border-orange-200 hover:border-brand-orange text-brand-orange text-sm font-semibold px-4 py-3 rounded-xl transition-all">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-              <span id="gpsBtnText">ระบุอัตโนมัติ</span>
+
+          <!-- Step hint -->
+          <div class="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 mb-3 text-xs text-blue-700 leading-relaxed">
+            <strong>วิธีหาลิงก์:</strong> เปิด Google Maps → ค้นหาร้านของคุณ → กด <strong>Share (แชร์)</strong> → Copy link → วางที่นี่<br/>
+            <span class="text-blue-500">หรือคัดลอก URL จาก address bar ของเบราว์เซอร์ขณะเปิดร้านอยู่</span>
+          </div>
+
+          <div class="flex gap-2">
+            <input type="text" id="gmapsUrlInput" name="googleMapsUrl"
+              placeholder="https://maps.app.goo.gl/... หรือ https://www.google.com/maps/place/..."
+              class="input-field flex-1"/>
+            <button type="button" id="gmapsParseBtn"
+              class="flex-shrink-0 flex items-center gap-1.5 bg-green-50 border-2 border-green-200 hover:bg-green-100 hover:border-green-400 text-green-700 text-sm font-bold px-4 py-3 rounded-xl transition-all whitespace-nowrap">
+              📍 ดึงพิกัด
             </button>
           </div>
-          <p class="text-xs text-gray-400 mt-1.5">หรือหา coordinates ได้จาก <a href="https://maps.google.com" target="_blank" class="text-brand-orange hover:underline">Google Maps</a> → คลิกขวาที่ร้าน → คัดลอกพิกัด</p>
+
+          <!-- Parse result -->
+          <div id="gmapsParseStatus" class="hidden mt-2 text-xs px-3 py-2 rounded-xl"></div>
+          <a id="gmapsVerifyLink" href="#" target="_blank" rel="noopener"
+            class="hidden mt-1 text-xs text-brand-orange hover:underline font-medium">
+            🔍 คลิกตรวจสอบพิกัดบน Google Maps
+          </a>
+
+          <!-- Hidden lat/lng filled automatically -->
+          <input type="hidden" id="latInput" name="lat"/>
+          <input type="hidden" id="lngInput" name="lng"/>
+
+          <!-- GPS fallback -->
+          <div class="mt-3 pt-3 border-t border-gray-100">
+            <p class="text-xs text-gray-400 mb-2">ถ้าคุณอยู่ที่ร้านตอนนี้ กดปุ่มนี้ได้เลย:</p>
+            <button type="button" id="gpsAutoBtn"
+              class="flex items-center gap-1.5 bg-orange-50 border-2 border-orange-200 hover:border-brand-orange text-brand-orange text-xs font-semibold px-3 py-2 rounded-xl transition-all">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+              <span id="gpsBtnText">ระบุพิกัดจาก GPS ของฉัน</span>
+            </button>
+          </div>
         </div>
 
         <!-- Description -->
@@ -966,21 +994,80 @@
     });
   }
 
+  // ── Google Maps URL → extract lat/lng ─────────────────────────────────
+  function extractCoordsFromGmapsUrl(url) {
+    if (!url) return null;
+    // รูปแบบที่ 1: พิกัดตรงๆ "13.347, 100.974"
+    const plain = url.match(/^(-?\d+\.?\d*)[,\s]+(-?\d+\.?\d*)$/);
+    if (plain) return { lat: parseFloat(plain[1]), lng: parseFloat(plain[2]) };
+    // รูปแบบที่ 2: /@lat,lng,zoom
+    const at = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+    if (at) return { lat: parseFloat(at[1]), lng: parseFloat(at[2]) };
+    // รูปแบบที่ 3: !3dlat!4dlng
+    const d3 = url.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/);
+    if (d3) return { lat: parseFloat(d3[1]), lng: parseFloat(d3[2]) };
+    // รูปแบบที่ 4: ?q=lat,lng
+    const q = url.match(/[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/);
+    if (q) return { lat: parseFloat(q[1]), lng: parseFloat(q[2]) };
+    // รูปแบบที่ 5: /place/name/@lat,lng หรือ ll=lat,lng
+    const ll = url.match(/[?&]ll=(-?\d+\.\d+),(-?\d+\.\d+)/);
+    if (ll) return { lat: parseFloat(ll[1]), lng: parseFloat(ll[2]) };
+    return null;
+  }
+
+  document.getElementById('gmapsParseBtn').addEventListener('click', () => {
+    const url   = document.getElementById('gmapsUrlInput').value.trim();
+    const status = document.getElementById('gmapsParseStatus');
+    const link   = document.getElementById('gmapsVerifyLink');
+    const coords = extractCoordsFromGmapsUrl(url);
+    if (coords) {
+      document.getElementById('latInput').value = coords.lat.toFixed(6);
+      document.getElementById('lngInput').value = coords.lng.toFixed(6);
+      status.className = 'mt-2 text-xs px-3 py-2 rounded-xl bg-green-50 text-green-700';
+      status.textContent = `✅ พิกัด: ${coords.lat.toFixed(5)}, ${coords.lng.toFixed(5)} — พร้อมใช้งาน`;
+      status.classList.remove('hidden');
+      link.href = `https://www.google.com/maps/search/?api=1&query=${coords.lat},${coords.lng}`;
+      link.classList.remove('hidden');
+    } else if (url.includes('maps.app.goo.gl') || url.includes('goo.gl/maps')) {
+      // Short URL — can't parse without following redirect
+      status.className = 'mt-2 text-xs px-3 py-2 rounded-xl bg-amber-50 text-amber-700';
+      status.textContent = '⚠️ ลิงก์สั้นไม่สามารถดึงพิกัดได้อัตโนมัติ — กรุณาเปิด Google Maps ในเบราว์เซอร์แล้วคัดลอก URL จาก address bar แทนครับ';
+      status.classList.remove('hidden');
+      // Still save the URL itself for reference
+      link.classList.add('hidden');
+    } else if (url) {
+      status.className = 'mt-2 text-xs px-3 py-2 rounded-xl bg-red-50 text-red-700';
+      status.textContent = '❌ ไม่พบพิกัดใน URL นี้ — ลองคัดลอก URL จาก address bar ของ Google Maps ขณะที่เปิดร้านอยู่ครับ';
+      status.classList.remove('hidden');
+      link.classList.add('hidden');
+    }
+  });
+
   // ── GPS Auto-fill ──────────────────────────────────────────────────────
   document.getElementById('gpsAutoBtn').addEventListener('click', () => {
-    const txt = document.getElementById('gpsBtnText');
-    const btn = document.getElementById('gpsAutoBtn');
+    const txt  = document.getElementById('gpsBtnText');
+    const btn  = document.getElementById('gpsAutoBtn');
     if (!navigator.geolocation) { alert('เบราว์เซอร์นี้ไม่รองรับ GPS ครับ'); return; }
     txt.textContent = '⏳ กำลังระบุ...';
     btn.disabled = true;
     navigator.geolocation.getCurrentPosition(
       pos => {
-        document.getElementById('latInput').value = pos.coords.latitude.toFixed(6);
-        document.getElementById('lngInput').value = pos.coords.longitude.toFixed(6);
+        const lat = pos.coords.latitude.toFixed(6);
+        const lng = pos.coords.longitude.toFixed(6);
+        document.getElementById('latInput').value = lat;
+        document.getElementById('lngInput').value = lng;
+        // แสดง feedback
+        const status = document.getElementById('gmapsParseStatus');
+        const link   = document.getElementById('gmapsVerifyLink');
+        status.className = 'mt-2 text-xs px-3 py-2 rounded-xl bg-green-50 text-green-700';
+        status.textContent = `✅ พิกัด GPS: ${Number(lat).toFixed(5)}, ${Number(lng).toFixed(5)} — กรุณาตรวจสอบว่าตรงกับร้านจริงๆ`;
+        status.classList.remove('hidden');
+        link.href = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+        link.classList.remove('hidden');
         txt.textContent = '✅ ระบุแล้ว';
         btn.disabled = false;
       },
-      () => { txt.textContent = 'ระบุอัตโนมัติ'; btn.disabled = false; alert('ไม่สามารถระบุตำแหน่งได้ กรอกพิกัดเองได้เลยครับ'); },
+      () => { txt.textContent = 'ระบุจาก GPS'; btn.disabled = false; alert('ไม่สามารถระบุตำแหน่งได้ ลองใช้ Google Maps URL แทนครับ'); },
       { enableHighAccuracy: true, timeout: 10000 }
     );
   });
@@ -1135,6 +1222,7 @@
       hasLab:         form.querySelector('[name=hasLab]')?.checked || false,
       hasSurgery:     form.querySelector('[name=hasSurgery]')?.checked || false,
       specialServices: val('specialServices') || null,
+      googleMapsUrl: document.getElementById('gmapsUrlInput')?.value.trim() || null,
       lat:           latVal ? Number(latVal) : null,
       lng:           lngVal ? Number(lngVal) : null,
       website:       val('website') || null,
