@@ -26,7 +26,7 @@ const PAWDEE_TRANSLATIONS = {
     'index.hero_desc':    'Google Maps ไม่มีคำตอบ — PawDee มี พร้อมรีวิวจากเจ้าของสัตว์เลี้ยงจริงๆ ไม่ใช่แค่คนผ่านมา',
     'index.hero_sub':     'ข้อมูลที่แม่นยำขึ้นทุกวัน เพราะทาสหมาทาสแมวทั่วไทยช่วยกันรีวิวและอัปเดต',
     'index.cta_search':   'ค้นหาสถานที่เลย',
-    'index.cta_waitlist': 'เข้าร่วม Waitlist',
+    'index.cta_waitlist': 'ลงทะเบียนร้านค้า (ฟรี)',
     'index.social_proof': 'คนสนใจแล้ว',
 
     // ── Index Stats ─────────────────────────────────
