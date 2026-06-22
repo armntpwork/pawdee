@@ -796,7 +796,10 @@
             ${verified}
           </div>
           <h3 class="font-bold text-gray-900 leading-tight mb-1">${place.name}</h3>
-          <p class="text-xs text-gray-500 mb-2">📍 ${[place.district || place.city, place.province].filter(Boolean).join(', ') || '—'}</p>
+          <p class="text-xs text-gray-500 mb-2">${place.isMobile
+            ? `🚗 <span class="font-medium text-blue-600">บริการเคลื่อนที่</span> · ${place.city || place.province || ''}`
+            : `📍 ${[place.district || place.city, place.province].filter(Boolean).join(', ') || '—'}`
+          }</p>
           <div class="flex items-center gap-2 text-sm mb-1">
             <span class="text-yellow-500">⭐</span>
             <span class="font-semibold">${(place.rating || 0).toFixed(1)}</span>
@@ -1287,7 +1290,9 @@
       document.querySelector('#placeModal .relative.h-52').appendChild(badge);
     }
     document.getElementById('modalName').textContent    = place.name;
-    document.getElementById('modalAddress').textContent = '📍 ' + [place.address, place.district || place.city, place.province].filter(Boolean).join(', ');
+    document.getElementById('modalAddress').textContent = place.isMobile
+      ? '🚗 พื้นที่ให้บริการ: ' + [place.address, place.city || place.province].filter(Boolean).join(' · ')
+      : '📍 ' + [place.address, place.district || place.city, place.province].filter(Boolean).join(', ');
 
     // คำอธิบาย
     const descEl = document.getElementById('modalDesc');
@@ -1386,16 +1391,21 @@
     // ปุ่มแผนที่ — ค้นหาด้วยชื่อร้าน+ที่อยู่ เพื่อให้โชว์ชื่อร้านบน Google Maps
     // ถ้ามีพิกัดจริงให้ใส่เป็น center ของแผนที่ด้วย
     const mapEl = document.getElementById('modalMap');
-    const DEFAULT_LAT = 13.7563, DEFAULT_LNG = 100.5018;
-    const hasRealCoords = place.lat && place.lng &&
-      !(Math.abs(place.lat - DEFAULT_LAT) < 0.001 && Math.abs(place.lng - DEFAULT_LNG) < 0.001);
-    const searchQ = encodeURIComponent([place.name, place.address, place.city || place.district, place.province].filter(Boolean).join(' '));
-    if (place.googleMapsUrl) {
-      mapEl.href = place.googleMapsUrl;
-    } else if (hasRealCoords) {
-      mapEl.href = `https://maps.google.com/?q=${place.lat},${place.lng}`;
+    if (place.isMobile) {
+      mapEl.classList.add('hidden');
     } else {
-      mapEl.href = `https://www.google.com/maps/search/?api=1&query=${searchQ}`;
+      mapEl.classList.remove('hidden');
+      const DEFAULT_LAT = 13.7563, DEFAULT_LNG = 100.5018;
+      const hasRealCoords = place.lat && place.lng &&
+        !(Math.abs(place.lat - DEFAULT_LAT) < 0.001 && Math.abs(place.lng - DEFAULT_LNG) < 0.001);
+      const searchQ = encodeURIComponent([place.name, place.address, place.city || place.district, place.province].filter(Boolean).join(' '));
+      if (place.googleMapsUrl) {
+        mapEl.href = place.googleMapsUrl;
+      } else if (hasRealCoords) {
+        mapEl.href = `https://maps.google.com/?q=${place.lat},${place.lng}`;
+      } else {
+        mapEl.href = `https://www.google.com/maps/search/?api=1&query=${searchQ}`;
+      }
     }
 
     // Gallery strip
