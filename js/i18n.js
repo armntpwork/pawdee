@@ -13,10 +13,12 @@ const PAWDEE_TRANSLATIONS = {
     'nav.emergency':     '🚨 คลินิกฉุกเฉิน',
     'nav.business':      'สำหรับธุรกิจ',
     'nav.business_mobile':'🏪 สำหรับธุรกิจ',
+    'nav.about':         'เกี่ยวกับเรา',
+    'nav.contact':       'ติดต่อเรา',
     'nav.features':      'ฟีเจอร์',
     'nav.community':     'ชุมชน',
     'nav.login':         'เข้าสู่ระบบ',
-    'nav.join':          'เข้าร่วมก่อนใคร ✨',
+    'nav.join':          'สมัครสมาชิกฟรี ✨',
 
     // ── Index Hero ──────────────────────────────────
     'index.hero_badge':   'เปิด Early Access แล้วครับ ✨',
@@ -469,10 +471,12 @@ const PAWDEE_TRANSLATIONS = {
     'nav.emergency':     '🚨 Emergency Vet',
     'nav.business':      'For Business',
     'nav.business_mobile':'🏪 For Business',
+    'nav.about':         'About Us',
+    'nav.contact':       'Contact',
     'nav.features':      'Features',
     'nav.community':     'Community',
     'nav.login':         'Sign In',
-    'nav.join':          'Join Early Access ✨',
+    'nav.join':          'Sign Up Free ✨',
 
     // ── Index Hero ──────────────────────────────────
     'index.hero_badge':   'Early Access is Now Open ✨',
@@ -925,10 +929,12 @@ const PAWDEE_TRANSLATIONS = {
     'nav.emergency':     '🚨 紧急兽医',
     'nav.business':      '商家入驻',
     'nav.business_mobile':'🏪 商家入驻',
+    'nav.about':         '关于我们',
+    'nav.contact':       '联系我们',
     'nav.features':      '功能',
     'nav.community':     '社区',
     'nav.login':         '登录',
-    'nav.join':          '立即加入 ✨',
+    'nav.join':          '免费注册 ✨',
 
     // ── Index Hero ──────────────────────────────────
     'index.hero_badge':   '早期访问现已开放 ✨',
