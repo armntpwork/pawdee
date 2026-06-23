@@ -132,9 +132,15 @@
 
         // Static pages
         const staticPages = [
-          { loc: `${BASE}/`, priority: '0.9', changefreq: 'weekly' },
-          { loc: `${BASE}/places.html`, priority: '0.8', changefreq: 'daily' },
-          { loc: `${BASE}/register-business.html`, priority: '0.6', changefreq: 'monthly' },
+          { loc: `${BASE}/`,                       priority: '1.0', changefreq: 'weekly'  },
+          { loc: `${BASE}/places.html`,             priority: '0.9', changefreq: 'daily'   },
+          { loc: `${BASE}/emergency.html`,          priority: '0.8', changefreq: 'weekly'  },
+          { loc: `${BASE}/sitters.html`,            priority: '0.7', changefreq: 'weekly'  },
+          { loc: `${BASE}/register-business.html`,  priority: '0.7', changefreq: 'monthly' },
+          { loc: `${BASE}/about.html`,              priority: '0.5', changefreq: 'monthly' },
+          { loc: `${BASE}/contact.html`,            priority: '0.5', changefreq: 'monthly' },
+          { loc: `${BASE}/privacy.html`,            priority: '0.3', changefreq: 'yearly'  },
+          { loc: `${BASE}/terms.html`,              priority: '0.3', changefreq: 'yearly'  },
         ];
 
         staticPages.forEach(p => {

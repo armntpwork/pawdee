@@ -378,35 +378,68 @@ function showContent() {
 }
 
 // ── SEO Injection ────────────────────────────────────────────
+const PET_LABEL = { dog:'สุนัข', cat:'แมว', rabbit:'กระต่าย', bird:'นก', fish:'ปลา', hamster:'แฮมสเตอร์', reptile:'สัตว์เลื้อยคลาน', other:'สัตว์อื่นๆ' };
+
+function buildSEODesc(place, typeLabel, location) {
+  // สร้าง description ที่รวม pet policy — ดีสำหรับ keyword ที่คนค้นหา
+  const parts = [`ดูข้อมูล ${place.name}`];
+  if (typeLabel) parts.push(`${typeLabel} Pet-Friendly`);
+  if (location)  parts.push(`ใน${location}`);
+
+  const policies = [];
+  const pets = (place.allowedPets || []).map(k => PET_LABEL[k] || k).filter(Boolean);
+  if (pets.length) policies.push(`รับ${pets.join(', ')}`);
+  if (place.indoorSeating)    policies.push('นั่งในร้านได้');
+  if (!place.needCarrier)     policies.push('ไม่ต้องใส่กรง');
+  if (place.maxWeightKg)      policies.push(`น้ำหนักไม่เกิน ${place.maxWeightKg} กก.`);
+  if (place.emergency24hr)    policies.push('เปิด 24 ชม.');
+  if (policies.length) parts.push(`(${policies.join(' · ')})`);
+
+  parts.push('พร้อมรีวิวจากเจ้าของสัตว์จริง | PawDee');
+  const desc = parts.join(' ');
+  return desc.length > 160 ? desc.slice(0, 157) + '...' : desc;
+}
+
+function setMeta(selector, attr, value) {
+  const el = document.querySelector(selector);
+  if (el && value) el.setAttribute(attr, value);
+}
+
 function injectSEO(place) {
-  const BASE = 'https://www.pawdeepet.com';
-  const url  = `${BASE}/place?id=${place.id}`;
-  const tier = place.tier || 'free';
-  const isPro = tier === 'pro' || tier === 'basic' || tier === 'verified';
+  const BASE     = 'https://www.pawdeepet.com';
+  const url      = `${BASE}/place?id=${place.id}`;
+  const tier     = place.tier || 'free';
+  const isPro    = ['pro', 'basic', 'verified'].includes(tier);
   const isPremium = tier === 'premium';
 
-  // ── Title & Description ──
-  const cityStr = [place.city, place.province].filter(Boolean).join(' ');
-  const typeLabel = place.categories?.[0] || place.type || 'สถานที่';
-  const titleText = `${place.name} | ${typeLabel}${cityStr ? ' ' + cityStr : ''} — PawDee`;
-  const descText  = place.description
-    ? place.description.slice(0, 155)
-    : `${place.name} ${typeLabel}${cityStr ? ' ใน' + cityStr : ''} — ข้อมูล ที่อยู่ เวลาเปิด-ปิด และนโยบายสัตว์เลี้ยงบน PawDee`;
+  // ── Title: [ชื่อร้าน] - [ประเภท] Pet-Friendly ใน [พื้นที่] | PawDee ──
+  const firstCat  = (place.categories?.[0]) || place.type || '';
+  const typeLabel = TYPE_LABELS[firstCat]?.label || place.customCategory || 'สถานที่';
+  const location  = [place.district, place.city, place.province].filter(Boolean)[0] || '';
+  const titleText = [
+    place.name,
+    `${typeLabel} Pet-Friendly`,
+    location ? `ใน ${location}` : '',
+    'PawDee'
+  ].filter(Boolean).join(' - ').replace('- PawDee', '| PawDee');
 
+  const descText = buildSEODesc(place, typeLabel, location);
+  const imgUrl   = place.imageUrl || `${BASE}/og-default.jpg`;
+
+  // ── Update DOM ──
   document.title = titleText;
-  document.querySelector('meta[name="description"]')?.setAttribute('content', descText);
-  document.querySelector('meta[property="og:title"]')?.setAttribute('content', titleText);
-  document.querySelector('meta[property="og:description"]')?.setAttribute('content', descText);
-  document.querySelector('meta[property="og:url"]')?.setAttribute('content', url);
-  document.querySelector('meta[property="twitter:title"]')?.setAttribute('content', titleText);
-  document.querySelector('meta[property="twitter:description"]')?.setAttribute('content', descText);
-  document.querySelector('link[rel="canonical"]')?.setAttribute('href', url);
-
-  if (place.imageUrl) {
-    document.querySelector('meta[property="og:image"]')?.setAttribute('content', place.imageUrl);
-    document.querySelector('meta[property="og:type"]')?.setAttribute('content', 'website');
-    document.querySelector('meta[property="twitter:image"]')?.setAttribute('content', place.imageUrl);
-  }
+  setMeta('meta[name="description"]',              'content', descText);
+  setMeta('meta[property="og:title"]',             'content', titleText);
+  setMeta('meta[property="og:description"]',       'content', descText);
+  setMeta('meta[property="og:url"]',               'content', url);
+  setMeta('meta[property="og:image"]',             'content', imgUrl);
+  setMeta('meta[property="og:image:width"]',       'content', '1200');
+  setMeta('meta[property="og:image:height"]',      'content', '630');
+  setMeta('meta[property="og:type"]',              'content', 'business.business');
+  setMeta('meta[name="twitter:title"]',            'content', titleText);
+  setMeta('meta[name="twitter:description"]',      'content', descText);
+  setMeta('meta[name="twitter:image"]',            'content', imgUrl);
+  setMeta('link[rel="canonical"]',                 'href',    url);
 
   // ── Schema.org JSON-LD ──
   const SCHEMA_TYPE_MAP = {
