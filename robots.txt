@@ -7,3 +7,4 @@ Disallow: /admin-link-generator
 Disallow: /generate-icon
 
 Sitemap: https://www.pawdeepet.com/sitemap.xml
+Sitemap: https://www.pawdeepet.com/sitemap-main.xml

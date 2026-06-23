@@ -913,7 +913,36 @@
     }
 
     document.getElementById('skeletonGrid').classList.add('hidden');
+    injectItemListSchema();
     render();
+  }
+
+  // ── ItemList Schema (SEO) ─────────────────────────────────────
+  function injectItemListSchema() {
+    if (!allPlaces.length) return;
+    const BASE = 'https://www.pawdeepet.com';
+    const items = allPlaces.slice(0, 30).map((p, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: p.name,
+      url: `${BASE}/place?id=${p.id}`
+    }));
+    const schema = {
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      name: 'สถานที่ Pet-Friendly ทั่วไทย | PawDee',
+      description: 'รายชื่อสถานที่ Pet-Friendly รวมคาเฟ่ ร้านอาหาร โรงแรม และคลินิกสัตว์เลี้ยงทั่วไทย',
+      url: `${BASE}/places`,
+      numberOfItems: allPlaces.length,
+      itemListElement: items
+    };
+    const existing = document.getElementById('places-item-list-ld');
+    if (existing) existing.remove();
+    const s = document.createElement('script');
+    s.id   = 'places-item-list-ld';
+    s.type = 'application/ld+json';
+    s.text = JSON.stringify(schema);
+    document.head.appendChild(s);
   }
 
   // ── Event listeners ───────────────────────────────────────────

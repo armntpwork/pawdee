@@ -474,7 +474,24 @@ function injectSEO(place) {
     ...(place.openHours && { openingHours: place.openHours }),
     ...(place.priceRange && { priceRange: place.priceRange }),
     ...(place.imageUrl && { image: place.imageUrl }),
+    additionalProperty: { '@type': 'PropertyValue', name: 'petFriendly', value: 'true' },
   };
+
+  // Pet policy amenityFeature — หัวใจของ PawDee SEO
+  const amenities = [
+    place.indoorSeating    && { '@type': 'LocationFeatureSpecification', name: 'นั่งในร้านได้พร้อมสัตว์เลี้ยง', value: true },
+    !place.needCarrier     && place.indoorSeating && { '@type': 'LocationFeatureSpecification', name: 'ไม่ต้องใส่กรง', value: true },
+    place.hasParking       && { '@type': 'LocationFeatureSpecification', name: 'มีที่จอดรถ', value: true },
+    place.emergency24hr    && { '@type': 'LocationFeatureSpecification', name: 'เปิด 24 ชั่วโมง', value: true },
+    place.hasSpecialist    && { '@type': 'LocationFeatureSpecification', name: 'มีหมอเฉพาะทาง', value: true },
+    place.hasXray          && { '@type': 'LocationFeatureSpecification', name: 'มีเครื่องเอกซเรย์', value: true },
+    place.hasLab           && { '@type': 'LocationFeatureSpecification', name: 'มีห้องปฏิบัติการ', value: true },
+    place.hasSurgery       && { '@type': 'LocationFeatureSpecification', name: 'มีห้องผ่าตัด', value: true },
+    (place.maxWeightKg >= 20) && { '@type': 'LocationFeatureSpecification', name: 'รับสุนัขพันธุ์ใหญ่ได้', value: true },
+    (place.allowedPets||[]).includes('dog') && { '@type': 'LocationFeatureSpecification', name: 'รับสุนัข', value: true },
+    (place.allowedPets||[]).includes('cat') && { '@type': 'LocationFeatureSpecification', name: 'รับแมว', value: true },
+  ].filter(Boolean);
+  if (amenities.length) schema.amenityFeature = amenities;
 
   // Pro+: aggregateRating (ดาวขึ้น Google)
   if ((isPro || isPremium) && place.rating > 0 && place.reviewCount > 0) {
@@ -492,13 +509,34 @@ function injectSEO(place) {
     schema.photo = place.gallery.map(u => ({ '@type': 'ImageObject', url: u }));
   }
 
-  const existing = document.getElementById('place-json-ld');
-  if (existing) existing.remove();
+  // BreadcrumbList
+  const bcSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'PawDee', item: 'https://www.pawdeepet.com/' },
+      { '@type': 'ListItem', position: 2, name: 'ค้นหาสถานที่', item: 'https://www.pawdeepet.com/places' },
+      { '@type': 'ListItem', position: 3, name: place.name, item: url },
+    ]
+  };
+
+  // ลบ schema เก่าก่อน inject ใหม่ (ป้องกัน duplicate)
+  ['place-json-ld', 'place-bc-ld'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.remove();
+  });
+
   const script = document.createElement('script');
   script.id   = 'place-json-ld';
   script.type = 'application/ld+json';
   script.text = JSON.stringify(schema);
   document.head.appendChild(script);
+
+  const bcScript = document.createElement('script');
+  bcScript.id   = 'place-bc-ld';
+  bcScript.type = 'application/ld+json';
+  bcScript.text = JSON.stringify(bcSchema);
+  document.head.appendChild(bcScript);
 }
 
 // ── Render Place ────────────────────────────────────────────
@@ -509,74 +547,6 @@ function renderPlace(place) {
 
   // ── SEO: title, meta, og, canonical, JSON-LD ──
   injectSEO(place);
-  document.querySelector('meta[property="og:title"]') &&
-    (document.querySelector('meta[property="og:title"]').content = titleStr);
-  const placeUrl = `https://www.pawdeepet.com/place/${placeId}`;
-  document.querySelector('meta[property="og:url"]').content = placeUrl;
-  document.querySelector('link[rel="canonical"]').href = placeUrl;
-  const twTitle = document.querySelector('meta[name="twitter:title"]');
-  if (twTitle) twTitle.content = titleStr;
-  const twDesc = document.querySelector('meta[name="twitter:description"]');
-  if (twDesc) twDesc.content = document.querySelector('meta[name="description"]').content;
-  if (place.imageUrl) {
-    document.querySelector('meta[property="og:image"]').content = place.imageUrl;
-    const twImg = document.querySelector('meta[name="twitter:image"]');
-    if (twImg) twImg.content = place.imageUrl;
-  }
-
-  // ── Inject JSON-LD LocalBusiness ──
-  const schemaType = { clinic:'VeterinaryCare', hotel:'LodgingBusiness', restaurant:'Restaurant', cafe:'CafeOrCoffeeShop' }[firstKey] || 'LocalBusiness';
-  const ldJson = {
-    '@context': 'https://schema.org',
-    '@type': schemaType,
-    name: place.name,
-    image: place.imageUrl || undefined,
-    address: {
-      '@type': 'PostalAddress',
-      streetAddress: place.address || '',
-      addressLocality: place.district || '',
-      addressRegion: place.city || '',
-      addressCountry: 'TH'
-    },
-    telephone: place.phone || undefined,
-    url: place.website || `https://www.pawdeepet.com/place/${placeId}`,
-    openingHours: place.openHours || undefined,
-    aggregateRating: place.reviewCount > 0 ? {
-      '@type': 'AggregateRating',
-      ratingValue: place.rating?.toFixed(1),
-      reviewCount: place.reviewCount
-    } : undefined,
-    geo: (place.lat && place.lng) ? { '@type': 'GeoCoordinates', latitude: place.lat, longitude: place.lng } : undefined,
-    hasMap: (place.lat && place.lng) ? `https://www.google.com/maps?q=${place.lat},${place.lng}` : undefined,
-    amenityFeature: [
-      place.indoorSeating  && { '@type': 'LocationFeatureSpecification', name: 'นั่งในร้านได้', value: true },
-      place.hasParking     && { '@type': 'LocationFeatureSpecification', name: 'มีที่จอดรถ', value: true },
-      place.hasSpecialist  && { '@type': 'LocationFeatureSpecification', name: 'มีหมอเฉพาะทาง', value: true },
-      place.hasXray        && { '@type': 'LocationFeatureSpecification', name: 'มีเครื่องเอกซเรย์', value: true },
-      place.hasLab         && { '@type': 'LocationFeatureSpecification', name: 'มีห้องปฏิบัติการ', value: true },
-      place.hasSurgery     && { '@type': 'LocationFeatureSpecification', name: 'มีห้องผ่าตัด', value: true },
-      place.emergency24hr  && { '@type': 'LocationFeatureSpecification', name: 'เปิด 24 ชั่วโมง', value: true },
-    ].filter(Boolean),
-    additionalProperty: { '@type': 'PropertyValue', name: 'petFriendly', value: 'true' },
-  };
-  const ldScript = document.createElement('script');
-  ldScript.type = 'application/ld+json';
-  ldScript.text = JSON.stringify(ldJson, (_, v) => v === undefined ? undefined : v);
-  document.head.appendChild(ldScript);
-
-  // ── BreadcrumbList ──
-  const bcScript = document.createElement('script');
-  bcScript.type = 'application/ld+json';
-  bcScript.text = JSON.stringify({
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'PawDee', item: 'https://www.pawdeepet.com/' },
-      { '@type': 'ListItem', position: 2, name: 'ค้นหาสถานที่', item: 'https://www.pawdeepet.com/places' },
-      { '@type': 'ListItem', position: 3, name: place.name, item: `https://www.pawdeepet.com/place/${placeId}` },
-    ]
-  });
-  document.head.appendChild(bcScript);
 
   // ── Hero Image ──
   const heroImg = document.getElementById('heroImg');
