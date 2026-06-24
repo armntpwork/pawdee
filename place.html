@@ -449,7 +449,6 @@ function injectSEO(place) {
     grooming: 'LocalBusiness', pet_store: 'PetStore',
     park: 'Park', beach: 'Beach',
   };
-  const firstCat = place.categories?.[0] || place.type || '';
   const schemaType = SCHEMA_TYPE_MAP[firstCat] || 'LocalBusiness';
 
   const schema = {
