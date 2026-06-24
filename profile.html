@@ -365,7 +365,7 @@ async function loadCounts(uid) {
   try {
     const [favSnap, placeSnap] = await Promise.all([
       getDocs(query(collection(db, 'favorites'), where('userId', '==', uid))),
-      getDocs(query(collection(db, 'pending_places'), where('ownerUid', '==', uid))),
+      getDocs(query(collection(db, 'pending_places'), where('submittedBy', '==', uid))),
     ]);
     favCount   = favSnap.size;
     placeCount = placeSnap.size;
@@ -491,7 +491,7 @@ function renderProfile(user) {
 async function loadMyPlaces(uid) {
   const list = document.getElementById('myPlacesList');
   try {
-    const q = query(collection(db, 'pending_places'), where('ownerUid', '==', uid), orderBy('createdAt', 'desc'));
+    const q = query(collection(db, 'pending_places'), where('submittedBy', '==', uid), orderBy('createdAt', 'desc'));
     const snap = await getDocs(q);
 
     if (snap.empty) {
