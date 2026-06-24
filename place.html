@@ -95,98 +95,92 @@
 <div id="placeContent" class="hidden">
 
   <!-- Hero Image -->
-  <div class="relative h-64 sm:h-80 lg:h-96 bg-gray-200 overflow-hidden mt-16">
+  <div class="relative bg-gray-200 overflow-hidden mt-16" style="height:22rem">
     <img id="heroImg" src="" alt="" class="w-full h-full object-cover"/>
-    <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-    <!-- Logo overlay -->
-    <div id="logoOverlay" class="hidden absolute bottom-4 left-4">
-      <div id="logoFrame" class="w-16 h-16 rounded-2xl overflow-hidden bg-white">
-        <img id="logoImg" src="" alt="" class="w-full h-full object-cover"/>
-      </div>
-    </div>
-    <!-- Tier badge -->
+    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+    <div id="emergencyBadge" class="hidden absolute top-4 left-4 bg-red-500 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-sm">🚨 24 ชม.</div>
     <div id="tierBadge" class="hidden absolute top-4 right-4"></div>
-    <!-- Emergency badge -->
-    <div id="emergencyBadge" class="hidden absolute top-4 left-4 bg-red-500 text-white text-xs font-bold px-3 py-1.5 rounded-xl">🚨 24 ชม.</div>
   </div>
 
-  <!-- Gallery -->
-  <div id="gallerySection" class="hidden">
-    <div id="galleryGrid" class="grid gap-1" style="grid-template-columns:repeat(auto-fill,minmax(120px,1fr))"></div>
-  </div>
+  <!-- Main container -->
+  <div class="max-w-4xl mx-auto px-4 sm:px-6">
 
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-8">
-
-    <!-- Breadcrumb (SEO: helps Google understand page hierarchy) -->
-    <nav aria-label="breadcrumb" class="mb-4">
-      <ol class="flex items-center gap-2 text-sm text-gray-400">
-        <li><a href="index.html" class="hover:text-brand-orange transition-colors">PawDee</a></li>
-        <li><span class="text-gray-300">›</span></li>
-        <li><a href="places.html" class="hover:text-brand-orange transition-colors">ค้นหาสถานที่ Pet-Friendly</a></li>
-        <li><span class="text-gray-300">›</span></li>
-        <li id="breadcrumbName" class="text-gray-600 font-medium truncate max-w-48"></li>
-      </ol>
-    </nav>
-
-    <!-- Place Header -->
-    <div class="mb-6">
-      <div class="flex flex-wrap items-center gap-2 mb-3">
-        <span id="typeBadge" class="inline-flex items-center gap-1 text-xs font-semibold px-3 py-1 rounded-full"></span>
-        <span id="verifiedBadge" class="hidden inline-flex items-center gap-1.5 text-xs font-semibold text-green-600 bg-green-50 px-3 py-1 rounded-full border border-green-200">
-          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-          ยืนยันแล้ว
-        </span>
-        <span id="ownerVerifiedBadge" class="hidden inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 bg-blue-50 px-3 py-1 rounded-full border border-blue-200">
-          🏪 เจ้าของยืนยัน
-        </span>
-      </div>
-
-      <h1 id="placeName" class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-2 leading-tight"></h1>
-
-      <div class="flex flex-wrap items-center gap-4 text-sm text-gray-500 mb-4">
-        <span id="placeAddress" class="flex items-start gap-1.5">
-          <span class="mt-0.5 flex-shrink-0">📍</span>
-          <span></span>
-        </span>
-      </div>
-
-      <div class="flex flex-wrap items-center gap-4">
-        <div class="flex items-center gap-1.5">
-          <span class="text-yellow-500 text-lg">⭐</span>
-          <span id="placeRating" class="text-xl font-extrabold text-gray-900"></span>
-          <span id="placeReviewCount" class="text-gray-400 text-sm"></span>
+    <!-- Place header card (overlaps hero) -->
+    <div class="bg-white rounded-3xl shadow-xl -mt-10 relative z-10 p-5 sm:p-6 mb-5">
+      <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="flex items-center gap-1.5 text-xs text-gray-400">
+          <li><a href="index.html" class="hover:text-brand-orange transition-colors">PawDee</a></li>
+          <li class="text-gray-300">›</li>
+          <li><a href="places.html" class="hover:text-brand-orange transition-colors">ค้นหาสถานที่</a></li>
+          <li class="text-gray-300">›</li>
+          <li id="breadcrumbName" class="text-gray-600 font-medium truncate max-w-[10rem]"></li>
+        </ol>
+      </nav>
+      <div class="flex items-start gap-4">
+        <div id="logoOverlay" class="hidden flex-shrink-0">
+          <div id="logoFrame" class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden bg-gray-100 border-2 border-gray-100 shadow-sm">
+            <img id="logoImg" src="" alt="" class="w-full h-full object-cover"/>
+          </div>
         </div>
-        <div class="flex items-center gap-1.5 text-sm text-gray-600">
-          <span>🕐</span>
-          <span id="placeHours"></span>
+        <div class="flex-1 min-w-0">
+          <div class="flex flex-wrap items-center gap-1.5 mb-2">
+            <span id="typeBadge" class="flex flex-wrap gap-1.5"></span>
+            <span id="verifiedBadge" class="hidden inline-flex items-center gap-1 text-xs font-semibold text-green-600 bg-green-50 px-2.5 py-1 rounded-full border border-green-200">✅ ยืนยันแล้ว</span>
+            <span id="ownerVerifiedBadge" class="hidden inline-flex items-center gap-1 text-xs font-semibold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-full border border-blue-200">🏪 เจ้าของยืนยัน</span>
+          </div>
+          <h1 id="placeName" class="text-2xl sm:text-3xl font-extrabold text-gray-900 leading-tight mb-2"></h1>
+          <div id="placeAddress" class="flex items-start gap-1.5 text-sm text-gray-500 mb-3">
+            <span class="mt-0.5 flex-shrink-0">📍</span>
+            <span></span>
+          </div>
+          <div class="flex flex-wrap items-center gap-4">
+            <div class="flex items-center gap-1.5">
+              <span class="text-yellow-500">⭐</span>
+              <span id="placeRating" class="text-lg font-extrabold text-gray-900"></span>
+              <span id="placeReviewCount" class="text-gray-400 text-sm"></span>
+            </div>
+            <div class="flex items-center gap-1.5 text-sm text-gray-600">
+              <span>🕐</span>
+              <span id="placeHours"></span>
+            </div>
+          </div>
         </div>
       </div>
-      <p class="text-xs text-gray-400 mt-2">⚠️ ข้อมูลอาจเปลี่ยนแปลง โปรดโทรยืนยันกับร้านก่อนเดินทาง</p>
+      <p class="text-xs text-amber-700 bg-amber-50 rounded-xl px-3 py-2 mt-4 border border-amber-100">⚠️ ข้อมูลอาจเปลี่ยนแปลง โปรดโทรยืนยันกับร้านก่อนเดินทาง</p>
     </div>
 
-    <div class="grid lg:grid-cols-3 gap-6">
+    <!-- Gallery strip (horizontal scroll) -->
+    <div id="gallerySection" class="hidden mb-5">
+      <div id="galleryGrid" class="flex gap-2 overflow-x-auto pb-1 snap-x snap-mandatory" style="scrollbar-width:none;-webkit-overflow-scrolling:touch"></div>
+    </div>
 
-      <!-- Left column: main info -->
-      <div class="lg:col-span-2 space-y-6">
+    <div class="grid lg:grid-cols-3 gap-5 pb-28 lg:pb-10">
 
-        <!-- Pet-Friendly Details (คีย์ข้อมูล SEO หลัก) -->
+      <!-- Left column -->
+      <div class="lg:col-span-2 space-y-5">
+
+        <!-- Pet Policy (visual grid cards) -->
         <div class="bg-white rounded-3xl p-6 shadow-sm border border-orange-100">
-          <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+          <h2 class="text-base font-bold text-gray-900 mb-4 flex items-center gap-2">
             🐾 นโยบายสัตว์เลี้ยง
-            <span class="text-xs font-normal text-gray-400">(ข้อมูลที่ Google Maps ไม่มี)</span>
+            <span class="text-xs font-normal text-gray-400 hidden sm:inline">— ข้อมูลที่ Google Maps ไม่มี</span>
           </h2>
-
-          <div id="petPolicyRows"></div>
-
+          <div id="petPolicyRows" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
           <div id="allowedPetsSection" class="mt-4 pt-4 border-t border-gray-100">
             <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">สัตว์เลี้ยงที่รับ</p>
             <div id="allowedPetsChips" class="flex flex-wrap gap-2"></div>
           </div>
         </div>
 
+        <!-- Description (shown if place.description exists) -->
+        <div id="descSection" class="hidden bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+          <h2 class="text-base font-bold text-gray-900 mb-3">เกี่ยวกับสถานที่</h2>
+          <p id="placeDesc" class="text-sm text-gray-600 leading-relaxed whitespace-pre-line"></p>
+        </div>
+
         <!-- Reviews -->
         <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
-          <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+          <h2 class="text-base font-bold text-gray-900 mb-4 flex items-center gap-2">
             💬 รีวิวจากเจ้าของสัตว์เลี้ยง
             <span id="reviewCountBadge" class="text-xs bg-orange-100 text-brand-orange font-bold px-2 py-0.5 rounded-full"></span>
           </h2>
@@ -206,20 +200,18 @@
 
       </div>
 
-      <!-- Right column: contact + actions -->
-      <div class="space-y-4">
-
-        <!-- CTA Actions -->
-        <div class="bg-white rounded-3xl p-5 shadow-sm border border-orange-100">
+      <!-- Right column (desktop only) -->
+      <div class="space-y-4 hidden lg:block">
+        <div class="bg-white rounded-3xl p-5 shadow-sm border border-orange-100 sticky top-24">
           <div id="phoneBtn" class="hidden mb-3">
-            <a id="phoneBtnLink" href="#" class="flex items-center justify-center gap-2 bg-brand-orange text-white py-3.5 px-5 rounded-2xl font-bold text-sm hover:bg-brand-orange-deep transition-colors w-full">
+            <a id="phoneBtnLink" href="#" class="flex items-center justify-center gap-2 bg-brand-orange text-white py-3.5 px-5 rounded-2xl font-bold text-sm hover:bg-brand-orange-deep transition-colors w-full shadow-sm">
               📞 โทรเลย
             </a>
           </div>
           <a id="mapsBtn" href="#" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-2 bg-white border-2 border-orange-200 text-gray-700 py-3 px-5 rounded-2xl font-semibold text-sm hover:border-brand-orange hover:text-brand-orange transition-colors w-full mb-3">
             🗺️ เปิดใน Google Maps
           </a>
-          <button id="favBtn" class="flex items-center justify-center gap-2 bg-red-50 text-red-400 py-3 px-5 rounded-2xl font-medium text-sm hover:bg-red-100 transition-colors w-full">
+          <button id="favBtn" class="flex items-center justify-center gap-2 bg-red-50 text-red-400 py-3 px-5 rounded-2xl font-medium text-sm hover:bg-red-100 transition-colors w-full mb-2">
             🤍 บันทึกร้านนี้
           </button>
           <button id="shareBtn" class="flex items-center justify-center gap-2 bg-gray-50 text-gray-600 py-3 px-5 rounded-2xl font-medium text-sm hover:bg-gray-100 transition-colors w-full">
@@ -227,21 +219,29 @@
           </button>
         </div>
 
-        <!-- Social / Online Channels -->
         <div id="socialSection" class="hidden bg-white rounded-3xl p-5 shadow-sm border border-gray-100">
           <h2 class="text-sm font-bold text-gray-700 mb-3">ช่องทางออนไลน์</h2>
           <div id="socialLinks" class="space-y-2"></div>
         </div>
 
-        <!-- Back to search -->
         <div class="text-center">
           <a href="places.html" class="inline-flex items-center gap-2 text-gray-500 text-sm hover:text-brand-orange transition-colors font-medium">
             ← กลับไปค้นหาสถานที่
           </a>
         </div>
-
       </div>
+
     </div>
+  </div>
+</div>
+
+<!-- Mobile Sticky Bar -->
+<div id="mobileStickyBar" class="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-gray-200 shadow-2xl px-4 py-3">
+  <div class="flex items-center gap-2 max-w-lg mx-auto">
+    <a id="mobilePhone" href="#" class="hidden flex-1 bg-brand-orange text-white py-3 rounded-2xl font-bold text-sm text-center shadow-sm">📞 โทร</a>
+    <a id="mobileMaps" href="#" target="_blank" rel="noopener noreferrer" class="flex-1 bg-orange-50 text-brand-orange border-2 border-orange-200 py-3 rounded-2xl font-semibold text-sm text-center">🗺️ แผนที่</a>
+    <button id="mobileFav" class="flex-1 bg-red-50 text-red-400 border-2 border-red-100 py-3 rounded-2xl font-medium text-sm">🤍 บันทึก</button>
+    <button id="mobileShare" class="w-12 h-12 bg-gray-100 text-gray-600 rounded-2xl text-lg flex items-center justify-center flex-shrink-0">🔗</button>
   </div>
 </div>
 
@@ -345,10 +345,13 @@ const REVIEW_TAG_LABELS = {
 };
 
 // ── Load Place ──────────────────────────────────────────────
-const params  = new URLSearchParams(location.search);
-const placeId = params.get('id');
+const params    = new URLSearchParams(location.search);
+const placeId   = params.get('id');
+// Slug from clean URL: /place/cafe-baan-moo
+const _pathParts = window.location.pathname.split('/').filter(Boolean);
+const pathSlug   = (_pathParts[0] === 'place' && _pathParts[1]) ? decodeURIComponent(_pathParts[1]) : null;
 
-if (!placeId || !isConfigured) {
+if ((!placeId && !pathSlug) || !isConfigured) {
   showError();
 } else {
   loadPlace();
@@ -356,11 +359,19 @@ if (!placeId || !isConfigured) {
 
 async function loadPlace() {
   try {
-    const snap = await getDoc(doc(db, 'places', placeId));
-    if (!snap.exists()) { showError(); return; }
-    const place = { id: snap.id, ...snap.data() };
+    let place;
+    if (pathSlug) {
+      const q    = query(collection(db, 'places'), where('slug', '==', pathSlug));
+      const snap = await getDocs(q);
+      if (snap.empty) { showError(); return; }
+      place = { id: snap.docs[0].id, ...snap.docs[0].data() };
+    } else {
+      const snap = await getDoc(doc(db, 'places', placeId));
+      if (!snap.exists()) { showError(); return; }
+      place = { id: snap.id, ...snap.data() };
+    }
     renderPlace(place);
-    loadReviews(placeId);
+    loadReviews(place.id);
   } catch (e) {
     console.error(e);
     showError();
@@ -407,7 +418,7 @@ function setMeta(selector, attr, value) {
 
 function injectSEO(place) {
   const BASE     = 'https://www.pawdeepet.com';
-  const url      = `${BASE}/place?id=${place.id}`;
+  const url      = place.slug ? `${BASE}/place/${place.slug}` : `${BASE}/place?id=${place.id}`;
   const tier     = place.tier || 'free';
   const isPro    = ['pro', 'basic', 'verified'].includes(tier);
   const isPremium = tier === 'premium';
@@ -592,22 +603,19 @@ function renderPlace(place) {
   if (place.verified) document.getElementById('verifiedBadge').classList.remove('hidden');
   if (place.ownerVerified) document.getElementById('ownerVerifiedBadge').classList.remove('hidden');
 
-  // ── Gallery ──
+  // ── Gallery (horizontal scroll strip) ──
   const gallery = place.gallery || [];
   if (gallery.length > 0) {
     const sec  = document.getElementById('gallerySection');
     const grid = document.getElementById('galleryGrid');
     sec.classList.remove('hidden');
     grid.innerHTML = gallery.map((url, i) => `
-      <a href="${url}" target="_blank" rel="noopener" class="block" style="aspect-ratio:1;overflow:hidden;">
+      <a href="${url}" target="_blank" rel="noopener" class="flex-shrink-0 snap-start rounded-2xl overflow-hidden" style="width:9rem;height:9rem">
         <img src="${url}" alt="gallery ${i+1}" loading="lazy"
           class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
           onerror="this.parentElement.style.display='none'"/>
       </a>
     `).join('');
-    // แถวแรกใหญ่กว่าถ้ามีรูปเดียว
-    if (gallery.length === 1) grid.style.gridTemplateColumns = '1fr';
-    else if (gallery.length === 2) grid.style.gridTemplateColumns = '1fr 1fr';
   }
 
   // ── H1 name ──
@@ -668,12 +676,10 @@ function renderPlace(place) {
   }
 
   document.getElementById('petPolicyRows').innerHTML = policies.map(p => `
-    <div class="pet-policy-row">
-      <span class="text-xl flex-shrink-0 mt-0.5">${p.icon}</span>
-      <div>
-        <div class="font-semibold text-gray-900 text-sm">${p.label}</div>
-        <div class="text-xs text-gray-500">${p.note}</div>
-      </div>
+    <div class="bg-orange-50 rounded-2xl p-3.5 flex flex-col items-center text-center gap-1.5">
+      <span class="text-2xl">${p.icon}</span>
+      <div class="font-semibold text-gray-800 text-xs leading-tight">${p.label}</div>
+      <div class="text-xs text-gray-400 leading-snug">${p.note}</div>
     </div>
   `).join('');
 
@@ -688,21 +694,30 @@ function renderPlace(place) {
     document.getElementById('allowedPetsSection').classList.add('hidden');
   }
 
+  // ── Description ──
+  if (place.description) {
+    document.getElementById('descSection').classList.remove('hidden');
+    document.getElementById('placeDesc').textContent = place.description;
+  }
+
   // ── Phone CTA ──
+  const mapsHref = place.lat && place.lng
+    ? `https://www.google.com/maps/search/?api=1&query=${place.lat},${place.lng}`
+    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${place.name} ${place.city || ''}`)}`;
+
   if (place.phone) {
     document.getElementById('phoneBtn').classList.remove('hidden');
     document.getElementById('phoneBtnLink').href = `tel:${place.phone}`;
     document.getElementById('phoneBtnLink').textContent = `📞 ${place.phone}`;
+    const mp = document.getElementById('mobilePhone');
+    mp.href = `tel:${place.phone}`;
+    mp.classList.remove('hidden');
   }
 
   // ── Google Maps button ──
   const mapsBtn = document.getElementById('mapsBtn');
-  if (place.lat && place.lng) {
-    mapsBtn.href = `https://www.google.com/maps/search/?api=1&query=${place.lat},${place.lng}`;
-  } else {
-    const q = encodeURIComponent(`${place.name} ${place.city || ''}`);
-    mapsBtn.href = `https://www.google.com/maps/search/?api=1&query=${q}`;
-  }
+  mapsBtn.href = mapsHref;
+  document.getElementById('mobileMaps').href = mapsHref;
 
   // ── Fav button ──
   let currentUser = null;
@@ -733,6 +748,10 @@ function renderPlace(place) {
       btn.dataset.favDocId = ref.id;
     }
   });
+
+  // ── Mobile fav/share delegates ──
+  document.getElementById('mobileFav').addEventListener('click', () => document.getElementById('favBtn').click());
+  document.getElementById('mobileShare').addEventListener('click', () => document.getElementById('shareBtn').click());
 
   // ── Share button ──
   document.getElementById('shareBtn').addEventListener('click', () => {
@@ -794,7 +813,7 @@ function renderReviews(reviews) {
         <div class="text-3xl mb-2">🌟</div>
         <p class="text-sm">ยังไม่มีรีวิว เป็นคนแรกที่รีวิวสถานที่นี้!</p>
       </div>`;
-    document.getElementById('writeReviewLink').href = `places.html?id=${placeId}`;
+    document.getElementById('writeReviewLink').href = `places.html?id=${place.id}`;
     document.getElementById('writeReviewCta').classList.remove('hidden');
     return;
   }

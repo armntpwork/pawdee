@@ -749,7 +749,7 @@
       : isPro
       ? `<div class="absolute top-2 right-2 bg-brand-orange text-white text-xs font-bold px-2.5 py-1 rounded-xl shadow-sm">🔶 Pro</div>`
       : '';
-    const placeUrl = `place.html?id=${place.id}`;
+    const placeUrl = place.slug ? `/place/${place.slug}` : `place.html?id=${place.id}`;
     return `
       <article class="card-hover bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 flex flex-col">
         <a href="${placeUrl}" class="block relative h-44 bg-gray-100 overflow-hidden">
