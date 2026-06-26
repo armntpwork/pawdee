@@ -4,13 +4,18 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>สถานที่ Pet-Friendly | PawDee</title>
-  <link rel="icon" href="Pawdee Logo.png" type="image/png"/>
+  <link rel="icon" href="/Pawdee Logo.png" type="image/png"/>
   <link rel="manifest" href="/manifest.json"/>
   <link rel="apple-touch-icon" href="/icon-512.png"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
   <meta name="apple-mobile-web-app-title" content="PawDee"/>
   <meta name="description" content="ข้อมูลสถานที่ Pet-Friendly บน PawDee — รายละเอียด ที่อยู่ นโยบายสัตว์เลี้ยง และรีวิวจากเจ้าของจริง"/>
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"/>
+  <meta name="geo.region" content="TH-10"/>
+  <meta name="geo.placename" content="Bangkok, Thailand"/>
+  <meta name="geo.position" content="13.7563;100.5018"/>
+  <meta name="ICBM" content="13.7563, 100.5018"/>
   <meta property="og:type" content="place"/>
   <meta property="og:url" content="https://www.pawdeepet.com/place"/>
   <meta property="og:title" content="สถานที่ Pet-Friendly | PawDee"/>
@@ -26,6 +31,9 @@
   <meta name="twitter:image" content="https://www.pawdeepet.com/animals-hero.png.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link rel="preconnect" href="https://firestore.googleapis.com"/>
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin/>
+  <link rel="dns-prefetch" href="https://firebase.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="/css/fonts.css"/>
   <script src="https://cdn.tailwindcss.com"></script>
@@ -59,6 +67,12 @@
     .hero-chips > span { background:rgba(255,255,255,0.18) !important; color:white !important; border:1px solid rgba(255,255,255,0.28) !important; backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); }
     #heroImg { transition: transform 8s ease; }
     #heroImg:hover { transform: scale(1.04); }
+    .review-tag-label { display:inline-flex; align-items:center; gap:0.25rem; font-size:0.7rem; font-weight:600; padding:0.3rem 0.65rem; border-radius:9999px; border:1.5px solid #E5E7EB; color:#6B7280; cursor:pointer; transition:all 0.15s; user-select:none; }
+    .review-tag-label.selected, .review-tag-label:has(input:checked) { background:#FFF7ED; color:#EA580C; border-color:#F97316; }
+    .review-tag-label input { display:none; }
+    .place-star-btn { font-size:1.8rem; line-height:1; color:#D1D5DB; background:none; border:none; cursor:pointer; transition:transform 0.1s; padding:0 2px; }
+    .place-star-btn:hover { transform:scale(1.2); }
+    .place-star-btn.active { color:#F97316; }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased">
@@ -67,7 +81,7 @@
   <div style="padding:2rem;text-align:center;font-family:sans-serif;">
     <h1>สถานที่ Pet-Friendly | PawDee</h1>
     <p>หน้านี้ต้องการ JavaScript เพื่อแสดงข้อมูลสถานที่ กรุณาเปิดใช้งาน JavaScript ในเบราว์เซอร์ของคุณ</p>
-    <p>หรือ <a href="places.html">ค้นหาสถานที่ Pet-Friendly ทั้งหมด</a> ได้เลย</p>
+    <p>หรือ <a href="/places">ค้นหาสถานที่ Pet-Friendly ทั้งหมด</a> ได้เลย</p>
   </div>
 </noscript>
 
@@ -78,7 +92,7 @@
 <div id="loadingState" class="pt-24 pb-16 min-h-screen flex items-center justify-center">
   <div class="text-center">
     <div class="text-5xl mb-4 animate-bounce">🐾</div>
-    <p class="text-gray-500 font-medium">กำลังโหลดข้อมูล...</p>
+    <p class="text-gray-500 font-medium" data-i18n="common.loading">กำลังโหลดข้อมูล...</p>
   </div>
 </div>
 
@@ -86,10 +100,10 @@
 <div id="errorState" class="hidden pt-24 pb-16 min-h-screen flex items-center justify-center">
   <div class="text-center max-w-md mx-auto px-4">
     <div class="text-6xl mb-4">😿</div>
-    <h1 class="text-2xl font-bold text-gray-900 mb-2">ไม่พบสถานที่นี้</h1>
-    <p class="text-gray-500 mb-6">อาจถูกลบออกจากระบบหรือ URL ไม่ถูกต้อง</p>
-    <a href="places.html" class="inline-flex items-center gap-2 bg-brand-orange text-white px-6 py-3 rounded-2xl font-semibold hover:bg-brand-orange-deep transition-colors">
-      ← ค้นหาสถานที่อื่น
+    <h1 class="text-2xl font-bold text-gray-900 mb-2" data-i18n="place.not_found">ไม่พบสถานที่นี้</h1>
+    <p class="text-gray-500 mb-6" data-i18n="place.not_found_desc">อาจถูกลบออกจากระบบหรือ URL ไม่ถูกต้อง</p>
+    <a href="/places" class="inline-flex items-center gap-2 bg-brand-orange text-white px-6 py-3 rounded-2xl font-semibold hover:bg-brand-orange-deep transition-colors">
+      <span data-i18n="place.search_other">← ค้นหาสถานที่อื่น</span>
     </a>
   </div>
 </div>
@@ -111,9 +125,9 @@
         <!-- Breadcrumb (desktop) -->
         <nav aria-label="breadcrumb" class="mb-3 hidden sm:block">
           <ol class="flex items-center gap-1.5 text-xs text-white/50">
-            <li><a href="index.html" class="hover:text-white/80 transition-colors">PawDee</a></li>
+            <li><a href="/" class="hover:text-white/80 transition-colors">PawDee</a></li>
             <li>›</li>
-            <li><a href="places.html" class="hover:text-white/80 transition-colors">ค้นหาสถานที่</a></li>
+            <li><a href="/places" class="hover:text-white/80 transition-colors">ค้นหาสถานที่</a></li>
             <li>›</li>
             <li id="breadcrumbName" class="text-white/70 truncate max-w-[14rem]"></li>
           </ol>
@@ -159,16 +173,16 @@
       </div>
       <!-- Warning -->
       <div class="flex-1 min-w-[160px]">
-        <p class="text-xs text-amber-700 leading-relaxed">⚠️ ข้อมูลอาจเปลี่ยนแปลง โปรดโทรยืนยันกับร้านก่อนเดินทาง</p>
+        <p class="text-xs text-amber-700 leading-relaxed">⚠️ <span data-i18n="place.data_warning">ข้อมูลอาจเปลี่ยนแปลง โปรดโทรยืนยันกับร้านก่อนเดินทาง</span></p>
       </div>
       <!-- CTA buttons -->
       <div class="flex items-center gap-2 ml-auto flex-shrink-0">
         <div id="phoneBtn" class="hidden">
-          <a id="phoneBtnLink" href="#" class="inline-flex items-center gap-1.5 bg-brand-orange text-white py-2.5 px-4 rounded-2xl font-bold text-sm hover:bg-brand-orange-deep transition-colors shadow-sm whitespace-nowrap">📞 โทร</a>
+          <a id="phoneBtnLink" href="#" class="inline-flex items-center gap-1.5 bg-brand-orange text-white py-2.5 px-4 rounded-2xl font-bold text-sm hover:bg-brand-orange-deep transition-colors shadow-sm whitespace-nowrap">📞 <span data-i18n="place.call">โทร</span></a>
         </div>
         <a id="mapsBtn" href="#" target="_blank" rel="noopener noreferrer"
            class="inline-flex items-center gap-1.5 bg-orange-50 border-2 border-orange-200 text-brand-orange py-2.5 px-4 rounded-2xl font-semibold text-sm hover:border-brand-orange transition-colors whitespace-nowrap">
-          🗺️ แผนที่
+          🗺️ <span data-i18n="place.map_btn">แผนที่</span>
         </a>
       </div>
     </div>
@@ -176,6 +190,17 @@
     <!-- Gallery mosaic -->
     <div id="gallerySection" class="hidden mb-6 rounded-3xl overflow-hidden shadow-sm">
       <div id="galleryGrid"></div>
+    </div>
+
+    <!-- Lightbox -->
+    <div id="lightbox" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/90 backdrop-blur-sm" onclick="closeLightbox(event)">
+      <button onclick="closeLightboxBtn()" class="absolute top-4 right-4 text-white text-3xl leading-none w-10 h-10 flex items-center justify-center hover:bg-white/20 rounded-full transition-colors z-10">✕</button>
+      <button onclick="prevPhoto()" class="absolute left-3 top-1/2 -translate-y-1/2 text-white text-3xl w-12 h-12 flex items-center justify-center hover:bg-white/20 rounded-full transition-colors z-10">‹</button>
+      <button onclick="nextPhoto()" class="absolute right-3 top-1/2 -translate-y-1/2 text-white text-3xl w-12 h-12 flex items-center justify-center hover:bg-white/20 rounded-full transition-colors z-10">›</button>
+      <div class="relative max-w-4xl max-h-screen w-full flex flex-col items-center px-16 py-8">
+        <img id="lightboxImg" src="" alt="" class="max-h-[80vh] max-w-full object-contain rounded-xl shadow-2xl select-none"/>
+        <p id="lightboxCounter" class="text-white/60 text-sm mt-3 font-medium"></p>
+      </div>
     </div>
 
     <!-- 2-col grid -->
@@ -187,40 +212,102 @@
         <!-- Pet Policy -->
         <div class="bg-white rounded-3xl p-6 shadow-sm border border-orange-50">
           <h2 class="text-base font-bold text-gray-900 mb-4 flex items-center gap-2">
-            🐾 นโยบายสัตว์เลี้ยง
-            <span class="text-xs font-normal text-gray-400 hidden sm:inline">— ข้อมูลที่ Google Maps ไม่มี</span>
+            🐾 <span data-i18n="place.policy_title">นโยบายสัตว์เลี้ยง</span>
+            <span class="text-xs font-normal text-gray-400 hidden sm:inline">— <span data-i18n="place.pet_policy_gmaps">ข้อมูลที่ Google Maps ไม่มี</span></span>
           </h2>
           <div id="petPolicyRows" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
           <div id="allowedPetsSection" class="mt-4 pt-4 border-t border-gray-100">
-            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">สัตว์เลี้ยงที่รับ</p>
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2" data-i18n="place.pets_accepted">สัตว์เลี้ยงที่รับ</p>
             <div id="allowedPetsChips" class="flex flex-wrap gap-2"></div>
           </div>
         </div>
 
         <!-- Description -->
         <div id="descSection" class="hidden bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
-          <h2 class="text-base font-bold text-gray-900 mb-3">เกี่ยวกับสถานที่</h2>
+          <h2 class="text-base font-bold text-gray-900 mb-3" data-i18n="place.about_title">เกี่ยวกับสถานที่</h2>
           <p id="placeDesc" class="text-sm text-gray-600 leading-relaxed whitespace-pre-line"></p>
         </div>
 
         <!-- Reviews -->
         <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
           <h2 class="text-base font-bold text-gray-900 mb-4 flex items-center gap-2">
-            💬 รีวิวจากเจ้าของสัตว์เลี้ยง
+            💬 <span data-i18n="place.reviews_section">รีวิวจากเจ้าของสัตว์เลี้ยง</span>
             <span id="reviewCountBadge" class="text-xs bg-orange-100 text-brand-orange font-bold px-2 py-0.5 rounded-full"></span>
           </h2>
           <div id="reviewsList">
             <div class="text-center py-8 text-gray-400">
               <div class="text-3xl mb-2">📝</div>
-              <p class="text-sm">กำลังโหลดรีวิว...</p>
+              <p class="text-sm" data-i18n="common.loading">กำลังโหลดรีวิว...</p>
             </div>
           </div>
           <div id="writeReviewCta" class="hidden mt-4 pt-4 border-t border-gray-100">
-            <p class="text-xs text-gray-400 mb-2 text-center">เคยไปกับน้องแล้ว? ช่วยเจ้าของสัตว์คนอื่นด้วยรีวิวของคุณ</p>
-            <a id="writeReviewLink" href="places.html" class="flex items-center justify-center gap-2 bg-orange-50 text-brand-orange border border-orange-200 py-2.5 px-4 rounded-2xl font-semibold text-sm hover:bg-orange-100 transition-colors w-full">
-              ✍️ เขียนรีวิวสถานที่นี้
-            </a>
+
+            <!-- logged-in: form -->
+            <div id="placeReviewForm" class="hidden bg-orange-50 rounded-2xl p-4">
+              <p class="text-sm font-semibold text-gray-800 mb-3">✍️ <span data-i18n="place.write_review_title">เขียนรีวิวของคุณ</span></p>
+              <div class="flex gap-0.5 mb-3" id="placeStarPicker">
+                <button type="button" data-star="1" class="place-star-btn">★</button>
+                <button type="button" data-star="2" class="place-star-btn">★</button>
+                <button type="button" data-star="3" class="place-star-btn">★</button>
+                <button type="button" data-star="4" class="place-star-btn">★</button>
+                <button type="button" data-star="5" class="place-star-btn">★</button>
+              </div>
+              <div class="flex flex-wrap gap-1.5 mb-3">
+                <label class="review-tag-label"><input type="checkbox" value="petFriendlyStaff"/><span>👋 <span data-i18n="review.tag_staff">พนักงานเป็นมิตร</span></span></label>
+                <label class="review-tag-label"><input type="checkbox" value="waterBowl"/><span>💧 <span data-i18n="review.tag_water">มีถาดน้ำ</span></span></label>
+                <label class="review-tag-label"><input type="checkbox" value="indoorOk"/><span>🪑 <span data-i18n="review.tag_indoor">นั่งในร้านได้</span></span></label>
+                <label class="review-tag-label"><input type="checkbox" value="spacious"/><span>🌿 <span data-i18n="review.tag_spacious">พื้นที่กว้าง</span></span></label>
+                <label class="review-tag-label"><input type="checkbox" value="clean"/><span>🧹 <span data-i18n="review.tag_clean">สะอาด</span></span></label>
+                <label class="review-tag-label"><input type="checkbox" value="easyParking"/><span>🅿️ <span data-i18n="review.tag_parking">ที่จอดสะดวก</span></span></label>
+              </div>
+              <textarea id="placeReviewComment" rows="3" data-i18n-ph="place.review_ph"
+                placeholder="เล่าประสบการณ์ของคุณ... (ไม่บังคับ)"
+                class="w-full text-sm border border-orange-200 rounded-xl px-3 py-2.5 resize-none focus:outline-none focus:ring-2 focus:ring-brand-orange/30 bg-white placeholder-gray-300 mb-2"></textarea>
+              <label class="flex items-center gap-2 cursor-pointer select-none mb-2.5">
+                <input type="checkbox" id="placeReviewAnon" class="w-4 h-4 rounded accent-brand-orange"/>
+                <span class="text-xs text-gray-500" data-i18n="place.anon_label">ไม่ระบุตัวตน</span>
+              </label>
+              <button id="submitPlaceReviewBtn" class="w-full bg-brand-orange text-white text-sm font-semibold py-2.5 rounded-xl hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" data-i18n="place.submit_review">
+                ส่งรีวิว
+              </button>
+              <p id="placeReviewMsg" class="text-xs text-center mt-2 hidden text-red-500"></p>
+            </div>
+
+            <!-- logged-in: review submitted success -->
+            <div id="placeReviewSuccess" class="hidden text-center py-3 bg-green-50 rounded-2xl">
+              <p class="text-sm text-green-700 font-semibold">✅ ขอบคุณที่รีวิว! รีวิวของคุณถูกบันทึกแล้ว</p>
+            </div>
+
+            <!-- logged-in: already reviewed (20-review limit) -->
+            <div id="placeAlreadyReviewed" class="hidden text-center py-3 bg-green-50 rounded-2xl">
+              <p class="text-sm text-green-700 font-semibold" data-i18n="place.review_limit">✅ คุณรีวิวสถานที่นี้ครบ 20 ครั้งแล้ว ขอบคุณ!</p>
+            </div>
+
+            <!-- not logged in -->
+            <div id="placeReviewLoginPrompt" class="text-center py-3 bg-gray-50 rounded-2xl">
+              <p class="text-xs text-gray-400 mb-1.5" data-i18n="place.review_prompt">เคยไปกับน้องแล้ว? ช่วยเจ้าของสัตว์คนอื่น</p>
+              <a href="/login" class="text-sm text-brand-orange font-semibold hover:underline" data-i18n="place.login_review_link">เข้าสู่ระบบเพื่อเขียนรีวิว →</a>
+            </div>
+
           </div>
+        </div>
+
+        <!-- PawDee Go Section -->
+        <div class="bg-white rounded-3xl p-6 shadow-sm border border-orange-100">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-base font-bold text-gray-900 flex items-center gap-2">
+              🐾 PawDee Go
+              <span class="text-xs font-normal text-gray-400">— มีคนวางแผนจะมาที่นี่</span>
+            </h2>
+            <button id="goCreateBtn" class="text-xs font-bold bg-brand-orange text-white px-3 py-1.5 rounded-xl hover:bg-orange-600 transition-colors">+ นัดไปด้วยกัน</button>
+          </div>
+          <div id="goTripsList">
+            <div class="text-center py-6 text-gray-400">
+              <div class="text-2xl mb-1">🗺️</div>
+              <p class="text-xs">กำลังโหลด...</p>
+            </div>
+          </div>
+          <a href="/community" class="mt-3 flex items-center justify-center gap-1 text-xs text-brand-orange font-semibold hover:underline">ดูทุกทริปบน PawDee Go →</a>
         </div>
 
       </div>
@@ -228,19 +315,19 @@
       <!-- Right sidebar (desktop) -->
       <div class="space-y-4 hidden lg:block">
         <div class="bg-white rounded-3xl p-5 shadow-sm border border-orange-100 sticky top-24">
-          <button id="favBtn" class="flex items-center justify-center gap-2 bg-red-50 text-red-400 py-3 px-5 rounded-2xl font-medium text-sm hover:bg-red-100 transition-colors w-full mb-2.5">
+          <button id="favBtn" class="flex items-center justify-center gap-2 bg-red-50 text-red-400 py-3 px-5 rounded-2xl font-medium text-sm hover:bg-red-100 transition-colors w-full mb-2.5" data-i18n="place.save_btn">
             🤍 บันทึกร้านนี้
           </button>
-          <button id="shareBtn" class="flex items-center justify-center gap-2 bg-gray-50 text-gray-600 py-3 px-5 rounded-2xl font-medium text-sm hover:bg-gray-100 transition-colors w-full">
+          <button id="shareBtn" class="flex items-center justify-center gap-2 bg-gray-50 text-gray-600 py-3 px-5 rounded-2xl font-medium text-sm hover:bg-gray-100 transition-colors w-full" data-i18n="place.share_btn">
             🔗 แชร์สถานที่นี้
           </button>
         </div>
         <div id="socialSection" class="hidden bg-white rounded-3xl p-5 shadow-sm border border-gray-100">
-          <h2 class="text-sm font-bold text-gray-700 mb-3">ช่องทางออนไลน์</h2>
+          <h2 class="text-sm font-bold text-gray-700 mb-3" data-i18n="place.online_channels">ช่องทางออนไลน์</h2>
           <div id="socialLinks" class="space-y-2"></div>
         </div>
         <div class="text-center">
-          <a href="places.html" class="inline-flex items-center gap-2 text-gray-400 text-sm hover:text-brand-orange transition-colors font-medium">
+          <a href="/places" class="inline-flex items-center gap-2 text-gray-400 text-sm hover:text-brand-orange transition-colors font-medium" data-i18n="place.back_search">
             ← กลับไปค้นหาสถานที่
           </a>
         </div>
@@ -253,9 +340,9 @@
 <!-- Mobile Sticky Bar -->
 <div id="mobileStickyBar" class="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-gray-200 shadow-2xl px-4 py-3">
   <div class="flex items-center gap-2 max-w-lg mx-auto">
-    <a id="mobilePhone" href="#" class="hidden flex-1 bg-brand-orange text-white py-3 rounded-2xl font-bold text-sm text-center shadow-sm">📞 โทร</a>
-    <a id="mobileMaps" href="#" target="_blank" rel="noopener noreferrer" class="flex-1 bg-orange-50 text-brand-orange border-2 border-orange-200 py-3 rounded-2xl font-semibold text-sm text-center">🗺️ แผนที่</a>
-    <button id="mobileFav" class="flex-1 bg-red-50 text-red-400 border-2 border-red-100 py-3 rounded-2xl font-medium text-sm">🤍 บันทึก</button>
+    <a id="mobilePhone" href="#" class="hidden flex-1 bg-brand-orange text-white py-3 rounded-2xl font-bold text-sm text-center shadow-sm">📞 <span data-i18n="place.call">โทร</span></a>
+    <a id="mobileMaps" href="#" target="_blank" rel="noopener noreferrer" class="flex-1 bg-orange-50 text-brand-orange border-2 border-orange-200 py-3 rounded-2xl font-semibold text-sm text-center">🗺️ <span data-i18n="place.map_btn">แผนที่</span></a>
+    <button id="mobileFav" class="flex-1 bg-red-50 text-red-400 border-2 border-red-100 py-3 rounded-2xl font-medium text-sm">🤍 <span data-i18n="place.mobile_save">บันทึก</span></button>
     <button id="mobileShare" class="w-12 h-12 bg-gray-100 text-gray-600 rounded-2xl text-lg flex items-center justify-center flex-shrink-0">🔗</button>
   </div>
 </div>
@@ -266,7 +353,7 @@
     <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
       <div class="col-span-2 md:col-span-1">
         <div class="flex items-center gap-2 mb-3">
-          <img src="Pawdee Logo.png" alt="PawDee Logo" class="h-8 w-auto"/>
+          <img src="/Pawdee Logo.png" alt="PawDee Logo" class="h-8 w-auto"/>
           <span class="font-bold text-xl">Paw<span class="text-brand-orange">Dee</span></span>
         </div>
         <p class="text-gray-400 text-sm leading-relaxed">ศูนย์กลางข้อมูล รีวิว และชุมชน สำหรับเจ้าของสัตว์เลี้ยงในไทย</p>
@@ -282,10 +369,10 @@
       <div>
         <h3 class="font-semibold mb-3 text-sm">ฟีเจอร์</h3>
         <ul class="space-y-2 text-gray-400 text-sm">
-          <li><a href="places.html" class="hover:text-brand-orange transition-colors">🗺️ สถานที่ Pet-Friendly</a></li>
-          <li><a href="sitters.html" class="hover:text-brand-orange transition-colors">🧑 พี่เลี้ยงสัตว์</a></li>
-          <li><a href="emergency.html" class="hover:text-brand-orange transition-colors">🚨 คลินิกฉุกเฉิน</a></li>
-          <li><a href="register-business.html" class="hover:text-brand-orange transition-colors">🏪 ลงทะเบียนธุรกิจ</a></li>
+          <li><a href="/places" class="hover:text-brand-orange transition-colors">🗺️ สถานที่ Pet-Friendly</a></li>
+          <li><a href="/sitters" class="hover:text-brand-orange transition-colors">🧑 พี่เลี้ยงสัตว์</a></li>
+          <li><a href="/emergency" class="hover:text-brand-orange transition-colors">🚨 คลินิกฉุกเฉิน</a></li>
+          <li><a href="/register-business" class="hover:text-brand-orange transition-colors">🏪 ลงทะเบียนธุรกิจ</a></li>
         </ul>
       </div>
       <div>
@@ -299,8 +386,8 @@
     <div class="border-t border-gray-800 pt-6 flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-gray-500">
       <p>© 2026 PawDee. สงวนลิขสิทธิ์.</p>
       <div class="flex gap-4">
-        <a href="privacy.html" class="hover:text-brand-orange transition-colors">นโยบายความเป็นส่วนตัว</a>
-        <a href="terms.html" class="hover:text-brand-orange transition-colors">เงื่อนไขการใช้งาน</a>
+        <a href="/privacy" class="hover:text-brand-orange transition-colors">นโยบายความเป็นส่วนตัว</a>
+        <a href="/terms" class="hover:text-brand-orange transition-colors">เงื่อนไขการใช้งาน</a>
       </div>
     </div>
   </div>
@@ -309,15 +396,12 @@
 <script type="module">
 import '/js/navbar.js';
 import { db, isConfigured } from '/js/firebase-config.js';
-import { doc, getDoc, collection, query, where, getDocs, orderBy, limit, addDoc, deleteDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { doc, getDoc, collection, query, where, getDocs, orderBy, limit, addDoc, deleteDoc, updateDoc, serverTimestamp, arrayUnion, Timestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 import { initNavAuth, onAuthChange } from '/js/auth.js';
+import { initI18n, t as tr } from '/js/i18n.js';
+initI18n();
 
 initNavAuth();
-
-// Mobile menu
-document.getElementById('mobileMenuBtn').addEventListener('click', () => {
-  document.getElementById('mobileMenu').classList.toggle('hidden');
-});
 
 const TYPE_LABELS = {
   cafe:       { label: 'คาเฟ่',        icon: '☕', cls: 'badge-cafe'       },
@@ -339,9 +423,9 @@ function categoryChipsHtml(place) {
       const label = place.customCategory || 'อื่นๆ';
       return `<span class="inline-flex items-center gap-1 text-xs font-semibold px-3 py-1 rounded-full bg-gray-100 text-gray-600">📍 ${label}</span>`;
     }
-    const t = TYPE_LABELS[key];
-    if (!t) return '';
-    return `<span class="inline-flex items-center gap-1 text-xs font-semibold px-3 py-1 rounded-full ${t.cls}">${t.icon} ${t.label}</span>`;
+    const tl = TYPE_LABELS[key];
+    if (!tl) return '';
+    return `<span class="inline-flex items-center gap-1 text-xs font-semibold px-3 py-1 rounded-full ${tl.cls}">${tl.icon} ${tl.label}</span>`;
   }).filter(Boolean).join('');
 }
 
@@ -387,6 +471,7 @@ async function loadPlace() {
     }
     renderPlace(place);
     loadReviews(place.id);
+    initReviewForm(place.id);
   } catch (e) {
     console.error(e);
     showError();
@@ -565,10 +650,13 @@ function injectSEO(place) {
 }
 
 // ── Render Place ────────────────────────────────────────────
+let _currentPlace = null;
+
 function renderPlace(place) {
+  _currentPlace = place;
   const cats = getCategories(place);
   const firstKey = cats[0] || '';
-  const t = TYPE_LABELS[firstKey] || { label: place.customCategory || firstKey || 'สถานที่', icon: '📍', cls: '' };
+  const typeInfo = TYPE_LABELS[firstKey] || { label: place.customCategory || firstKey || 'สถานที่', icon: '📍', cls: '' };
 
   // ── SEO: title, meta, og, canonical, JSON-LD ──
   injectSEO(place);
@@ -576,7 +664,7 @@ function renderPlace(place) {
   // ── Hero Image ──
   const heroImg = document.getElementById('heroImg');
   heroImg.src = place.imageUrl || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=1200&q=80';
-  heroImg.alt = `${place.name} — ${t.label} Pet-Friendly ที่ ${place.city || ''}`;
+  heroImg.alt = `${place.name} — ${typeInfo.label} Pet-Friendly ที่ ${place.city || ''}`;
   heroImg.onerror = () => { heroImg.src = 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=1200&q=80'; };
 
   // Logo
@@ -618,30 +706,75 @@ function renderPlace(place) {
   if (place.verified) document.getElementById('verifiedBadge').classList.remove('hidden');
   if (place.ownerVerified) document.getElementById('ownerVerifiedBadge').classList.remove('hidden');
 
-  // ── Gallery (photo mosaic) ──
+  // ── Gallery (photo mosaic + lightbox) ──
   const gallery = place.gallery || [];
+  window._galleryUrls = gallery;
+  window._lightboxIdx = 0;
+
+  window.openLightbox = function(i) {
+    window._lightboxIdx = i;
+    const lb = document.getElementById('lightbox');
+    document.getElementById('lightboxImg').src = gallery[i];
+    document.getElementById('lightboxCounter').textContent = `${i + 1} / ${gallery.length}`;
+    lb.classList.remove('hidden');
+    lb.classList.add('flex');
+    document.body.style.overflow = 'hidden';
+  };
+  window.closeLightboxBtn = function() {
+    const lb = document.getElementById('lightbox');
+    lb.classList.add('hidden');
+    lb.classList.remove('flex');
+    document.body.style.overflow = '';
+  };
+  window.closeLightbox = function(e) {
+    if (e.target === document.getElementById('lightbox')) window.closeLightboxBtn();
+  };
+  window.prevPhoto = function() {
+    const i = (window._lightboxIdx - 1 + gallery.length) % gallery.length;
+    window.openLightbox(i);
+  };
+  window.nextPhoto = function() {
+    const i = (window._lightboxIdx + 1) % gallery.length;
+    window.openLightbox(i);
+  };
+  document.addEventListener('keydown', e => {
+    const lb = document.getElementById('lightbox');
+    if (lb.classList.contains('hidden')) return;
+    if (e.key === 'Escape')      window.closeLightboxBtn();
+    if (e.key === 'ArrowLeft')   window.prevPhoto();
+    if (e.key === 'ArrowRight')  window.nextPhoto();
+  });
+
   if (gallery.length > 0) {
     const sec  = document.getElementById('gallerySection');
     const grid = document.getElementById('galleryGrid');
     sec.classList.remove('hidden');
-    const imgTag = (url, i) => `<img src="${url}" alt="รูปสถานที่ ${i+1}" loading="lazy"
-      class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-      onerror="this.parentElement.style.display='none'"/>`;
+
+    const thumb = (url, i, cls='') =>
+      `<div class="block overflow-hidden cursor-pointer ${cls}" onclick="openLightbox(${i})" style="position:relative">
+        <img src="${url}" alt="รูปสถานที่ ${i+1}" loading="lazy"
+          class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+          onerror="this.parentElement.style.display='none'"/>
+      </div>`;
+
     if (gallery.length === 1) {
-      grid.innerHTML = `<a href="${gallery[0]}" target="_blank" rel="noopener" class="block" style="height:20rem">${imgTag(gallery[0],1)}</a>`;
+      grid.style.cssText = 'height:20rem';
+      grid.innerHTML = thumb(gallery[0], 0);
     } else if (gallery.length === 2) {
       grid.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:3px;height:18rem';
-      grid.innerHTML = gallery.map((url,i) => `<a href="${url}" target="_blank" rel="noopener" class="block overflow-hidden">${imgTag(url,i+1)}</a>`).join('');
+      grid.innerHTML = gallery.map((url,i) => thumb(url,i)).join('');
     } else {
       const extra = gallery.length - 3;
       grid.innerHTML = `<div style="display:grid;grid-template-columns:2fr 1fr;gap:3px;height:22rem">
-        <a href="${gallery[0]}" target="_blank" rel="noopener" class="block overflow-hidden">${imgTag(gallery[0],1)}</a>
+        ${thumb(gallery[0], 0)}
         <div style="display:grid;grid-template-rows:1fr 1fr;gap:3px">
-          <a href="${gallery[1]}" target="_blank" rel="noopener" class="block overflow-hidden">${imgTag(gallery[1],2)}</a>
-          <a href="${gallery[2]}" target="_blank" rel="noopener" class="block overflow-hidden relative">
-            ${imgTag(gallery[2],3)}
-            ${extra > 0 ? `<div class="absolute inset-0 bg-black/50 flex items-center justify-center"><span class="text-white font-extrabold text-xl">+${extra}</span></div>` : ''}
-          </a>
+          ${thumb(gallery[1], 1)}
+          <div class="block overflow-hidden cursor-pointer relative" onclick="openLightbox(2)" style="position:relative">
+            <img src="${gallery[2]}" alt="รูปสถานที่ 3" loading="lazy"
+              class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+              onerror="this.parentElement.style.display='none'"/>
+            ${extra > 0 ? `<div class="absolute inset-0 bg-black/50 flex items-center justify-center pointer-events-none"><span class="text-white font-extrabold text-2xl">+${extra}</span></div>` : ''}
+          </div>
         </div>
       </div>`;
     }
@@ -656,52 +789,53 @@ function renderPlace(place) {
 
   // ── Rating ──
   document.getElementById('placeRating').textContent = place.rating?.toFixed(1) || '-';
-  document.getElementById('placeReviewCount').textContent = place.reviewCount ? `(${place.reviewCount} รีวิว)` : '';
+  const _rc = place.reviews || place.reviewCount || 0;
+  document.getElementById('placeReviewCount').textContent = _rc ? `(${_rc} รีวิว)` : '';
   document.getElementById('placeHours').textContent = place.openHours || '-';
 
   // ── Pet Policy Rows ──
   const policies = [];
   if (place.indoorSeating === true) {
-    policies.push({ icon:'✅', label:'นั่งในร้านได้', note:'น้องเข้านั่งในร้านได้เลย ไม่ต้องนั่งข้างนอก' });
+    policies.push({ icon:'✅', label:tr('policy.indoor_ok'), note:tr('policy.indoor_ok_note') });
   } else if (place.indoorSeating === false) {
-    policies.push({ icon:'⚠️', label:'นั่งข้างนอกเท่านั้น', note:'น้องต้องอยู่โซนกลางแจ้งหรือเฉลียง' });
+    policies.push({ icon:'⚠️', label:tr('policy.outdoor_only'), note:tr('policy.outdoor_note') });
   }
   if (place.maxWeightKg == null) {
-    policies.push({ icon:'✅', label:'รับพันธุ์ใหญ่ได้ (ไม่จำกัดน้ำหนัก)', note:'ไม่มีข้อจำกัดน้ำหนักน้อง' });
+    policies.push({ icon:'✅', label:tr('policy.no_weight'), note:tr('policy.no_weight_note') });
   } else if (place.maxWeightKg >= 20) {
-    policies.push({ icon:'✅', label:`รับได้ถึง ${place.maxWeightKg} กก.`, note:'รับพันธุ์ใหญ่ได้' });
+    policies.push({ icon:'✅', label:`${tr('policy.weight_up_to')} ${place.maxWeightKg} ${tr('place.kg')}`, note:tr('policy.weight_large_note') });
   } else {
-    policies.push({ icon:'⚠️', label:`รับได้ถึง ${place.maxWeightKg} กก.`, note:'เฉพาะสายพันธุ์เล็ก' });
+    policies.push({ icon:'⚠️', label:`${tr('policy.weight_up_to')} ${place.maxWeightKg} ${tr('place.kg')}`, note:tr('policy.weight_small_note') });
   }
   if (place.needCarrier === false) {
-    policies.push({ icon:'✅', label:'ไม่ต้องใส่กรง', note:'สามารถเดินอิสระหรืออุ้มได้' });
+    policies.push({ icon:'✅', label:tr('policy.no_carrier'), note:tr('policy.no_carrier_note') });
   } else if (place.needCarrier === true) {
-    policies.push({ icon:'❌', label:'ต้องใส่กรงหรือสายจูง', note:'กรุณาเตรียมกรง/สายจูงมาด้วย' });
+    policies.push({ icon:'❌', label:tr('policy.need_carrier'), note:tr('policy.need_carrier_note') });
   }
   if (place.emergency24hr) {
-    policies.push({ icon:'🚨', label:'เปิด 24 ชั่วโมง', note:'รับกรณีฉุกเฉินตลอด 24 ชม.' });
+    policies.push({ icon:'🚨', label:tr('policy.24hr'), note:tr('policy.24hr_note') });
   }
   if (place.hasParking) {
-    policies.push({ icon:'🅿️', label:'มีที่จอดรถหน้าร้าน', note:'สะดวกเวลาพาน้องมาฉุกเฉิน' });
+    policies.push({ icon:'🅿️', label:tr('policy.parking'), note:tr('policy.parking_note') });
   }
   if (place.hasSpecialist) {
-    policies.push({ icon:'👨‍⚕️', label:'มีหมอเฉพาะทาง', note:'ศัลยกรรม ผิวหนัง ทันตกรรม และอื่นๆ' });
+    policies.push({ icon:'👨‍⚕️', label:tr('policy.specialist'), note:tr('policy.specialist_note') });
   }
   if (place.hasXray) {
-    policies.push({ icon:'🔬', label:'มีเครื่องเอกซเรย์ / อัลตราซาวด์', note:'วินิจฉัยได้ทันทีโดยไม่ต้องส่งตัว' });
+    policies.push({ icon:'🔬', label:tr('policy.xray'), note:tr('policy.xray_note') });
   }
   if (place.hasLab) {
-    policies.push({ icon:'🧪', label:'มีห้องปฏิบัติการ (Lab)', note:'ตรวจเลือด ตรวจปัสสาวะได้เลย ไม่ต้องรอนอกสถานที่' });
+    policies.push({ icon:'🧪', label:tr('policy.lab'), note:tr('policy.lab_note') });
   }
   if (place.hasSurgery) {
-    policies.push({ icon:'🏥', label:'มีห้องผ่าตัด', note:'รองรับการผ่าตัดได้ในสถานที่' });
+    policies.push({ icon:'🏥', label:tr('policy.surgery'), note:tr('policy.surgery_note') });
   }
   if (place.specialServices) {
-    policies.push({ icon:'🩺', label:'บริการพิเศษ', note: place.specialServices });
+    policies.push({ icon:'🩺', label:tr('policy.special_svc'), note: place.specialServices });
   }
 
   if (policies.length === 0) {
-    policies.push({ icon:'ℹ️', label:'ข้อมูลนโยบายสัตว์เลี้ยง', note:'ยังไม่มีข้อมูลละเอียด — ลองโทรสอบถามก่อนนะครับ' });
+    policies.push({ icon:'ℹ️', label:tr('policy.no_info'), note:tr('policy.no_info_note') });
   }
 
   document.getElementById('petPolicyRows').innerHTML = policies.map(p => {
@@ -737,11 +871,33 @@ function renderPlace(place) {
     document.getElementById('placeDesc').textContent = place.description;
   }
 
-  // ── Phone CTA ──
-  const mapsHref = place.lat && place.lng
-    ? `https://www.google.com/maps/search/?api=1&query=${place.lat},${place.lng}`
-    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${place.name} ${place.city || ''}`)}`;
+  // ── Maps URL (same priority as places.html) ──
+  function extractCoordsFromUrl(url) {
+    if (!url) return null;
+    const at = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+    if (at) return { lat: parseFloat(at[1]), lng: parseFloat(at[2]) };
+    const d3 = url.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/);
+    if (d3) return { lat: parseFloat(d3[1]), lng: parseFloat(d3[2]) };
+    const q = url.match(/[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/);
+    if (q) return { lat: parseFloat(q[1]), lng: parseFloat(q[2]) };
+    const ll = url.match(/[?&]ll=(-?\d+\.\d+),(-?\d+\.\d+)/);
+    if (ll) return { lat: parseFloat(ll[1]), lng: parseFloat(ll[2]) };
+    return null;
+  }
+  const navQ = encodeURIComponent([place.name, place.address, place.city || place.district, place.province].filter(Boolean).join(' '));
+  const urlCoords = extractCoordsFromUrl(place.googleMapsUrl);
+  let mapsHref;
+  if (urlCoords) {
+    mapsHref = `https://www.google.com/maps/search/?api=1&query=${urlCoords.lat},${urlCoords.lng}`;
+  } else if (place.googleMapsUrl) {
+    mapsHref = place.googleMapsUrl;
+  } else if (place.lat && place.lng) {
+    mapsHref = `https://www.google.com/maps/search/?api=1&query=${place.lat},${place.lng}`;
+  } else {
+    mapsHref = `https://www.google.com/maps/search/?api=1&query=${navQ}`;
+  }
 
+  // ── Phone CTA ──
   if (place.phone) {
     document.getElementById('phoneBtn').classList.remove('hidden');
     document.getElementById('phoneBtnLink').href = `tel:${place.phone}`;
@@ -764,23 +920,24 @@ function renderPlace(place) {
     const favSnap = await getDocs(query(collection(db, 'favorites'), where('userId','==',user.uid), where('placeId','==',placeId)));
     const favBtn = document.getElementById('favBtn');
     if (!favSnap.empty) {
-      favBtn.textContent = '❤️ บันทึกแล้ว';
+      favBtn.textContent = tr('place.save_done');
       favBtn.classList.replace('text-red-400','text-red-500');
       favBtn.dataset.favDocId = favSnap.docs[0].id;
     }
   });
 
   document.getElementById('favBtn').addEventListener('click', async () => {
-    if (!currentUser) { alert('กรุณาเข้าสู่ระบบก่อนบันทึกร้าน'); return; }
+    if (!currentUser) { alert(tr('place.login_review_link')); return; }
     const btn = document.getElementById('favBtn');
-    const isFav = btn.textContent.includes('❤️');
+    const isFav = btn.dataset.favDocId;
     if (isFav) {
       await deleteDoc(doc(db, 'favorites', btn.dataset.favDocId));
-      btn.textContent = '🤍 บันทึกร้านนี้';
+      delete btn.dataset.favDocId;
+      btn.textContent = tr('place.save_btn');
       btn.classList.replace('text-red-500','text-red-400');
     } else {
       const ref = await addDoc(collection(db, 'favorites'), { userId: currentUser.uid, placeId, createdAt: serverTimestamp() });
-      btn.textContent = '❤️ บันทึกแล้ว';
+      btn.textContent = tr('place.save_done');
       btn.classList.replace('text-red-400','text-red-500');
       btn.dataset.favDocId = ref.id;
     }
@@ -793,14 +950,14 @@ function renderPlace(place) {
   // ── Share button ──
   document.getElementById('shareBtn').addEventListener('click', () => {
     const url  = location.href;
-    const text = `ดู ${place.name} ${t.label} Pet-Friendly บน PawDee`;
+    const text = `ดู ${place.name} ${typeInfo.label} Pet-Friendly บน PawDee`;
     if (navigator.share) {
       navigator.share({ title: place.name, text, url }).catch(() => {});
     } else {
       navigator.clipboard.writeText(url).then(() => {
         const btn = document.getElementById('shareBtn');
-        btn.textContent = '✅ คัดลอก URL แล้ว';
-        setTimeout(() => { btn.textContent = '🔗 แชร์สถานที่นี้'; }, 2000);
+        btn.textContent = tr('place.share_done');
+        setTimeout(() => { btn.textContent = tr('place.share_btn'); }, 2000);
       });
     }
   });
@@ -825,32 +982,193 @@ function renderPlace(place) {
   }
 
   showContent();
+
+  // PawDee Go — load trips + wire modal place name
+  _goPlace = place;
+  document.getElementById('goPlaceName').textContent = '📍 ' + place.name;
+  loadGoTrips(place.id);
 }
+
+// ── Inline Review Form ──────────────────────────────────────
+function initReviewForm(placeId) {
+  let reviewStar = 0;
+  let reviewUser = null;
+
+  // Auth state → show correct section
+  onAuthChange(async (user) => {
+    reviewUser = user;
+    _reviewUser = user;
+    _canDeleteAnyReview = false;
+
+    if (user) {
+      // Check admin
+      try {
+        const adminSnap = await getDoc(doc(db, 'admins', user.uid));
+        if (adminSnap.exists()) _canDeleteAnyReview = true;
+      } catch {}
+      // Check place owner (claimedBy field)
+      if (!_canDeleteAnyReview && _currentPlace?.claimedBy === user.uid) _canDeleteAnyReview = true;
+      // Re-render reviews with updated permissions
+      if (_currentReviews.length) renderReviews(_currentReviews, _currentReviewPlaceId);
+    }
+
+    const loginPrompt    = document.getElementById('placeReviewLoginPrompt');
+    const form           = document.getElementById('placeReviewForm');
+    const alreadyReviewed= document.getElementById('placeAlreadyReviewed');
+    if (!loginPrompt || !form || !alreadyReviewed) return;
+
+    if (!user) {
+      loginPrompt.classList.remove('hidden');
+      form.classList.add('hidden');
+      alreadyReviewed.classList.add('hidden');
+      return;
+    }
+
+    loginPrompt.classList.add('hidden');
+
+    // Check if user reached 20-review limit for this place
+    try {
+      const q    = query(collection(db,'reviews'), where('placeId','==',placeId), where('userId','==',user.uid), limit(20));
+      const snap = await getDocs(q);
+      if (snap.size >= 20) {
+        alreadyReviewed.classList.remove('hidden');
+        form.classList.add('hidden');
+        return;
+      }
+    } catch {}
+
+    form.classList.remove('hidden');
+    alreadyReviewed.classList.add('hidden');
+  });
+
+  // Star picker (init once)
+  document.querySelectorAll('.place-star-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      reviewStar = parseInt(btn.dataset.star);
+      document.querySelectorAll('.place-star-btn').forEach((b, i) => {
+        b.classList.toggle('active', i < reviewStar);
+      });
+    });
+  });
+
+  // Submit
+  document.getElementById('submitPlaceReviewBtn')?.addEventListener('click', async () => {
+    if (!reviewStar) { alert('กรุณาให้คะแนน ⭐ ก่อนส่ง'); return; }
+    if (!reviewUser) return;
+
+    const btn  = document.getElementById('submitPlaceReviewBtn');
+    const msg  = document.getElementById('placeReviewMsg');
+    btn.disabled = true;
+    btn.textContent = tr('place.sending');
+    msg.classList.add('hidden');
+
+    try {
+      const comment = document.getElementById('placeReviewComment').value.trim();
+      const anon    = document.getElementById('placeReviewAnon').checked;
+      const tags    = [...document.querySelectorAll('#placeReviewForm input[type=checkbox][value]:checked')]
+                        .map(cb => cb.value);
+
+      await addDoc(collection(db, 'reviews'), {
+        placeId,
+        rating:       reviewStar,
+        comment:      comment || null,
+        tags,
+        userId:       reviewUser.uid,
+        userName:     anon ? null : (reviewUser.displayName || reviewUser.email?.split('@')[0] || 'ผู้ใช้'),
+        userPhotoURL: anon ? null : (reviewUser.photoURL || null),
+        createdAt:    serverTimestamp(),
+        likes:        0,
+      });
+
+      // Update place rating
+      const placeRef  = doc(db, 'places', placeId);
+      const placeSnap = await getDoc(placeRef);
+      if (placeSnap.exists()) {
+        const d        = placeSnap.data();
+        const oldCount = d.reviews || 0;
+        const oldRating= d.rating  || 0;
+        const newCount = oldCount + 1;
+        const newRating= parseFloat(((oldRating * oldCount + reviewStar) / newCount).toFixed(2));
+        await updateDoc(placeRef, { rating: newRating, reviews: newCount });
+      }
+
+      // Show success + reload reviews
+      document.getElementById('placeReviewForm').classList.add('hidden');
+      document.getElementById('placeReviewSuccess').classList.remove('hidden');
+      loadReviews(placeId);
+    } catch (e) {
+      console.error(e);
+      msg.textContent = tr('place.send_error');
+      msg.classList.remove('hidden');
+      btn.disabled = false;
+      btn.textContent = tr('place.submit_review');
+    }
+  });
+}
+
+// ── Re-render dynamic content on language change ──────────────
+document.addEventListener('pawdee:lang-changed', () => {
+  if (!_currentPlace) return;
+  // Re-render only pet policy rows (uses tr() calls)
+  const p = _currentPlace;
+  const policies = [];
+  if (p.indoorSeating === true)  policies.push({ icon:'✅', label:tr('policy.indoor_ok'), note:tr('policy.indoor_ok_note') });
+  else if (p.indoorSeating === false) policies.push({ icon:'⚠️', label:tr('policy.outdoor_only'), note:tr('policy.outdoor_note') });
+  if (p.maxWeightKg == null)     policies.push({ icon:'✅', label:tr('policy.no_weight'), note:tr('policy.no_weight_note') });
+  else if (p.maxWeightKg >= 20)  policies.push({ icon:'✅', label:`${tr('policy.weight_up_to')} ${p.maxWeightKg} ${tr('place.kg')}`, note:tr('policy.weight_large_note') });
+  else                            policies.push({ icon:'⚠️', label:`${tr('policy.weight_up_to')} ${p.maxWeightKg} ${tr('place.kg')}`, note:tr('policy.weight_small_note') });
+  if (p.needCarrier === false)   policies.push({ icon:'✅', label:tr('policy.no_carrier'), note:tr('policy.no_carrier_note') });
+  else if (p.needCarrier === true) policies.push({ icon:'❌', label:tr('policy.need_carrier'), note:tr('policy.need_carrier_note') });
+  if (p.emergency24hr)  policies.push({ icon:'🚨', label:tr('policy.24hr'), note:tr('policy.24hr_note') });
+  if (p.hasParking)     policies.push({ icon:'🅿️', label:tr('policy.parking'), note:tr('policy.parking_note') });
+  if (p.hasSpecialist)  policies.push({ icon:'👨‍⚕️', label:tr('policy.specialist'), note:tr('policy.specialist_note') });
+  if (p.hasXray)        policies.push({ icon:'🔬', label:tr('policy.xray'), note:tr('policy.xray_note') });
+  if (p.hasLab)         policies.push({ icon:'🧪', label:tr('policy.lab'), note:tr('policy.lab_note') });
+  if (p.hasSurgery)     policies.push({ icon:'🏥', label:tr('policy.surgery'), note:tr('policy.surgery_note') });
+  if (p.specialServices) policies.push({ icon:'🩺', label:tr('policy.special_svc'), note: p.specialServices });
+  if (policies.length === 0) policies.push({ icon:'ℹ️', label:tr('policy.no_info'), note:tr('policy.no_info_note') });
+  document.getElementById('petPolicyRows').innerHTML = policies.map(pol => {
+    const isGood = pol.icon === '✅'; const isBad = pol.icon === '❌'; const isWarn = pol.icon === '⚠️' || pol.icon === '🚨';
+    const bg  = isGood ? 'bg-green-50 border border-green-100' : isBad ? 'bg-red-50 border border-red-100' : isWarn ? 'bg-amber-50 border border-amber-100' : 'bg-blue-50 border border-blue-100';
+    const lbl = isGood ? 'text-green-800' : isBad ? 'text-red-800' : isWarn ? 'text-amber-800' : 'text-blue-800';
+    return `<div class="${bg} rounded-2xl p-4 flex flex-col items-center text-center gap-2"><span class="text-3xl">${pol.icon}</span><div class="font-bold ${lbl} text-xs leading-tight">${pol.label}</div><div class="text-xs text-gray-400 leading-snug">${pol.note}</div></div>`;
+  }).join('');
+  // Re-render reviews (updates "no reviews" message if needed)
+  if (_currentReviewPlaceId) renderReviews(_currentReviews, _currentReviewPlaceId);
+});
 
 // ── Load Reviews ────────────────────────────────────────────
 async function loadReviews(id) {
   try {
-    const q    = query(collection(db, 'reviews'), where('placeId', '==', id), orderBy('createdAt', 'desc'), limit(20));
+    const q    = query(collection(db, 'reviews'), where('placeId', '==', id), limit(20));
     const snap = await getDocs(q);
-    const reviews = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    renderReviews(reviews);
+    const reviews = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+      .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+    renderReviews(reviews, id);
   } catch {
-    renderReviews([]);
+    renderReviews([], id);
   }
 }
 
-function renderReviews(reviews) {
+let _currentReviews = [];
+let _currentReviewPlaceId = null;
+let _canDeleteAnyReview = false;
+let _reviewUser = null;
+
+function renderReviews(reviews, placeId) {
+  _currentReviews = reviews;
+  _currentReviewPlaceId = placeId;
+
   const countBadge = document.getElementById('reviewCountBadge');
-  countBadge.textContent = reviews.length > 0 ? `${reviews.length} รีวิว` : '';
+  countBadge.textContent = reviews.length > 0 ? `${reviews.length} ${tr('place.reviews') || 'รีวิว'}` : '';
 
   const list = document.getElementById('reviewsList');
   if (reviews.length === 0) {
     list.innerHTML = `
       <div class="text-center py-8 text-gray-400">
         <div class="text-3xl mb-2">🌟</div>
-        <p class="text-sm">ยังไม่มีรีวิว เป็นคนแรกที่รีวิวสถานที่นี้!</p>
+        <p class="text-sm">${tr('place.no_review_first')}</p>
       </div>`;
-    document.getElementById('writeReviewLink').href = `places.html?id=${place.id}`;
     document.getElementById('writeReviewCta').classList.remove('hidden');
     return;
   }
@@ -858,22 +1176,25 @@ function renderReviews(reviews) {
   list.innerHTML = reviews.map(r => {
     const stars = '⭐'.repeat(Math.round(r.rating || 0));
     const date  = r.createdAt?.toDate ? r.createdAt.toDate().toLocaleDateString('th-TH', { year:'numeric', month:'short', day:'numeric' }) : '';
-    const tags  = (r.tags || []).map(t => `<span class="text-xs bg-orange-50 text-orange-700 px-2 py-0.5 rounded-full border border-orange-200">${REVIEW_TAG_LABELS[t] || t}</span>`).join('');
+    const tags  = (r.tags || []).map(tg => `<span class="text-xs bg-orange-50 text-orange-700 px-2 py-0.5 rounded-full border border-orange-200">${REVIEW_TAG_LABELS[tg] || tg}</span>`).join('');
     const avatar = r.userPhotoURL
-      ? `<img src="${r.userPhotoURL}" alt="${r.userName || 'ผู้รีวิว'}" class="w-9 h-9 rounded-full object-cover"/>`
+      ? `<img src="${r.userPhotoURL}" alt="${r.userName || tr('place.anon_label')}" class="w-9 h-9 rounded-full object-cover"/>`
       : `<div class="w-9 h-9 rounded-full bg-orange-100 text-brand-orange flex items-center justify-center font-bold text-sm">${(r.userName || 'U')[0].toUpperCase()}</div>`;
+    const canDel = _canDeleteAnyReview || (_reviewUser && r.userId === _reviewUser.uid);
+    const delBtn = canDel ? `<button onclick="deleteReview('${r.id}')" title="ลบรีวิว" style="background:none;border:none;cursor:pointer;color:#d1d5db;font-size:14px;padding:2px 4px;border-radius:6px;transition:color .15s;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='#d1d5db'">🗑️</button>` : '';
 
     return `
       <div class="py-4 border-b border-gray-100 last:border-0">
         <div class="flex items-center gap-3 mb-2">
           ${avatar}
           <div class="flex-1 min-w-0">
-            <div class="font-semibold text-gray-900 text-sm">${r.userName || 'ผู้ใช้ PawDee'}</div>
+            <div class="font-semibold text-gray-900 text-sm">${r.userName || 'PawDee User'}</div>
             <div class="flex items-center gap-2 text-xs text-gray-400">
               <span>${stars}</span>
               ${date ? `<span>· ${date}</span>` : ''}
             </div>
           </div>
+          ${delBtn}
         </div>
         ${r.comment ? `<p class="text-sm text-gray-700 leading-relaxed mb-2">${r.comment}</p>` : ''}
         ${tags ? `<div class="flex flex-wrap gap-1">${tags}</div>` : ''}
@@ -882,10 +1203,162 @@ function renderReviews(reviews) {
 
   document.getElementById('writeReviewCta').classList.remove('hidden');
 }
+
+window.deleteReview = async (id) => {
+  if (!_reviewUser) return;
+  if (!confirm('ยืนยันลบรีวิวนี้?')) return;
+  try {
+    await deleteDoc(doc(db, 'reviews', id));
+    _currentReviews = _currentReviews.filter(r => r.id !== id);
+    renderReviews(_currentReviews, _currentReviewPlaceId);
+  } catch (e) {
+    alert('ลบไม่ได้ กรุณาลองใหม่');
+  }
+};
+
+// ── PawDee Go ────────────────────────────────────────────────
+let _goPlaceId = null;
+let _goPlace   = null;
+let _goUser    = null;
+
+onAuthChange(u => { _goUser = u; });
+
+async function loadGoTrips(pid) {
+  _goPlaceId = pid;
+  const box  = document.getElementById('goTripsList');
+  if (!box) return;
+  try {
+    const now = Timestamp.now();
+    const q   = query(collection(db, 'trips'), where('placeId','==', pid), where('tripDate','>=', now), orderBy('tripDate','asc'), limit(5));
+    const snap = await getDocs(q);
+    const trips = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    if (!trips.length) {
+      box.innerHTML = `<div class="text-center py-4 text-gray-400"><p class="text-xs">ยังไม่มีใครนัดไว้ — เป็นคนแรก!</p></div>`;
+      return;
+    }
+    box.innerHTML = trips.map(t => {
+      const date = t.tripDate?.toDate ? t.tripDate.toDate().toLocaleDateString('th-TH',{weekday:'short',month:'short',day:'numeric'}) : '';
+      const total = 1 + (t.joiners?.length || 0);
+      const hasJoined = _goUser && t.joiners?.some(j => j.userId === _goUser?.uid);
+      const isOwner   = _goUser && t.userId === _goUser?.uid;
+      const btn = isOwner ? '' : hasJoined
+        ? `<button onclick="goLeave('${t.id}')" class="text-xs text-gray-400 hover:text-gray-600 font-semibold">ออก</button>`
+        : `<button onclick="goJoin('${t.id}')" class="text-xs bg-brand-orange text-white font-bold px-3 py-1 rounded-xl hover:bg-orange-600 transition-colors">ขอไปด้วย!</button>`;
+      return `
+        <div class="flex items-center gap-3 py-2.5 border-b border-gray-100 last:border-0">
+          <div class="w-9 h-9 rounded-full bg-orange-100 text-brand-orange flex items-center justify-center font-bold text-sm flex-shrink-0">${(t.userName||'U')[0].toUpperCase()}</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-semibold text-gray-800 truncate">${t.userName || 'PawDee User'}</p>
+            <p class="text-xs text-gray-400">📅 ${date}${t.tripTime ? ' · '+t.tripTime : ''} · ${total} คน</p>
+            ${t.petNames?.length ? `<p class="text-xs text-orange-500">🐾 ${t.petNames.join(', ')}</p>` : ''}
+          </div>
+          ${btn}
+        </div>`;
+    }).join('');
+  } catch(e) {
+    console.error(e);
+    document.getElementById('goTripsList').innerHTML = '<p class="text-xs text-gray-400 text-center py-3">โหลดไม่ได้</p>';
+  }
+}
+
+window.goJoin = async function(tripId) {
+  if (!_goUser) { window.location.href = '/login'; return; }
+  try {
+    const joiner = { userId: _goUser.uid, userName: _goUser.displayName || _goUser.email?.split('@')[0] || 'PawDee User', userPhoto: _goUser.photoURL || null, petNames: [], joinedAt: serverTimestamp() };
+    await updateDoc(doc(db, 'trips', tripId), { joiners: arrayUnion(joiner) });
+    loadGoTrips(_goPlaceId);
+  } catch(e) { console.error(e); }
+};
+
+window.goLeave = async function(tripId) {
+  if (!_goUser) return;
+  try {
+    const snap = await getDoc(doc(db, 'trips', tripId));
+    const joiner = snap.data()?.joiners?.find(j => j.userId === _goUser.uid);
+    if (joiner) { await updateDoc(doc(db, 'trips', tripId), { joiners: { arrayRemove: joiner } }); loadGoTrips(_goPlaceId); }
+  } catch(e) { console.error(e); }
+};
+
+function openGoModal()  { document.getElementById('goModal').style.display = 'flex'; }
+function closeGoModal() { document.getElementById('goModal').style.display = 'none'; }
+
+document.getElementById('goCreateBtn')?.addEventListener('click', () => {
+  if (!_goUser) { window.location.href = '/login'; return; }
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('goDate').value = today;
+  document.getElementById('goDate').min   = today;
+  openGoModal();
+});
+
+document.getElementById('goModalClose')?.addEventListener('click', closeGoModal);
+document.getElementById('goModal')?.addEventListener('click', e => { if (e.target === document.getElementById('goModal')) closeGoModal(); });
+
+document.querySelectorAll('.go-time-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.go-time-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+document.getElementById('goSubmitBtn')?.addEventListener('click', async () => {
+  const dateVal = document.getElementById('goDate').value;
+  if (!dateVal) { alert('กรุณาเลือกวันที่'); return; }
+  if (!_goPlace) return;
+  const timeBtn = document.querySelector('.go-time-btn.active');
+  const btn = document.getElementById('goSubmitBtn');
+  btn.disabled = true; btn.textContent = 'กำลังสร้าง...';
+  try {
+    await addDoc(collection(db, 'trips'), {
+      placeId:   _goPlace.id,
+      placeName: _goPlace.name,
+      placeImage: _goPlace.imageUrl || null,
+      placeUrl:  _goPlace.slug ? '/place/'+_goPlace.slug : '/place?id='+_goPlace.id,
+      userId:    _goUser.uid,
+      userName:  _goUser.displayName || _goUser.email?.split('@')[0] || 'PawDee User',
+      userPhoto: _goUser.photoURL || null,
+      petNames:  [],
+      tripDate:  Timestamp.fromDate(new Date(dateVal)),
+      tripTime:  timeBtn?.dataset.time || null,
+      note:      document.getElementById('goNote').value.trim() || null,
+      joiners:   [],
+      createdAt: serverTimestamp(),
+    });
+    closeGoModal();
+    document.getElementById('goNote').value = '';
+    loadGoTrips(_goPlaceId);
+  } catch(e) { console.error(e); alert('เกิดข้อผิดพลาด'); }
+  finally { btn.disabled = false; btn.textContent = '🐾 นัดไปด้วยกัน!'; }
+});
+
+// Set _goPlace when place loads — hooked into existing loadPlace flow
+const _origRenderPlace = renderPlace;
+// Override is not needed — just call loadGoTrips inside renderPlace after showContent()
 </script>
-<script type="module">
-  import { initI18n } from '/js/i18n.js';
-  initI18n();
-</script>
+
+<!-- PawDee Go Modal -->
+<div id="goModal" style="display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);align-items:flex-end;justify-content:center;">
+  <div style="background:white;border-radius:28px 28px 0 0;padding:28px 24px 40px;width:100%;max-width:480px;max-height:85vh;overflow-y:auto;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <h3 style="font-size:18px;font-weight:800;color:#111827;">🐾 นัดไปด้วยกัน</h3>
+      <button id="goModalClose" style="width:36px;height:36px;border-radius:50%;background:#f3f4f6;border:none;cursor:pointer;font-size:16px;color:#6b7280;">✕</button>
+    </div>
+    <p id="goPlaceName" style="font-size:13px;font-weight:600;color:#F97316;background:#fff7ed;border-radius:12px;padding:8px 14px;margin-bottom:16px;">📍 —</p>
+    <label style="display:block;font-size:13px;font-weight:700;color:#374151;margin-bottom:6px;">📅 วันที่จะไป</label>
+    <input id="goDate" type="date" style="width:100%;border:2px solid #e5e7eb;border-radius:16px;padding:10px 14px;font-size:13px;margin-bottom:14px;outline:none;font-family:inherit;"/>
+    <label style="display:block;font-size:13px;font-weight:700;color:#374151;margin-bottom:6px;">🕐 ช่วงเวลา</label>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
+      <button type="button" class="go-time-btn" data-time="ช่วงเช้า" style="border:2px solid #e5e7eb;border-radius:12px;padding:7px 14px;font-size:12px;font-weight:700;color:#6b7280;background:white;cursor:pointer;font-family:inherit;">🌅 เช้า</button>
+      <button type="button" class="go-time-btn active" data-time="ช่วงบ่าย" style="border:2px solid #F97316;border-radius:12px;padding:7px 14px;font-size:12px;font-weight:700;color:#F97316;background:#fff7ed;cursor:pointer;font-family:inherit;">☀️ บ่าย</button>
+      <button type="button" class="go-time-btn" data-time="ช่วงเย็น" style="border:2px solid #e5e7eb;border-radius:12px;padding:7px 14px;font-size:12px;font-weight:700;color:#6b7280;background:white;cursor:pointer;font-family:inherit;">🌆 เย็น</button>
+      <button type="button" class="go-time-btn" data-time="ทั้งวัน" style="border:2px solid #e5e7eb;border-radius:12px;padding:7px 14px;font-size:12px;font-weight:700;color:#6b7280;background:white;cursor:pointer;font-family:inherit;">🌞 ทั้งวัน</button>
+    </div>
+    <label style="display:block;font-size:13px;font-weight:700;color:#374151;margin-bottom:6px;">💬 บอกเพิ่มเติม <span style="font-weight:400;color:#9ca3af;">(ไม่บังคับ)</span></label>
+    <textarea id="goNote" rows="2" placeholder="เช่น ไปช่วงบ่ายๆ ใครอยากร่วมทักมาได้เลย..." style="width:100%;border:2px solid #e5e7eb;border-radius:16px;padding:10px 14px;font-size:13px;resize:none;margin-bottom:16px;outline:none;font-family:inherit;"></textarea>
+    <button id="goSubmitBtn" style="width:100%;background:#F97316;color:white;font-weight:800;font-size:14px;padding:14px;border-radius:16px;border:none;cursor:pointer;font-family:inherit;">🐾 นัดไปด้วยกัน!</button>
+  </div>
+</div>
+<style>
+  .go-time-btn.active { border-color:#F97316!important;background:#fff7ed!important;color:#F97316!important; }
+</style>
 </body>
 </html>

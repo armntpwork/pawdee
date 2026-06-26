@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chat — PawDee</title>
+  <link rel="icon" href="/Pawdee Logo.png" type="image/png"/>
+  <link rel="stylesheet" href="/css/fonts.css"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{colors:{'brand-orange':'#F97316'}}}}</script>
+  <style>
+    body { font-family: 'Sarabun','Noto Sans Thai',sans-serif; background:#fffbeb; }
+    .conv-item { display:flex; align-items:center; gap:12px; padding:12px 16px; cursor:pointer; border-radius:16px; transition:background .12s; }
+    .conv-item:hover, .conv-item.active { background:#fff7ed; }
+    .avatar { width:44px; height:44px; border-radius:50%; background:#F97316; color:white; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:16px; flex-shrink:0; }
+    .msg-bubble { max-width:72%; padding:10px 14px; border-radius:18px; font-size:14px; line-height:1.5; word-break:break-word; }
+    .msg-mine { background:#F97316; color:white; border-bottom-right-radius:4px; margin-left:auto; }
+    .msg-theirs { background:white; color:#1f2937; border-bottom-left-radius:4px; border:1px solid #f3f4f6; }
+    .unread-dot { width:8px; height:8px; background:#F97316; border-radius:50%; flex-shrink:0; }
+    #msgInput { font-family:inherit; }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+    .fade-in { animation:fadeIn .2s ease forwards; }
+  </style>
+</head>
+<body class="min-h-screen">
+<div id="nav-root"></div>
+
+<div class="pt-16 h-screen flex flex-col">
+  <!-- Login gate -->
+  <div id="loginGate" class="hidden flex-1 flex items-center justify-center">
+    <div class="text-center p-8">
+      <div class="text-5xl mb-4">💬</div>
+      <h2 class="text-xl font-extrabold text-gray-900 mb-2">เข้าสู่ระบบเพื่อใช้ Chat</h2>
+      <a href="/login" class="inline-block bg-brand-orange text-white px-6 py-3 rounded-2xl font-bold hover:bg-orange-600 transition-all mt-2">เข้าสู่ระบบ</a>
+    </div>
+  </div>
+
+  <!-- Chat UI -->
+  <div id="chatApp" class="hidden flex-1 flex overflow-hidden max-w-5xl mx-auto w-full">
+
+    <!-- Sidebar: conversation list -->
+    <div id="sidebar" class="w-full sm:w-72 lg:w-80 border-r border-orange-100 bg-white flex flex-col flex-shrink-0">
+      <div class="p-4 border-b border-orange-100">
+        <h2 class="font-extrabold text-gray-900 text-lg">💬 ข้อความ</h2>
+      </div>
+      <div id="convList" class="flex-1 overflow-y-auto p-2">
+        <p class="text-xs text-gray-400 text-center py-6">กำลังโหลด...</p>
+      </div>
+    </div>
+
+    <!-- Main: message area -->
+    <div id="mainArea" class="flex-1 flex flex-col hidden sm:flex">
+      <!-- Empty state -->
+      <div id="chatEmpty" class="flex-1 flex items-center justify-center text-center p-8">
+        <div>
+          <div class="text-5xl mb-3">🐾</div>
+          <p class="text-gray-500 font-semibold">เลือกบทสนทนาทางซ้าย</p>
+          <p class="text-gray-400 text-sm mt-1">หรือหาเพื่อนน้องแล้วทักหาเจ้าของได้เลย</p>
+          <a href="/pet-friends" class="mt-4 inline-block text-sm font-bold text-brand-orange bg-orange-50 px-4 py-2 rounded-xl hover:bg-orange-100 transition-colors">🐾 หาเพื่อนน้อง →</a>
+        </div>
+      </div>
+      <!-- Active chat -->
+      <div id="chatActive" class="hidden flex-1 flex flex-col">
+        <!-- Header -->
+        <div class="flex items-center gap-3 p-4 border-b border-orange-100 bg-white">
+          <div class="avatar" id="chatPartnerAvatar">?</div>
+          <div>
+            <p class="font-bold text-gray-900 text-sm" id="chatPartnerName">—</p>
+            <p class="text-xs text-gray-400">PawDee Member</p>
+          </div>
+        </div>
+        <!-- Messages -->
+        <div id="msgList" class="flex-1 overflow-y-auto p-4 flex flex-col gap-3 bg-orange-50/30"></div>
+        <!-- Input -->
+        <div class="p-3 border-t border-orange-100 bg-white flex gap-2 items-end">
+          <textarea id="msgInput" rows="1" placeholder="พิมพ์ข้อความ..." maxlength="500"
+            class="flex-1 border-2 border-gray-200 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-orange resize-none transition-colors" style="max-height:120px;"></textarea>
+          <button id="sendBtn" class="bg-brand-orange text-white rounded-2xl px-4 py-2.5 font-bold text-sm hover:bg-orange-600 transition-all flex-shrink-0 disabled:opacity-50">ส่ง</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import '/js/navbar.js';
+import { db } from '/js/firebase-config.js';
+import { initNavAuth, onAuthChange } from '/js/auth.js';
+import {
+  collection, doc, getDoc, getDocs, addDoc, setDoc, updateDoc,
+  query, where, orderBy, limit, onSnapshot, serverTimestamp, arrayUnion
+} from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+initNavAuth();
+
+let currentUser = null;
+let activeChatId = null;
+let unsubMessages = null;
+let unsubConvs = null;
+
+// ── Auth gate ──────────────────────────────────────────────────
+onAuthChange(async user => {
+  currentUser = user;
+  if (!user) {
+    document.getElementById('loginGate').classList.remove('hidden');
+    document.getElementById('chatApp').classList.add('hidden');
+    return;
+  }
+  document.getElementById('loginGate').classList.add('hidden');
+  document.getElementById('chatApp').classList.remove('hidden');
+  listenConversations();
+
+  // Auto-open DM from ?uid= param
+  const params = new URLSearchParams(location.search);
+  const targetUid = params.get('uid');
+  const targetName = params.get('name') || 'PawDee User';
+  if (targetUid && targetUid !== user.uid) {
+    await openOrCreateChat(targetUid, targetName);
+  }
+});
+
+// ── Conversation list (real-time) ──────────────────────────────
+function listenConversations() {
+  if (unsubConvs) unsubConvs();
+  const q = query(collection(db,'chats'), where('participants','array-contains',currentUser.uid), orderBy('lastMessageAt','desc'), limit(30));
+  unsubConvs = onSnapshot(q, snap => {
+    const convs = snap.docs.map(d => ({id:d.id,...d.data()}));
+    renderConvList(convs);
+  }, () => {});
+}
+
+function renderConvList(convs) {
+  const el = document.getElementById('convList');
+  if (!convs.length) {
+    el.innerHTML = `<div class="text-center py-8 px-4"><p class="text-gray-400 text-sm">ยังไม่มีบทสนทนา</p><a href="/pet-friends" class="text-xs text-brand-orange font-semibold mt-2 block">หาเพื่อนน้อง →</a></div>`;
+    return;
+  }
+  el.innerHTML = convs.map(c => {
+    const partnerId   = c.participants.find(p => p !== currentUser.uid);
+    const partnerName = c.participantNames?.[partnerId] || 'PawDee User';
+    const unread = (c.unread?.[currentUser.uid] || 0) > 0;
+    const last = c.lastMessage ? c.lastMessage.slice(0,40) + (c.lastMessage.length>40?'…':'') : '...';
+    const time = c.lastMessageAt?.toDate ? c.lastMessageAt.toDate().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'}) : '';
+    return `
+      <div class="conv-item ${activeChatId===c.id?'active':''}" data-id="${c.id}" data-pid="${partnerId}" data-pname="${partnerName.replace(/"/g,'&quot;')}">
+        <div class="avatar">${partnerName[0].toUpperCase()}</div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center justify-between">
+            <p class="font-bold text-gray-900 text-sm truncate">${partnerName}</p>
+            <p class="text-xs text-gray-400 flex-shrink-0 ml-2">${time}</p>
+          </div>
+          <p class="text-xs text-gray-400 truncate">${last}</p>
+        </div>
+        ${unread ? '<div class="unread-dot"></div>' : ''}
+      </div>`;
+  }).join('');
+
+  el.querySelectorAll('.conv-item').forEach(item => {
+    item.addEventListener('click', () => {
+      activeChatId = item.dataset.id;
+      openChat(item.dataset.id, item.dataset.pid, item.dataset.pname);
+    });
+  });
+}
+
+// ── Open or create chat ────────────────────────────────────────
+async function openOrCreateChat(partnerUid, partnerName) {
+  const chatId = [currentUser.uid, partnerUid].sort().join('_');
+  const chatRef = doc(db, 'chats', chatId);
+  const snap = await getDoc(chatRef);
+  if (!snap.exists()) {
+    await setDoc(chatRef, {
+      participants: [currentUser.uid, partnerUid],
+      participantNames: {
+        [currentUser.uid]: currentUser.displayName || currentUser.email?.split('@')[0] || 'PawDee User',
+        [partnerUid]: partnerName
+      },
+      lastMessage: null,
+      lastMessageAt: serverTimestamp(),
+      unread: { [currentUser.uid]: 0, [partnerUid]: 0 }
+    });
+  }
+  activeChatId = chatId;
+  openChat(chatId, partnerUid, partnerName);
+}
+
+// ── Open chat ──────────────────────────────────────────────────
+function openChat(chatId, partnerUid, partnerName) {
+  activeChatId = chatId;
+  document.getElementById('chatEmpty').classList.add('hidden');
+  document.getElementById('chatActive').classList.remove('hidden');
+  document.getElementById('mainArea').classList.remove('hidden');
+  document.getElementById('chatPartnerName').textContent = partnerName;
+  document.getElementById('chatPartnerAvatar').textContent = partnerName[0].toUpperCase();
+
+  // Mark as read
+  try { updateDoc(doc(db,'chats',chatId), { [`unread.${currentUser.uid}`]: 0 }); } catch {}
+
+  // Listen messages
+  if (unsubMessages) unsubMessages();
+  const q = query(collection(db,'chats',chatId,'messages'), orderBy('createdAt','asc'), limit(100));
+  unsubMessages = onSnapshot(q, snap => {
+    const msgs = snap.docs.map(d => ({id:d.id,...d.data()}));
+    renderMessages(msgs);
+  });
+
+  // Mobile: hide sidebar
+  if (window.innerWidth < 640) document.getElementById('sidebar').classList.add('hidden');
+}
+
+function renderMessages(msgs) {
+  const el = document.getElementById('msgList');
+  if (!msgs.length) { el.innerHTML = '<p class="text-center text-xs text-gray-400 py-4">เริ่มบทสนทนาได้เลย 👋</p>'; return; }
+  el.innerHTML = msgs.map(m => {
+    const mine = m.senderId === currentUser.uid;
+    const time = m.createdAt?.toDate ? m.createdAt.toDate().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'}) : '';
+    return `
+      <div class="flex flex-col ${mine?'items-end':'items-start'} fade-in">
+        <div class="msg-bubble ${mine?'msg-mine':'msg-theirs'}">${escHtml(m.text)}</div>
+        <p class="text-xs text-gray-400 mt-0.5 px-1">${time}</p>
+      </div>`;
+  }).join('');
+  el.scrollTop = el.scrollHeight;
+}
+
+// ── Send message ───────────────────────────────────────────────
+async function sendMessage() {
+  const input = document.getElementById('msgInput');
+  const text = input.value.trim();
+  if (!text || !activeChatId || !currentUser) return;
+  input.value = '';
+  input.style.height = '';
+  try {
+    const partnerId = activeChatId.replace(currentUser.uid,'').replace('_','');
+    await addDoc(collection(db,'chats',activeChatId,'messages'), {
+      senderId: currentUser.uid,
+      senderName: currentUser.displayName || currentUser.email?.split('@')[0] || 'PawDee User',
+      text,
+      createdAt: serverTimestamp()
+    });
+    await updateDoc(doc(db,'chats',activeChatId), {
+      lastMessage: text,
+      lastMessageAt: serverTimestamp(),
+      [`unread.${partnerId}`]: (await getDoc(doc(db,'chats',activeChatId))).data()?.unread?.[partnerId]+1 || 1
+    });
+  } catch(e) { console.error(e); }
+}
+
+document.getElementById('sendBtn').addEventListener('click', sendMessage);
+document.getElementById('msgInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+});
+document.getElementById('msgInput').addEventListener('input', function() {
+  this.style.height = 'auto';
+  this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+});
+
+// Mobile back button
+document.addEventListener('click', e => {
+  if (e.target.id === 'backBtn') {
+    document.getElementById('sidebar').classList.remove('hidden');
+    document.getElementById('chatActive').classList.add('hidden');
+  }
+});
+
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br/>');
+}
+</script>
+</body>
+</html>

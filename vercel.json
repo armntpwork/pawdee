@@ -1,5 +1,4 @@
 {
-  "cleanUrls": true,
   "headers": [
     {
       "source": "/sitemap.xml",
@@ -21,6 +20,14 @@
         { "key": "Content-Type", "value": "text/plain; charset=utf-8" },
         { "key": "Cache-Control", "value": "public, max-age=3600" }
       ]
+    },
+    {
+      "source": "/js/(.*)",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=3600, stale-while-revalidate=86400" }]
+    },
+    {
+      "source": "/css/(.*)",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=3600, stale-while-revalidate=86400" }]
     }
   ],
   "redirects": [
@@ -31,10 +38,29 @@
       "permanent": true
     }
   ],
+  "cleanUrls": false,
   "rewrites": [
-    { "source": "/sitemap-places.xml", "destination": "/api/sitemap-places" },
-    { "source": "/place/:id", "destination": "/place.html?id=:id" },
-    { "source": "/__/auth/:path*", "destination": "https://pawdee-f082e.firebaseapp.com/__/auth/:path*" },
-    { "source": "/__/firebase/:path*", "destination": "https://pawdee-f082e.firebaseapp.com/__/firebase/:path*" }
+    { "source": "/places",            "destination": "/places.html" },
+    { "source": "/profile",           "destination": "/profile.html" },
+    { "source": "/login",             "destination": "/login.html" },
+    { "source": "/register-business", "destination": "/register-business.html" },
+    { "source": "/about",             "destination": "/about.html" },
+    { "source": "/contact",           "destination": "/contact.html" },
+    { "source": "/sitters",           "destination": "/sitters.html" },
+    { "source": "/emergency",         "destination": "/emergency.html" },
+    { "source": "/privacy",           "destination": "/privacy.html" },
+    { "source": "/terms",             "destination": "/terms.html" },
+    { "source": "/admin",             "destination": "/admin.html" },
+    { "source": "/business-dashboard","destination": "/business-dashboard.html" },
+    { "source": "/pets",             "destination": "/pets.html" },
+    { "source": "/community",        "destination": "/community.html" },
+    { "source": "/pet-friends",      "destination": "/pet-friends.html" },
+    { "source": "/chat",             "destination": "/chat.html" },
+    { "source": "/pet-id",           "destination": "/pet-id.html" },
+    { "source": "/place",              "destination": "/place.html" },
+    { "source": "/place/:slug",       "destination": "/place.html" },
+    { "source": "/sitemap-places.xml","destination": "/api/sitemap-places" },
+    { "source": "/__/auth/:path*",    "destination": "https://pawdee-f082e.firebaseapp.com/__/auth/:path*" },
+    { "source": "/__/firebase/:path*","destination": "https://pawdee-f082e.firebaseapp.com/__/firebase/:path*" }
   ]
 }

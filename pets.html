@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>สัตว์เลี้ยงของฉัน & Digital Pet ID | PawDee</title>
+  <meta name="description" content="สร้าง Digital Pet ID Card และ Vaccine Pass สำหรับสัตว์เลี้ยงของคุณบน PawDee"/>
+  <meta name="robots" content="noindex, follow"/>
+  <link rel="canonical" href="https://www.pawdeepet.com/pets"/>
+  <meta property="og:title" content="Digital Pet ID | PawDee"/>
+  <meta property="og:image" content="https://www.pawdeepet.com/animals-hero.png.png"/>
+  <link rel="icon" href="/Pawdee Logo.png" type="image/png"/>
+  <link rel="manifest" href="/manifest.json"/>
+  <link rel="stylesheet" href="/css/fonts.css"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'brand-orange': '#F97316',
+            'brand-orange-deep': '#ea6c0a',
+            'brand-cream': '#FFFBEB',
+            'brand-grey': '#2B2B2B',
+          },
+          fontFamily: { sans: ['LINE Seed Sans TH', 'Poppins', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <style>
+    body { background: #FFFBEB; font-family: 'LINE Seed Sans TH', sans-serif; }
+
+    /* ── Pet ID Card ── */
+    .pet-id-card {
+      background: #fffbeb;
+      border-radius: 24px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 16px 48px rgba(249,115,22,0.2), 0 2px 8px rgba(0,0,0,0.06);
+      width: 320px;
+    }
+    .card-header-band {
+      background: linear-gradient(135deg, #F97316 0%, #fb923c 100%);
+      padding: 13px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .card-body { padding: 16px 18px 14px; }
+    .card-photo-center { text-align: center; margin-bottom: 12px; }
+    .pet-photo-ring {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      border: 3px solid #F97316;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+      background: #fff7ed;
+      flex-shrink: 0;
+    }
+    .pet-photo-ring img { width: 100%; height: 100%; object-fit: cover; }
+    .pet-photo-ring-lg {
+      width: 92px; height: 92px;
+      border-radius: 50%;
+      border: 4px solid #F97316;
+      box-shadow: 0 6px 24px rgba(249,115,22,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 40px;
+      overflow: hidden;
+      background: #fff7ed;
+      margin: 0 auto 10px;
+    }
+    .pet-photo-ring-lg img { width: 100%; height: 100%; object-fit: cover; }
+    .vaccinated-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: #dcfce7; color: #15803d;
+      font-size: 10px; font-weight: 700;
+      padding: 4px 12px; border-radius: 20px;
+      border: 1px solid #bbf7d0;
+    }
+    .not-vaccinated-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: #fef3c7; color: #92400e;
+      font-size: 10px; font-weight: 700;
+      padding: 4px 12px; border-radius: 20px;
+      border: 1px solid #fde68a;
+    }
+    .card-info-box {
+      background: white; border: 1px solid #fed7aa;
+      border-radius: 10px; padding: 8px 10px;
+    }
+    .card-info-label {
+      font-size: 8px; color: #F97316; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 2px;
+    }
+    .card-info-value { font-size: 12px; font-weight: 700; color: #1f2937; margin: 0; }
+    .card-divider { border: none; border-top: 1.5px dashed #fed7aa; margin: 12px 0; }
+    .badge-row { display:flex; flex-wrap:wrap; gap:4px; justify-content:center; margin:6px 0 4px; }
+    .badge { display:inline-flex; align-items:center; gap:3px; font-size:10px; font-weight:700; padding:3px 8px; border-radius:20px; }
+    .badge-gold   { background:#fef3c7; color:#92400e; border:1px solid #fde68a; }
+    .badge-orange { background:#fff7ed; color:#c2410c; border:1px solid #fed7aa; }
+    .badge-blue   { background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; }
+    .badge-green  { background:#f0fdf4; color:#166534; border:1px solid #bbf7d0; }
+
+    /* ── Upload zones ── */
+    .upload-zone {
+      border: 2px dashed #fed7aa;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: #fffbeb;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 6px;
+    }
+    .upload-zone:hover { border-color: #F97316; background: #fff7ed; }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 100;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 16px;
+    }
+    .modal-box {
+      background: white;
+      border-radius: 24px;
+      padding: 28px;
+      max-width: 520px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.15);
+    }
+
+    /* ── Species icon ── */
+    .species-btn { border: 2px solid #e5e7eb; border-radius: 14px; padding: 8px 14px; cursor: pointer; transition: all 0.2s; font-size: 13px; font-weight: 600; color: #6b7280; background: white; }
+    .species-btn.active { border-color: #F97316; background: #fff7ed; color: #F97316; }
+
+    /* ── Action buttons ── */
+    .btn-primary { background: #F97316; color: white; border: none; border-radius: 14px; padding: 12px 24px; font-weight: 700; cursor: pointer; transition: all 0.2s; font-size: 14px; }
+    .btn-primary:hover { background: #ea6c0a; transform: translateY(-1px); }
+    .btn-secondary { background: white; color: #374151; border: 1.5px solid #e5e7eb; border-radius: 14px; padding: 12px 24px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-size: 14px; }
+    .btn-secondary:hover { border-color: #F97316; color: #F97316; }
+
+    /* ── Card action buttons ── */
+    .card-action { font-size: 11px; font-weight: 600; padding: 5px 12px; border-radius: 10px; border: 1.5px solid; cursor: pointer; transition: all 0.2s; background: white; }
+
+    /* ── Loading ── */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner { width: 40px; height: 40px; border: 3px solid #fed7aa; border-top-color: #F97316; border-radius: 50%; animation: spin 0.8s linear infinite; }
+
+    @keyframes fadeSlideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .fade-in { animation: fadeSlideIn 0.4s ease forwards; }
+
+    /* Scrollbar */
+    .modal-box::-webkit-scrollbar { width: 6px; }
+    .modal-box::-webkit-scrollbar-track { background: #f9fafb; border-radius: 3px; }
+    .modal-box::-webkit-scrollbar-thumb { background: #fed7aa; border-radius: 3px; }
+
+    /* ── Toast ── */
+    #toast-container { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; align-items: center; gap: 10px; pointer-events: none; }
+    .toast {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 20px; border-radius: 16px;
+      font-size: 14px; font-weight: 600;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+      pointer-events: auto; min-width: 220px; max-width: 320px;
+      animation: toastIn .3s cubic-bezier(.34,1.56,.64,1) forwards;
+    }
+    .toast.hide { animation: toastOut .3s ease forwards; }
+    .toast-success { background: #fff; border-left: 4px solid #22c55e; color: #166534; }
+    .toast-error   { background: #fff; border-left: 4px solid #ef4444; color: #991b1b; }
+    .toast-warn    { background: #fff; border-left: 4px solid #f97316; color: #9a3412; }
+    .toast-icon    { font-size: 20px; flex-shrink: 0; }
+    @keyframes toastIn  { from { opacity:0; transform:translateY(16px) scale(.95); } to { opacity:1; transform:translateY(0) scale(1); } }
+    @keyframes toastOut { from { opacity:1; transform:translateY(0) scale(1); }      to { opacity:0; transform:translateY(16px) scale(.95); } }
+  </style>
+</head>
+
+<body class="min-h-screen">
+
+<div id="toast-container"></div>
+
+
+  <!-- Navbar -->
+  <script type="module" src="/js/navbar.js"></script>
+
+  <!-- Auth Guard overlay -->
+  <div id="authGuard" class="hidden fixed inset-0 z-40 flex items-center justify-center bg-brand-cream">
+    <div class="text-center p-8 max-w-sm">
+      <div class="text-6xl mb-4">🐾</div>
+      <h2 class="text-xl font-bold text-gray-900 mb-2">เข้าสู่ระบบก่อนนะครับ</h2>
+      <p class="text-gray-500 text-sm mb-6">เพื่อสร้าง Digital Pet ID ของน้อง</p>
+      <a href="/login?redirect=/pets" class="btn-primary inline-block">เข้าสู่ระบบ / สมัครสมาชิก</a>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div id="loadingState" class="flex flex-col items-center justify-center min-h-screen">
+    <div class="spinner"></div>
+    <p class="text-sm text-gray-400 mt-4">กำลังโหลด...</p>
+  </div>
+
+  <!-- Main Content -->
+  <main id="mainContent" class="hidden max-w-5xl mx-auto px-4 pt-24 pb-20">
+
+    <!-- Header -->
+    <div class="flex items-start justify-between mb-8 flex-wrap gap-4">
+      <div>
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900">🐾 สัตว์เลี้ยงของฉัน</h1>
+        <p class="text-gray-500 text-sm mt-1">Digital Pet ID & Vaccine Pass — แสดงให้ร้านค้า Pet-Friendly ได้เลย</p>
+      </div>
+      <button onclick="openAddModal()" class="btn-primary flex items-center gap-2">
+        <span class="text-lg">+</span> เพิ่มน้อง
+      </button>
+    </div>
+
+    <!-- Empty state -->
+    <div id="emptyState" class="hidden text-center py-20">
+      <div class="text-7xl mb-4">🐕</div>
+      <h3 class="text-xl font-bold text-gray-900 mb-2">ยังไม่มีสัตว์เลี้ยงในระบบ</h3>
+      <p class="text-gray-400 text-sm mb-6">เพิ่มน้องเพื่อสร้าง Digital Pet ID Card ได้เลย!</p>
+      <button onclick="openAddModal()" class="btn-primary">🐾 เพิ่มน้องตัวแรก!</button>
+    </div>
+
+    <!-- Pet grid -->
+    <div id="petGrid" class="flex flex-wrap gap-6 justify-start"></div>
+
+  </main>
+
+  <!-- ════ ADD / EDIT MODAL ════ -->
+  <div id="petModal" class="modal-overlay hidden">
+    <div class="modal-box">
+      <div class="flex items-center justify-between mb-6">
+        <h2 id="modalTitle" class="text-xl font-extrabold text-gray-900">🐾 เพิ่มสัตว์เลี้ยง</h2>
+        <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 text-2xl leading-none w-8 h-8 flex items-center justify-center">✕</button>
+      </div>
+
+      <form id="petForm" class="space-y-5">
+
+        <!-- Pet photo -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">📸 รูปน้อง</label>
+          <div class="flex items-center gap-4">
+            <div id="photoPreviewWrap" class="pet-photo-ring text-4xl cursor-pointer flex-shrink-0" onclick="document.getElementById('photoInput').click()">
+              <span id="photoEmoji">🐾</span>
+              <img id="photoPreview" class="hidden w-full h-full object-cover" alt=""/>
+            </div>
+            <div class="flex-1">
+              <div class="upload-zone h-16" onclick="document.getElementById('photoInput').click()">
+                <span class="text-sm text-gray-500">คลิกเพื่ออัปโหลดรูปน้อง</span>
+                <span class="text-xs text-gray-400">JPG, PNG — ไม่เกิน 5 MB</span>
+              </div>
+              <input type="file" id="photoInput" accept="image/*" class="hidden"/>
+            </div>
+          </div>
+        </div>
+
+        <!-- Species -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">ประเภทสัตว์ <span class="text-red-400">*</span></label>
+          <div id="speciesBtns" class="flex flex-wrap gap-2">
+            <button type="button" class="species-btn active" data-species="dog">🐕 สุนัข</button>
+            <button type="button" class="species-btn" data-species="cat">🐈 แมว</button>
+            <button type="button" class="species-btn" data-species="rabbit">🐇 กระต่าย</button>
+            <button type="button" class="species-btn" data-species="bird">🐦 นก</button>
+            <button type="button" class="species-btn" data-species="hamster">🐹 หนู/แฮมสเตอร์</button>
+            <button type="button" class="species-btn" data-species="exotic">🦎 สัตว์แปลก</button>
+            <button type="button" class="species-btn" data-species="other">🐾 อื่นๆ</button>
+          </div>
+          <input type="hidden" id="speciesInput" value="dog"/>
+        </div>
+
+        <!-- Name + Breed -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1">ชื่อน้อง <span class="text-red-400">*</span></label>
+            <input type="text" id="petName" placeholder="เช่น มะลิ, โมจิ" maxlength="30"
+              class="w-full border-2 border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-brand-orange"/>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1">สายพันธุ์</label>
+            <input type="text" id="petBreed" placeholder="เช่น Golden Retriever"
+              class="w-full border-2 border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-brand-orange"/>
+          </div>
+        </div>
+
+        <!-- Gender + Weight + BirthDate -->
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1">เพศ</label>
+            <select id="petGender" class="w-full border-2 border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-brand-orange">
+              <option value="male">♂ เพศผู้</option>
+              <option value="female">♀ เพศเมีย</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1">น้ำหนัก (kg)</label>
+            <input type="number" id="petWeight" placeholder="0.0" min="0" max="200" step="0.1"
+              class="w-full border-2 border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-brand-orange"/>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1">วันเกิด</label>
+            <input type="date" id="petBirthDate"
+              class="w-full border-2 border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-brand-orange"/>
+          </div>
+        </div>
+
+        <!-- Color -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">สี / ลักษณะเด่น</label>
+          <input type="text" id="petColor" placeholder="เช่น สีทอง, ขาว-ดำ, สามสี"
+            class="w-full border-2 border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-brand-orange"/>
+        </div>
+
+        <!-- Divider -->
+        <hr class="border-orange-100"/>
+        <p class="text-sm font-bold text-gray-700">💉 ข้อมูลวัคซีน</p>
+
+        <!-- Is vaccinated -->
+        <label class="flex items-center gap-3 cursor-pointer p-3 bg-green-50 rounded-xl border border-green-200">
+          <input type="checkbox" id="isVaccinated" class="w-5 h-5 accent-green-600"/>
+          <div>
+            <span class="text-sm font-semibold text-green-800">น้องฉีดวัคซีนแล้ว ✅</span>
+            <p class="text-xs text-green-600">เพื่อแสดง "Vaccinated" badge บน ID Card</p>
+          </div>
+        </label>
+
+        <!-- Vaccine dates (shown when vaccinated) -->
+        <div id="vaccineDatesWrap" class="hidden grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1">วันที่ฉีดล่าสุด</label>
+            <input type="date" id="lastVaccineDate"
+              class="w-full border-2 border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-brand-orange"/>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1">วันฉีดครั้งถัดไป</label>
+            <input type="date" id="nextVaccineDate"
+              class="w-full border-2 border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-brand-orange"/>
+          </div>
+          <div class="col-span-2">
+            <label class="block text-sm font-semibold text-gray-700 mb-1">คลินิก / โรงพยาบาลสัตว์</label>
+            <input type="text" id="vetClinic" placeholder="ชื่อคลินิก..."
+              class="w-full border-2 border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-brand-orange"/>
+          </div>
+        </div>
+
+        <!-- Vaccine book upload -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">📋 รูปสมุดวัคซีน <span class="text-gray-400 font-normal">(ไม่บังคับ)</span></label>
+          <div id="vaccineZone" class="upload-zone h-20 relative" onclick="document.getElementById('vaccineInput').click()">
+            <span id="vaccineZoneText" class="text-sm text-gray-500">คลิกเพื่ออัปโหลดรูปสมุดวัคซีน</span>
+            <span class="text-xs text-gray-400">JPG, PNG — ไม่เกิน 5 MB</span>
+            <img id="vaccinePreview" class="hidden absolute inset-0 w-full h-full object-contain rounded-2xl p-1" alt=""/>
+          </div>
+          <input type="file" id="vaccineInput" accept="image/*" class="hidden"/>
+        </div>
+
+        <!-- Submit -->
+        <div id="formProgress" class="hidden text-xs text-center text-orange-500 py-2">⏳ กำลังบันทึก...</div>
+        <div class="flex gap-3 pt-2">
+          <button type="button" onclick="closeModal()" class="btn-secondary flex-1">ยกเลิก</button>
+          <button type="submit" id="petSubmitBtn" class="btn-primary flex-1">💾 บันทึก</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ════ DELETE CONFIRM MODAL ════ -->
+  <div id="deleteModal" class="modal-overlay hidden">
+    <div class="modal-box max-w-sm text-center">
+      <div class="text-5xl mb-4">🗑️</div>
+      <h3 class="text-lg font-bold text-gray-900 mb-2">ลบน้อง <span id="deletePetName" class="text-red-500"></span> ?</h3>
+      <p class="text-gray-500 text-sm mb-6">ข้อมูลและ ID Card จะถูกลบถาวร ไม่สามารถกู้คืนได้</p>
+      <div class="flex gap-3">
+        <button onclick="closeDeleteModal()" class="btn-secondary flex-1">ยกเลิก</button>
+        <button id="confirmDeleteBtn" class="flex-1 bg-red-500 hover:bg-red-600 text-white border-none rounded-2xl py-3 font-bold cursor-pointer transition-all">ลบออก</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ SCRIPTS ════ -->
+  <script>
+    function showToast(msg, type = 'success') {
+      const icons = { success: '✅', error: '❌', warn: '⚠️' };
+      const container = document.getElementById('toast-container');
+      const t = document.createElement('div');
+      t.className = `toast toast-${type}`;
+      t.innerHTML = `<span class="toast-icon">${icons[type]}</span><span>${msg}</span>`;
+      container.appendChild(t);
+      setTimeout(() => {
+        t.classList.add('hide');
+        t.addEventListener('animationend', () => t.remove());
+      }, 3000);
+    }
+  </script>
+
+  <script type="module">
+    import '/js/navbar.js';
+    import { onAuthChange } from '/js/auth.js';
+    import { initNavAuth } from '/js/auth.js';
+    import { db, app } from '/js/firebase-config.js';
+    import {
+      collection, doc, addDoc, setDoc, getDoc, getDocs,
+      deleteDoc, serverTimestamp, query, orderBy, where, limit
+    } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+    import {
+      getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL, deleteObject
+    } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js';
+
+    initNavAuth();
+    const storage = getStorage(app);
+
+    // ── State ──────────────────────────────────────────────────────────────
+    let currentUser   = null;
+    let editPetId     = null;
+    let selectedSpecies = 'dog';
+    let photoFile     = null;
+    let vaccineFile   = null;
+    let existingPhotoUrl   = null;
+    let existingVaccineUrl = null;
+    let deleteTargetId = null;
+    let allPets = [];
+
+    // ── Species config ─────────────────────────────────────────────────────
+    const SPECIES_EMOJI = {
+      dog: '🐕', cat: '🐈', rabbit: '🐇', bird: '🐦',
+      hamster: '🐹', exotic: '🦎', other: '🐾'
+    };
+    const SPECIES_TH = {
+      dog: 'สุนัข', cat: 'แมว', rabbit: 'กระต่าย', bird: 'นก',
+      hamster: 'แฮมสเตอร์', exotic: 'สัตว์แปลก', other: 'สัตว์เลี้ยง'
+    };
+
+    // ── Auth ───────────────────────────────────────────────────────────────
+    onAuthChange(async user => {
+      document.getElementById('loadingState').classList.add('hidden');
+      if (!user) {
+        document.getElementById('authGuard').classList.remove('hidden');
+        return;
+      }
+      currentUser = user;
+      document.getElementById('mainContent').classList.remove('hidden');
+      await loadPets();
+    });
+
+    // ── Load pets ──────────────────────────────────────────────────────────
+    async function loadPets() {
+      const grid = document.getElementById('petGrid');
+      grid.innerHTML = '<div class="w-full flex justify-center py-10"><div class="spinner"></div></div>';
+      try {
+        const q    = query(collection(db, `users/${currentUser.uid}/pets`), orderBy('createdAt', 'desc'));
+        const snap = await getDocs(q);
+        allPets = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderGrid();
+      } catch (e) {
+        console.error(e);
+        grid.innerHTML = '<p class="text-gray-400 text-sm text-center w-full py-8">เกิดข้อผิดพลาดในการโหลดข้อมูล</p>';
+      }
+    }
+
+    // ── Render grid ────────────────────────────────────────────────────────
+    async function renderGrid() {
+      const grid  = document.getElementById('petGrid');
+      const empty = document.getElementById('emptyState');
+      if (!allPets.length) {
+        grid.innerHTML = '';
+        empty.classList.remove('hidden');
+        return;
+      }
+      empty.classList.add('hidden');
+      grid.innerHTML = '';
+      for (let i = 0; i < allPets.length; i++) {
+        const pet = allPets[i];
+        const wrap = document.createElement('div');
+        wrap.className = 'fade-in';
+        wrap.style.animationDelay = `${i * 0.08}s`;
+        wrap.style.opacity = '0';
+        wrap.innerHTML = await buildCardHTML(pet);
+        grid.appendChild(wrap);
+      }
+    }
+
+    function calcAge(birthDate) {
+      if (!birthDate) return null;
+      const bd = birthDate.toDate ? birthDate.toDate() : new Date(birthDate);
+      const diff = Date.now() - bd.getTime();
+      const years  = Math.floor(diff / (1000 * 60 * 60 * 24 * 365));
+      const months = Math.floor((diff % (1000 * 60 * 60 * 24 * 365)) / (1000 * 60 * 60 * 24 * 30));
+      if (years > 0) return `${years} ปี ${months} เดือน`;
+      return `${months} เดือน`;
+    }
+
+    function formatDate(ts) {
+      if (!ts) return '—';
+      const d = ts.toDate ? ts.toDate() : new Date(ts);
+      return d.toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric' });
+    }
+
+    async function buildCardHTML(pet) {
+      const emoji    = SPECIES_EMOJI[pet.species] || '🐾';
+      const spTh     = SPECIES_TH[pet.species]   || 'สัตว์เลี้ยง';
+      const age      = calcAge(pet.birthDate);
+      const cardId   = `PD-${pet.id.slice(-6).toUpperCase()}`;
+      const shareUrl = `https://www.pawdeepet.com/pet-id?id=${pet.id}`;
+      const genderIcon = pet.gender === 'female' ? '♀' : '♂';
+
+      const photoHTML = pet.profileImageUrl
+        ? `<img src="${pet.profileImageUrl}" style="width:100%;height:100%;object-fit:cover;" alt="${pet.name}"/>`
+        : `<span style="font-size:40px;">${emoji}</span>`;
+
+      const vaccineBadge = pet.isVaccinated
+        ? `<span class="vaccinated-badge">✅ ฉีดวัคซีนแล้ว</span>`
+        : `<span class="not-vaccinated-badge">⚠️ ยังไม่ได้ฉีดวัคซีน</span>`;
+
+      // ── Achievements ────────────────────────────────────────────
+      let badgesHTML = '';
+      try {
+        const uid = currentUser?.uid;
+        if (uid && pet.name) {
+          const [ciSnap, tripSnap] = await Promise.all([
+            getDocs(query(collection(db,'checkins'), where('userId','==',uid), where('petNames','array-contains',pet.name), limit(25))),
+            getDocs(query(collection(db,'trips'),    where('userId','==',uid), where('petNames','array-contains',pet.name), limit(25))),
+          ]);
+          const ciCount   = ciSnap.size;
+          const tripCount = tripSnap.size;
+          const badges = [];
+          if (ciCount >= 1)  badges.push(`<span class="badge badge-green">🐾 First Steps</span>`);
+          if (ciCount >= 5)  badges.push(`<span class="badge badge-orange">📸 Instapaw</span>`);
+          if (ciCount >= 10) badges.push(`<span class="badge badge-gold">⭐ Star Pet</span>`);
+          if (ciCount >= 20) badges.push(`<span class="badge badge-gold">🏆 Legend</span>`);
+          if (tripCount >= 1) badges.push(`<span class="badge badge-blue">🗺️ Explorer</span>`);
+          if (tripCount >= 5) badges.push(`<span class="badge badge-blue">🤝 Social Paw</span>`);
+          if (badges.length) badgesHTML = `<div class="badge-row">${badges.join('')}</div>`;
+        }
+      } catch(e) {}
+
+      let qrHTML = '';
+      try {
+        const qrDataUrl = await QRCode.toDataURL(shareUrl, { width: 56, margin: 1, color: { dark: '#F97316', light: '#fffbeb' } });
+        qrHTML = `<img src="${qrDataUrl}" style="width:54px;height:54px;border-radius:8px;flex-shrink:0;" alt="QR"/>`;
+      } catch (e) {}
+
+      const vaccineInfoHTML = pet.isVaccinated ? `
+        <div class="card-info-box">
+          <p class="card-info-label">วัคซีนล่าสุด</p>
+          <p class="card-info-value">${formatDate(pet.lastVaccineDate)}</p>
+        </div>
+        <div class="card-info-box">
+          <p class="card-info-label">วัคซีนถัดไป</p>
+          <p class="card-info-value">${formatDate(pet.nextVaccineDate)}</p>
+        </div>` : '';
+
+      return `
+        <div class="pet-id-card" id="card-${pet.id}">
+
+          <!-- Orange header band -->
+          <div class="card-header-band">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <img src="/Pawdee Logo.png" alt="PawDee" style="height:20px;width:auto;filter:brightness(0) invert(1);"/>
+              <span style="color:white;font-size:13px;font-weight:800;letter-spacing:0.3px;">PawDee</span>
+            </div>
+            <div style="text-align:right;">
+              <p style="color:rgba(255,255,255,0.75);font-size:8px;font-weight:700;letter-spacing:1px;margin:0;text-transform:uppercase;">Digital Pet ID</p>
+              <p style="color:white;font-size:10px;font-weight:700;margin:0;">${cardId}</p>
+            </div>
+          </div>
+
+          <!-- Card body -->
+          <div class="card-body">
+
+            <!-- Centered photo + name -->
+            <div class="card-photo-center">
+              <div class="pet-photo-ring-lg">${photoHTML}</div>
+              ${vaccineBadge}
+              <h3 style="font-size:19px;font-weight:800;color:#111827;margin:8px 0 2px;">${pet.name}</h3>
+              ${badgesHTML}
+              <p style="font-size:11px;color:#9ca3af;margin:0;">${spTh}${pet.breed ? ' · ' + pet.breed : ''} · ${genderIcon}</p>
+            </div>
+
+            <hr class="card-divider"/>
+
+            <!-- Info boxes -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:12px;">
+              <div class="card-info-box">
+                <p class="card-info-label">น้ำหนัก</p>
+                <p class="card-info-value">${pet.weight ? pet.weight + ' kg' : '—'}</p>
+              </div>
+              <div class="card-info-box">
+                <p class="card-info-label">อายุ</p>
+                <p class="card-info-value">${age || '—'}</p>
+              </div>
+              ${vaccineInfoHTML}
+            </div>
+
+            <hr class="card-divider"/>
+
+            <!-- Footer: branding + QR -->
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+              <div>
+                <p style="font-size:11px;color:#F97316;font-weight:800;margin:0 0 2px;">🐾 pawdeepet.com</p>
+                <p style="font-size:9px;color:#9ca3af;margin:0;">Scan QR เพื่อดูข้อมูลเพิ่มเติม</p>
+              </div>
+              ${qrHTML}
+            </div>
+          </div>
+
+          <!-- Action buttons (hidden during download) -->
+          <div class="card-actions" style="padding:0 18px 14px;display:flex;flex-wrap:wrap;gap:6px;">
+            <button class="card-action border-orange-200 text-orange-600 hover:bg-orange-50"
+              onclick="downloadCard('${pet.id}', '${pet.name}')">📸 ดาวน์โหลด</button>
+            <button class="card-action border-blue-200 text-blue-600 hover:bg-blue-50"
+              onclick="copyShareLink('${shareUrl}', this)">🔗 คัดลอก Link</button>
+            <button class="card-action border-gray-200 text-gray-500 hover:bg-gray-50"
+              onclick="openEditModal('${pet.id}')">✏️ แก้ไข</button>
+            <button class="card-action border-red-200 text-red-500 hover:bg-red-50"
+              onclick="openDeleteModal('${pet.id}', '${pet.name}')">🗑️</button>
+          </div>
+        </div>`;
+    }
+
+    // ── Download card ──────────────────────────────────────────────────────
+    async function toDataURL(url) {
+      try {
+        const resp = await fetch(url);
+        const blob = await resp.blob();
+        return await new Promise(resolve => {
+          const fr = new FileReader();
+          fr.onload = () => resolve(fr.result);
+          fr.readAsDataURL(blob);
+        });
+      } catch { return null; }
+    }
+
+    window.downloadCard = async function(petId, petName) {
+      const card = document.querySelector(`#card-${petId}`);
+      if (!card) return;
+      const actions = card.querySelector('.card-actions');
+      const origSrcs = [];
+
+      try {
+        if (actions) actions.style.display = 'none';
+
+        // Convert Firebase Storage images to base64; hide if CORS blocks
+        const storageImgs = [...card.querySelectorAll('img[src*="firebasestorage"]')];
+        for (const img of storageImgs) {
+          const wrap = img.closest('.pet-photo-ring-lg, .pet-photo-ring, .vaccine-book-wrap') || img.parentElement;
+          origSrcs.push({ el: img, src: img.src, wrap, wrapDisplay: wrap.style.display });
+          const dataUrl = await toDataURL(img.src);
+          if (dataUrl) {
+            img.src = dataUrl;
+          } else {
+            wrap.style.display = 'none';
+          }
+        }
+
+        const canvas = await html2canvas(card, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: '#fffbeb',
+          logging: false,
+        });
+        const link = document.createElement('a');
+        link.download = `PawDee-${petName}-ID.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      } catch (e) {
+        showToast('ไม่สามารถดาวน์โหลดได้ กรุณาลองใหม่', 'error');
+        console.error(e);
+      } finally {
+        if (actions) actions.style.display = '';
+        origSrcs.forEach(({ el, src, wrap, wrapDisplay }) => { el.src = src; wrap.style.display = wrapDisplay; });
+      }
+    };
+
+    // ── Copy share link ────────────────────────────────────────────────────
+    window.copyShareLink = function(url, btn) {
+      navigator.clipboard.writeText(url).then(() => {
+        const orig = btn.textContent;
+        btn.textContent = '✅ คัดลอกแล้ว!';
+        setTimeout(() => { btn.textContent = orig; }, 2000);
+      });
+    };
+
+    // ── Species buttons ────────────────────────────────────────────────────
+    document.getElementById('speciesBtns').addEventListener('click', e => {
+      const btn = e.target.closest('.species-btn');
+      if (!btn) return;
+      document.querySelectorAll('.species-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedSpecies = btn.dataset.species;
+      document.getElementById('speciesInput').value = selectedSpecies;
+      // Update emoji in photo placeholder
+      if (!photoFile) document.getElementById('photoEmoji').textContent = SPECIES_EMOJI[selectedSpecies] || '🐾';
+    });
+
+    // ── Photo preview ──────────────────────────────────────────────────────
+    document.getElementById('photoInput').addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      if (file.size > 5 * 1024 * 1024) { showToast('ไฟล์ใหญ่เกิน 5 MB', 'warn'); return; }
+      photoFile = file;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        document.getElementById('photoEmoji').classList.add('hidden');
+        const img = document.getElementById('photoPreview');
+        img.src = ev.target.result;
+        img.classList.remove('hidden');
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // ── Vaccine book preview ───────────────────────────────────────────────
+    document.getElementById('vaccineInput').addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      if (file.size > 5 * 1024 * 1024) { showToast('ไฟล์ใหญ่เกิน 5 MB', 'warn'); return; }
+      vaccineFile = file;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        const img  = document.getElementById('vaccinePreview');
+        img.src = ev.target.result;
+        img.classList.remove('hidden');
+        document.getElementById('vaccineZoneText').classList.add('hidden');
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // ── Vaccine checkbox toggle ────────────────────────────────────────────
+    document.getElementById('isVaccinated').addEventListener('change', e => {
+      document.getElementById('vaccineDatesWrap').classList.toggle('hidden', !e.target.checked);
+    });
+
+    // ── Modal helpers ──────────────────────────────────────────────────────
+    window.openAddModal = function() {
+      resetForm();
+      editPetId = null;
+      document.getElementById('modalTitle').textContent = '🐾 เพิ่มสัตว์เลี้ยง';
+      document.getElementById('petSubmitBtn').textContent = '💾 บันทึก';
+      document.getElementById('petModal').classList.remove('hidden');
+    };
+
+    window.closeModal = function() {
+      document.getElementById('petModal').classList.add('hidden');
+      resetForm();
+    };
+
+    window.openEditModal = async function(petId) {
+      try {
+      const pet = allPets.find(p => p.id === petId);
+      if (!pet) { showToast('ไม่พบข้อมูลน้อง กรุณารีเฟรช', 'error'); return; }
+      resetForm();
+      editPetId = petId;
+      existingPhotoUrl   = pet.profileImageUrl   || null;
+      existingVaccineUrl = pet.vaccineBookImageUrl || null;
+      document.getElementById('modalTitle').textContent = `✏️ แก้ไขข้อมูล ${pet.name}`;
+      document.getElementById('petSubmitBtn').textContent = '💾 บันทึกการแก้ไข';
+
+      // Pre-fill
+      document.getElementById('petName').value   = pet.name    || '';
+      document.getElementById('petBreed').value  = pet.breed   || '';
+      document.getElementById('petColor').value  = pet.color   || '';
+      document.getElementById('petWeight').value = pet.weight  || '';
+      document.getElementById('petGender').value = pet.gender  || 'male';
+      document.getElementById('vetClinic').value = pet.vetClinic || '';
+      if (pet.birthDate) {
+        const bd = pet.birthDate.toDate ? pet.birthDate.toDate() : new Date(pet.birthDate);
+        document.getElementById('petBirthDate').value = bd.toISOString().split('T')[0];
+      }
+      if (pet.lastVaccineDate) {
+        const d = pet.lastVaccineDate.toDate ? pet.lastVaccineDate.toDate() : new Date(pet.lastVaccineDate);
+        document.getElementById('lastVaccineDate').value = d.toISOString().split('T')[0];
+      }
+      if (pet.nextVaccineDate) {
+        const d = pet.nextVaccineDate.toDate ? pet.nextVaccineDate.toDate() : new Date(pet.nextVaccineDate);
+        document.getElementById('nextVaccineDate').value = d.toISOString().split('T')[0];
+      }
+
+      // Species
+      selectedSpecies = pet.species || 'dog';
+      document.querySelectorAll('.species-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.species === selectedSpecies);
+      });
+      document.getElementById('speciesInput').value = selectedSpecies;
+
+      // Vaccine
+      document.getElementById('isVaccinated').checked = !!pet.isVaccinated;
+      document.getElementById('vaccineDatesWrap').classList.toggle('hidden', !pet.isVaccinated);
+
+      // Existing photo
+      if (existingPhotoUrl) {
+        document.getElementById('photoEmoji').classList.add('hidden');
+        const img = document.getElementById('photoPreview');
+        img.src = existingPhotoUrl;
+        img.classList.remove('hidden');
+      }
+      // Existing vaccine
+      if (existingVaccineUrl) {
+        const img = document.getElementById('vaccinePreview');
+        img.src = existingVaccineUrl;
+        img.classList.remove('hidden');
+        document.getElementById('vaccineZoneText').classList.add('hidden');
+      }
+
+      document.getElementById('petModal').classList.remove('hidden');
+      } catch(err) {
+        showToast('เปิดฟอร์มไม่ได้: ' + err.message, 'error');
+      }
+    };
+
+    function resetForm() {
+      document.getElementById('petForm').reset();
+      editPetId = null; photoFile = null; vaccineFile = null;
+      existingPhotoUrl = null; existingVaccineUrl = null;
+      selectedSpecies = 'dog';
+      document.querySelectorAll('.species-btn').forEach(b => b.classList.toggle('active', b.dataset.species === 'dog'));
+      document.getElementById('speciesInput').value = 'dog';
+      document.getElementById('photoEmoji').textContent = '🐾';
+      document.getElementById('photoEmoji').classList.remove('hidden');
+      document.getElementById('photoPreview').classList.add('hidden');
+      document.getElementById('photoPreview').src = '';
+      document.getElementById('vaccinePreview').classList.add('hidden');
+      document.getElementById('vaccinePreview').src = '';
+      document.getElementById('vaccineZoneText').classList.remove('hidden');
+      document.getElementById('vaccineDatesWrap').classList.add('hidden');
+      document.getElementById('formProgress').classList.add('hidden');
+      document.getElementById('petSubmitBtn').disabled = false;
+    }
+
+    // ── Delete modal ───────────────────────────────────────────────────────
+    window.openDeleteModal = function(petId, petName) {
+      deleteTargetId = petId;
+      document.getElementById('deletePetName').textContent = petName;
+      document.getElementById('deleteModal').classList.remove('hidden');
+    };
+    window.closeDeleteModal = function() {
+      document.getElementById('deleteModal').classList.add('hidden');
+      deleteTargetId = null;
+    };
+
+    document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
+      if (!deleteTargetId) return;
+      try {
+        await deleteDoc(doc(db, `users/${currentUser.uid}/pets/${deleteTargetId}`));
+        // Delete public card
+        try { await deleteDoc(doc(db, `pet_cards/${deleteTargetId}`)); } catch(_) {}
+        closeDeleteModal();
+        await loadPets();
+      } catch(e) {
+        showToast('เกิดข้อผิดพลาดในการลบ', 'error');
+        console.error(e);
+      }
+    });
+
+    // ── Upload helper ──────────────────────────────────────────────────────
+    async function uploadFile(path, file) {
+      return new Promise((resolve, reject) => {
+        const sRef = storageRef(storage, path);
+        const task = uploadBytesResumable(sRef, file);
+        task.on('state_changed', null, reject, async () => {
+          resolve(await getDownloadURL(task.snapshot.ref));
+        });
+      });
+    }
+
+    // ── Form submit ────────────────────────────────────────────────────────
+    document.getElementById('petForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const name = document.getElementById('petName').value.trim();
+      if (!name) { showToast('กรุณาใส่ชื่อน้อง', 'warn'); return; }
+
+      const btn  = document.getElementById('petSubmitBtn');
+      const prog = document.getElementById('formProgress');
+      btn.disabled = true;
+      prog.classList.remove('hidden');
+
+      try {
+        const uid   = currentUser.uid;
+        const petId = editPetId || doc(collection(db, `users/${uid}/pets`)).id;
+        prog.textContent = '⏳ กำลังอัปโหลดรูป...';
+
+        // Upload images (parallel)
+        const [profileUrl, vaccineUrl] = await Promise.all([
+          photoFile   ? uploadFile(`pet-profiles/${uid}/${petId}/profile.jpg`, photoFile)      : Promise.resolve(existingPhotoUrl),
+          vaccineFile ? uploadFile(`pet-profiles/${uid}/${petId}/vaccine-book.jpg`, vaccineFile) : Promise.resolve(existingVaccineUrl),
+        ]);
+
+        prog.textContent = '⏳ กำลังบันทึกข้อมูล...';
+
+        const isVaccinated = document.getElementById('isVaccinated').checked;
+        const birthDateVal = document.getElementById('petBirthDate').value;
+        const lastVacDate  = document.getElementById('lastVaccineDate').value;
+        const nextVacDate  = document.getElementById('nextVaccineDate').value;
+
+        const petData = {
+          name,
+          species:              selectedSpecies,
+          breed:                document.getElementById('petBreed').value.trim()    || null,
+          gender:               document.getElementById('petGender').value,
+          weight:               parseFloat(document.getElementById('petWeight').value) || null,
+          color:                document.getElementById('petColor').value.trim()    || null,
+          birthDate:            birthDateVal  ? new Date(birthDateVal)  : null,
+          profileImageUrl:      profileUrl    || null,
+          vaccineBookImageUrl:  vaccineUrl    || null,
+          isVaccinated,
+          lastVaccineDate:      isVaccinated && lastVacDate ? new Date(lastVacDate) : null,
+          nextVaccineDate:      isVaccinated && nextVacDate ? new Date(nextVacDate) : null,
+          vetClinic:            document.getElementById('vetClinic').value.trim()   || null,
+          updatedAt:            serverTimestamp(),
+          ...(editPetId ? {} : { createdAt: serverTimestamp() }),
+        };
+
+        // Save private pet data
+        await setDoc(doc(db, `users/${uid}/pets/${petId}`), petData, { merge: true });
+
+        // Save public card snapshot (no vaccine book image for privacy)
+        await setDoc(doc(db, `pet_cards/${petId}`), {
+          ownerId:         uid,
+          name:            petData.name,
+          species:         petData.species,
+          breed:           petData.breed,
+          gender:          petData.gender,
+          weight:          petData.weight,
+          color:           petData.color,
+          birthDate:       petData.birthDate,
+          profileImageUrl: petData.profileImageUrl,
+          isVaccinated:    petData.isVaccinated,
+          lastVaccineDate: petData.lastVaccineDate,
+          nextVaccineDate: petData.nextVaccineDate,
+          vetClinic:       petData.vetClinic,
+          updatedAt:       serverTimestamp(),
+        }, { merge: true });
+
+        const wasEdit = !!editPetId;
+        closeModal();
+        await loadPets();
+        showToast(wasEdit ? '✏️ แก้ไขข้อมูลเรียบร้อยแล้ว' : '🐾 เพิ่มน้องเรียบร้อยแล้ว', 'success');
+      } catch (err) {
+        console.error(err);
+        showToast('เกิดข้อผิดพลาด: ' + err.message, 'error');
+        btn.disabled = false;
+        prog.classList.add('hidden');
+      }
+    });
+
+    // ── Close modals on backdrop click ─────────────────────────────────────
+    document.getElementById('petModal').addEventListener('click', e => {
+      if (e.target === document.getElementById('petModal')) closeModal();
+    });
+    document.getElementById('deleteModal').addEventListener('click', e => {
+      if (e.target === document.getElementById('deleteModal')) closeDeleteModal();
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>หาเพื่อนน้อง — PawDee</title>
+  <meta name="description" content="ค้นหาเพื่อนน้องในละแวกบ้าน เจอหมา แมว และสัตว์เลี้ยงน่ารักๆ จากทั่วประเทศ"/>
+  <link rel="icon" href="/Pawdee Logo.png" type="image/png"/>
+  <link rel="stylesheet" href="/css/fonts.css"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{colors:{'brand-orange':'#F97316','brand-orange-deep':'#EA6C0A'}}}}</script>
+  <style>
+    body { font-family: 'Sarabun', 'Noto Sans Thai', sans-serif; background: #fffbeb; }
+    .pet-card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.07); transition: transform .2s, box-shadow .2s; cursor: pointer; }
+    .pet-card:hover { transform: translateY(-4px); box-shadow: 0 8px 28px rgba(249,115,22,0.15); }
+    .pet-photo { width: 100%; aspect-ratio: 1/1; object-fit: cover; background: #fff7ed; }
+    .pet-photo-placeholder { width: 100%; aspect-ratio: 1/1; background: linear-gradient(135deg,#fff7ed,#fed7aa); display: flex; align-items: center; justify-content: center; font-size: 48px; }
+    .species-btn { border: 2px solid #e5e7eb; border-radius: 12px; padding: 6px 16px; font-size: 13px; font-weight: 700; color: #6b7280; background: white; cursor: pointer; transition: all .15s; font-family: inherit; white-space: nowrap; }
+    .species-btn.active { border-color: #F97316; background: #fff7ed; color: #F97316; }
+    .badge-chip { display: inline-flex; align-items: center; gap: 3px; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+    .skeleton { background: linear-gradient(90deg,#f3f4f6 25%,#e5e7eb 50%,#f3f4f6 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: 12px; }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+    .fade-in { animation: fadeIn .3s ease forwards; }
+  </style>
+</head>
+<body class="min-h-screen pb-16">
+<div id="nav-root"></div>
+<div class="pt-20 max-w-6xl mx-auto px-4">
+
+  <!-- Hero -->
+  <div class="text-center mb-8">
+    <div class="text-4xl mb-2">🐾</div>
+    <h1 class="text-3xl font-extrabold text-gray-900 mb-1">หาเพื่อนน้อง</h1>
+    <p class="text-gray-500 text-sm">เจอน้องและเจ้าของที่ถูกใจ แล้วชวนไปเที่ยวด้วยกัน</p>
+  </div>
+
+  <!-- Search + Filter -->
+  <div class="bg-white rounded-2xl p-4 shadow-sm border border-orange-100 mb-6">
+    <div class="flex flex-col sm:flex-row gap-3">
+      <input id="searchInput" type="text" placeholder="🔍 ค้นหาชื่อน้อง หรือสายพันธุ์..."
+        class="flex-1 border-2 border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-orange transition-colors"/>
+      <div class="flex gap-2 overflow-x-auto pb-1 flex-nowrap" id="speciesFilter">
+        <button class="species-btn active" data-species="">🐾 ทั้งหมด</button>
+        <button class="species-btn" data-species="dog">🐕 หมา</button>
+        <button class="species-btn" data-species="cat">🐈 แมว</button>
+        <button class="species-btn" data-species="rabbit">🐇 กระต่าย</button>
+        <button class="species-btn" data-species="bird">🐦 นก</button>
+        <button class="species-btn" data-species="other">🦎 อื่นๆ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="flex items-center gap-2 text-sm text-gray-400 mb-4">
+    <span id="resultCount">กำลังโหลด...</span>
+  </div>
+
+  <!-- Grid -->
+  <div id="petsGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"></div>
+
+  <!-- Load more -->
+  <div class="text-center mt-8 hidden" id="loadMoreWrap">
+    <button id="loadMoreBtn" class="px-6 py-3 border-2 border-orange-200 text-brand-orange font-bold rounded-2xl hover:bg-orange-50 transition-colors text-sm">โหลดเพิ่มเติม</button>
+  </div>
+
+  <!-- Empty -->
+  <div id="emptyState" class="hidden text-center py-16">
+    <div class="text-5xl mb-3">🔍</div>
+    <p class="text-gray-500 font-semibold">ไม่พบน้องที่ตรงกัน</p>
+    <p class="text-gray-400 text-sm mt-1">ลองเปลี่ยนตัวกรองดูครับ</p>
+  </div>
+</div>
+
+<script type="module">
+import '/js/navbar.js';
+import { db } from '/js/firebase-config.js';
+import { initNavAuth, onAuthChange } from '/js/auth.js';
+import { collection, query, orderBy, limit, startAfter, getDocs, where } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+initNavAuth();
+
+const PAGE_SIZE = 20;
+let lastDoc = null;
+let currentSpecies = '';
+let currentSearch = '';
+let currentUser = null;
+let allLoaded = false;
+
+onAuthChange(u => { currentUser = u; });
+
+const SPECIES_LABELS = { dog:'🐕 หมา', cat:'🐈 แมว', rabbit:'🐇 กระต่าย', bird:'🐦 นก', other:'🦎 อื่นๆ' };
+
+async function loadPets(append = false) {
+  if (!append) { lastDoc = null; allLoaded = false; }
+  document.getElementById('emptyState').classList.add('hidden');
+
+  const grid = document.getElementById('petsGrid');
+  if (!append) {
+    grid.innerHTML = Array(8).fill(0).map(()=>`
+      <div class="pet-card">
+        <div class="skeleton" style="aspect-ratio:1/1;"></div>
+        <div class="p-3"><div class="skeleton h-4 mb-2 rounded"></div><div class="skeleton h-3 w-2/3 rounded"></div></div>
+      </div>`).join('');
+  }
+
+  try {
+    let q = query(collection(db,'pet_cards'), orderBy('createdAt','desc'), limit(PAGE_SIZE));
+    if (currentSpecies) q = query(collection(db,'pet_cards'), where('species','==',currentSpecies), orderBy('createdAt','desc'), limit(PAGE_SIZE));
+    if (append && lastDoc) q = query(collection(db,'pet_cards'), ...(currentSpecies?[where('species','==',currentSpecies)]:[]), orderBy('createdAt','desc'), startAfter(lastDoc), limit(PAGE_SIZE));
+
+    const snap = await getDocs(q);
+    let pets = snap.docs.map(d => ({id:d.id,...d.data()}));
+
+    if (currentSearch) {
+      const s = currentSearch.toLowerCase();
+      pets = pets.filter(p => (p.name||'').toLowerCase().includes(s) || (p.breed||'').toLowerCase().includes(s));
+    }
+
+    lastDoc = snap.docs[snap.docs.length-1] || null;
+    if (snap.docs.length < PAGE_SIZE) allLoaded = true;
+    document.getElementById('loadMoreWrap').classList.toggle('hidden', allLoaded);
+
+    if (!append) grid.innerHTML = '';
+    if (!pets.length && !append) {
+      document.getElementById('emptyState').classList.remove('hidden');
+      document.getElementById('resultCount').textContent = '0 น้อง';
+      return;
+    }
+
+    pets.forEach((p, i) => {
+      const card = document.createElement('div');
+      card.className = 'pet-card fade-in';
+      card.style.animationDelay = `${i*0.04}s`;
+      const photo = p.photoUrl
+        ? `<img src="${p.photoUrl}" class="pet-photo" alt="${p.name}" loading="lazy"/>`
+        : `<div class="pet-photo-placeholder">${p.species==='dog'?'🐕':p.species==='cat'?'🐈':p.species==='rabbit'?'🐇':p.species==='bird'?'🐦':'🐾'}</div>`;
+      card.innerHTML = `
+        ${photo}
+        <div class="p-3">
+          <p class="font-extrabold text-gray-900 text-sm truncate">${p.name||'น้อง'}</p>
+          <p class="text-xs text-gray-400 truncate">${p.breed||SPECIES_LABELS[p.species]||p.species||'สัตว์เลี้ยง'}</p>
+          ${p.ownerId!==currentUser?.uid ? `<button class="mt-2 w-full text-xs font-bold text-brand-orange bg-orange-50 border border-orange-200 rounded-xl py-1.5 hover:bg-orange-100 transition-colors chat-btn" data-uid="${p.ownerId}" data-name="${(p.ownerName||'เจ้าของ').replace(/"/g,'&quot;')}">💬 ทักหาเจ้าของ</button>` : '<p class="mt-2 text-xs text-center text-gray-300">น้องของคุณ</p>'}
+        </div>`;
+      grid.appendChild(card);
+    });
+
+    document.getElementById('resultCount').textContent = `พบ ${grid.querySelectorAll('.pet-card').length}+ น้อง`;
+
+    grid.querySelectorAll('.chat-btn').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        if (!currentUser) { window.location.href='/login'; return; }
+        const uid = btn.dataset.uid;
+        const name = btn.dataset.name;
+        window.location.href = `/chat?uid=${uid}&name=${encodeURIComponent(name)}`;
+      });
+    });
+  } catch(e) {
+    console.error(e);
+    if (!append) grid.innerHTML = '<p class="col-span-full text-center text-gray-400 py-8">โหลดข้อมูลไม่ได้ กรุณาลองใหม่</p>';
+  }
+}
+
+// Species filter
+document.getElementById('speciesFilter').addEventListener('click', e => {
+  const btn = e.target.closest('.species-btn');
+  if (!btn) return;
+  document.querySelectorAll('.species-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentSpecies = btn.dataset.species;
+  loadPets();
+});
+
+// Search
+let searchTimer;
+document.getElementById('searchInput').addEventListener('input', e => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => { currentSearch = e.target.value.trim(); loadPets(); }, 350);
+});
+
+// Load more
+document.getElementById('loadMoreBtn').addEventListener('click', () => loadPets(true));
+
+loadPets();
+</script>
+</body>
+</html>

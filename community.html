@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Community — PawDee Go, Check-in & Feed | PawDee</title>
+  <meta name="description" content="ชุมชนเจ้าของสัตว์เลี้ยง — นัดพาน้องไปด้วยกัน, check-in สถานที่ Pet-Friendly, ดูรูปน้องจากทั่วประเทศ"/>
+  <link rel="icon" href="/Pawdee Logo.png" type="image/png"/>
+  <link rel="manifest" href="/manifest.json"/>
+  <link rel="stylesheet" href="/css/fonts.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{colors:{brand:{orange:'#F97316',cream:'#FFFBEB'}},fontFamily:{sans:['LINE Seed Sans TH','Poppins','sans-serif']}}}}</script>
+  <style>
+    *{font-family:'LINE Seed Sans TH','Poppins',sans-serif;}
+    body{background:#FFFBEB;}
+    .tab-pill{flex:1;padding:10px 4px;font-size:13px;font-weight:700;border-radius:14px;transition:all .2s;color:#9ca3af;background:transparent;border:none;cursor:pointer;white-space:nowrap;}
+    .tab-pill.active{background:white;color:#F97316;box-shadow:0 2px 8px rgba(0,0,0,0.08);}
+    .card{background:white;border-radius:20px;box-shadow:0 4px 20px rgba(0,0,0,0.05);border:1px solid #fef3c7;overflow:hidden;transition:transform .2s,box-shadow .2s;}
+    .card:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(249,115,22,0.12);}
+    .av-stack{display:flex;}
+    .av-stack .av{width:26px;height:26px;border-radius:50%;border:2px solid white;margin-left:-7px;background:#fed7aa;color:#ea580c;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .av-stack :first-child{margin-left:0;}
+    .overlay{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);display:none;align-items:flex-end;justify-content:center;}
+    .overlay.show{display:flex;}
+    @media(min-width:640px){.overlay{align-items:center;}}
+    .sheet{background:white;border-radius:28px 28px 0 0;padding:26px 22px 40px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;}
+    @media(min-width:640px){.sheet{border-radius:28px;}}
+    .sheet::-webkit-scrollbar{width:4px;}
+    .sheet::-webkit-scrollbar-thumb{background:#fed7aa;border-radius:2px;}
+    .time-opt{border:2px solid #e5e7eb;border-radius:12px;padding:7px 13px;font-size:12px;font-weight:700;color:#6b7280;background:white;cursor:pointer;transition:all .15s;font-family:inherit;}
+    .time-opt.sel{border-color:#F97316;background:#fff7ed;color:#F97316;}
+    .pet-lbl{display:flex;align-items:center;gap:8px;padding:9px 13px;border:2px solid #e5e7eb;border-radius:14px;cursor:pointer;transition:all .15s;}
+    .pet-lbl input{display:none;}
+    .pet-lbl.sel{border-color:#F97316;background:#fff7ed;}
+    .sr-item{padding:10px 14px;cursor:pointer;font-size:13px;border-bottom:1px solid #f3f4f6;transition:background .1s;}
+    .sr-item:hover{background:#fff7ed;}
+    .sr-item:last-child{border-bottom:none;}
+    .fab{position:fixed;bottom:24px;right:20px;z-index:50;background:#F97316;color:white;border:none;border-radius:20px;padding:13px 20px;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 8px 24px rgba(249,115,22,0.35);transition:all .2s;font-family:inherit;}
+    .fab:hover{background:#ea6c0a;transform:translateY(-2px);}
+    @keyframes slideUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+    .slide-up{animation:slideUp .35s ease forwards;}
+    @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+    .fade-in{animation:fadeIn .3s ease forwards;}
+    #toast-container{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;align-items:center;gap:10px;pointer-events:none;}
+    .toast{display:flex;align-items:center;gap:10px;padding:12px 20px;border-radius:16px;font-size:14px;font-weight:600;box-shadow:0 8px 32px rgba(0,0,0,0.15);pointer-events:auto;min-width:200px;max-width:300px;animation:toastIn .3s ease forwards;}
+    .toast.hide{animation:toastOut .3s ease forwards;}
+    .toast-s{background:#fff;border-left:4px solid #22c55e;color:#166534;}
+    .toast-e{background:#fff;border-left:4px solid #ef4444;color:#991b1b;}
+    .toast-w{background:#fff;border-left:4px solid #f97316;color:#9a3412;}
+    @keyframes toastIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+    @keyframes toastOut{from{opacity:1;}to{opacity:0;transform:translateY(10px);}}
+    .like-btn{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:#9ca3af;background:none;border:none;cursor:pointer;padding:4px 8px;border-radius:10px;transition:all .15s;font-family:inherit;}
+    .like-btn.liked{color:#ef4444;}
+    .like-btn:hover{background:#f9fafb;}
+    .photo-preview{position:relative;width:100%;border-radius:16px;overflow:hidden;border:2px solid #fed7aa;margin-bottom:8px;}
+    .photo-preview img{width:100%;height:100%;object-fit:cover;display:block;}
+    .photo-preview .rm{position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.55);color:white;border:none;border-radius:50%;width:26px;height:26px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+    .ratio-btn{border:2px solid #e5e7eb;border-radius:10px;padding:5px 14px;font-size:12px;font-weight:700;color:#6b7280;background:white;cursor:pointer;transition:all .15s;font-family:inherit;}
+    .ratio-btn.sel{border-color:#F97316;background:#fff7ed;color:#F97316;}
+  </style>
+</head>
+<body class="min-h-screen pb-20">
+
+<div id="nav-root"></div>
+<div id="toast-container"></div>
+
+<!-- Hero -->
+<div class="pt-20 pb-6 px-4 bg-gradient-to-b from-orange-50 to-[#FFFBEB]">
+  <div class="max-w-xl mx-auto text-center">
+    <div class="text-4xl mb-2">🐾</div>
+    <h1 class="text-2xl font-extrabold text-gray-900 mb-1">PawDee Community</h1>
+    <p class="text-gray-400 text-sm">นัดไปด้วยกัน · Check-in · ดูรูปน้องจากทั่วประเทศ</p>
+  </div>
+</div>
+
+<!-- Stats -->
+<div class="max-w-2xl mx-auto px-4 mb-5">
+  <div class="flex gap-3 justify-center">
+    <div class="flex-1 max-w-[120px] bg-white rounded-2xl p-3 text-center shadow-sm border border-orange-100">
+      <p class="text-xl font-extrabold text-brand-orange" id="statTrips">—</p>
+      <p class="text-[11px] text-gray-400 font-medium">ทริป</p>
+    </div>
+    <div class="flex-1 max-w-[120px] bg-white rounded-2xl p-3 text-center shadow-sm border border-orange-100">
+      <p class="text-xl font-extrabold text-brand-orange" id="statCheckins">—</p>
+      <p class="text-[11px] text-gray-400 font-medium">Check-in</p>
+    </div>
+    <div class="flex-1 max-w-[120px] bg-white rounded-2xl p-3 text-center shadow-sm border border-orange-100">
+      <p class="text-xl font-extrabold text-brand-orange" id="statPets">—</p>
+      <p class="text-[11px] text-gray-400 font-medium">น้องที่ปรากฏ</p>
+    </div>
+  </div>
+</div>
+
+<!-- Tabs -->
+<div class="max-w-2xl mx-auto px-4 mb-5">
+  <div class="bg-orange-50 rounded-2xl p-1.5 flex gap-1">
+    <button class="tab-pill active" data-tab="go">🐾 PawDee Go</button>
+    <button class="tab-pill" data-tab="checkin">📸 Check-in</button>
+    <button class="tab-pill" data-tab="feed">💬 Feed</button>
+  </div>
+</div>
+
+<!-- Feed area -->
+<div class="max-w-2xl mx-auto px-4">
+  <div id="feedLoading" class="text-center py-16">
+    <div class="text-4xl animate-bounce mb-3">🐾</div>
+    <p class="text-gray-400 text-sm">กำลังโหลด...</p>
+  </div>
+  <div id="mainFeed" class="space-y-4 hidden"></div>
+  <div id="feedEmpty" class="hidden text-center py-16">
+    <div class="text-5xl mb-4" id="emptyIcon">🗺️</div>
+    <h3 class="text-lg font-bold text-gray-700 mb-2" id="emptyTitle">ยังไม่มีข้อมูล</h3>
+    <p class="text-gray-400 text-sm mb-6" id="emptyDesc">เป็นคนแรก!</p>
+  </div>
+</div>
+
+<!-- FAB -->
+<button class="fab" id="fabBtn">+ <span id="fabLabel">นัดไปด้วยกัน</span></button>
+
+<!-- ═══ MODAL: PawDee Go ═══ -->
+<div class="overlay" id="goModal">
+  <div class="sheet slide-up">
+    <div class="flex items-center justify-between mb-5">
+      <h2 class="text-xl font-extrabold text-gray-900">🐾 นัดไปด้วยกัน</h2>
+      <button class="modal-close w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 flex items-center justify-center text-base border-none cursor-pointer" data-modal="goModal">✕</button>
+    </div>
+    <!-- Place search -->
+    <label class="block text-sm font-bold text-gray-700 mb-1.5">📍 สถานที่</label>
+    <div class="relative mb-3">
+      <input id="goPlaceSearch" type="text" placeholder="ค้นหาสถานที่..." autocomplete="off"
+        class="w-full border-2 border-gray-200 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-orange transition-colors"/>
+      <div id="goPlaceResults" class="hidden absolute left-0 right-0 top-full mt-1 bg-white rounded-2xl border border-gray-200 shadow-xl z-10 overflow-hidden max-h-44 overflow-y-auto"></div>
+    </div>
+    <div id="goSelectedChip" class="hidden items-center gap-2 bg-orange-50 border border-orange-200 rounded-xl px-3 py-2 mb-3">
+      <span id="goSelectedName" class="text-sm font-semibold text-orange-700 flex-1"></span>
+      <button id="goClearPlace" class="text-orange-400 hover:text-orange-600 text-sm border-none bg-none cursor-pointer">✕</button>
+    </div>
+    <!-- Date -->
+    <label class="block text-sm font-bold text-gray-700 mb-1.5">📅 วันที่</label>
+    <input id="goDate" type="date" class="w-full border-2 border-gray-200 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-orange mb-3 font-sans"/>
+    <!-- Time -->
+    <label class="block text-sm font-bold text-gray-700 mb-1.5">🕐 ช่วงเวลา</label>
+    <div class="flex flex-wrap gap-2 mb-3">
+      <button type="button" class="time-opt go-time" data-time="ช่วงเช้า">🌅 เช้า</button>
+      <button type="button" class="time-opt go-time sel" data-time="ช่วงบ่าย">☀️ บ่าย</button>
+      <button type="button" class="time-opt go-time" data-time="ช่วงเย็น">🌆 เย็น</button>
+      <button type="button" class="time-opt go-time" data-time="ทั้งวัน">🌞 ทั้งวัน</button>
+    </div>
+    <!-- Pets -->
+    <label class="block text-sm font-bold text-gray-700 mb-1.5">🐾 น้องที่จะไป</label>
+    <div id="goPetBoxes" class="flex flex-wrap gap-2 mb-4"><p class="text-xs text-gray-400">กำลังโหลด...</p></div>
+    <!-- Note -->
+    <label class="block text-sm font-bold text-gray-700 mb-1.5">💬 โน้ต <span class="font-normal text-gray-400">(ไม่บังคับ)</span></label>
+    <textarea id="goNote" rows="2" placeholder="ใครอยากมาด้วยทักได้เลย..."
+      class="w-full border-2 border-gray-200 rounded-2xl px-4 py-2.5 text-sm resize-none focus:outline-none focus:border-brand-orange mb-4 placeholder-gray-300"></textarea>
+    <button id="goSubmit" class="w-full bg-brand-orange text-white font-bold py-3.5 rounded-2xl hover:bg-orange-600 transition-all disabled:opacity-50">🐾 นัดไปด้วยกัน!</button>
+    <p id="goErr" class="text-xs text-red-500 text-center mt-2 hidden"></p>
+  </div>
+</div>
+
+<!-- ═══ MODAL: Check-in ═══ -->
+<div class="overlay" id="ciModal">
+  <div class="sheet slide-up">
+    <div class="flex items-center justify-between mb-5">
+      <h2 class="text-xl font-extrabold text-gray-900">📸 Check-in กับน้อง</h2>
+      <button class="modal-close w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 flex items-center justify-center text-base border-none cursor-pointer" data-modal="ciModal">✕</button>
+    </div>
+    <!-- Place search -->
+    <label class="block text-sm font-bold text-gray-700 mb-1.5">📍 ที่ไหน?</label>
+    <div class="relative mb-3">
+      <input id="ciPlaceSearch" type="text" placeholder="ค้นหาสถานที่..." autocomplete="off"
+        class="w-full border-2 border-gray-200 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-orange transition-colors"/>
+      <div id="ciPlaceResults" class="hidden absolute left-0 right-0 top-full mt-1 bg-white rounded-2xl border border-gray-200 shadow-xl z-10 overflow-hidden max-h-44 overflow-y-auto"></div>
+    </div>
+    <div id="ciSelectedChip" class="hidden items-center gap-2 bg-orange-50 border border-orange-200 rounded-xl px-3 py-2 mb-3">
+      <span id="ciSelectedName" class="text-sm font-semibold text-orange-700 flex-1"></span>
+      <button id="ciClearPlace" class="text-orange-400 hover:text-orange-600 text-sm border-none bg-none cursor-pointer">✕</button>
+    </div>
+    <!-- Pets -->
+    <label class="block text-sm font-bold text-gray-700 mb-1.5">🐾 น้องที่ไปด้วย</label>
+    <div id="ciPetBoxes" class="flex flex-wrap gap-2 mb-3"><p class="text-xs text-gray-400">กำลังโหลด...</p></div>
+    <!-- Photo -->
+    <label class="block text-sm font-bold text-gray-700 mb-1.5">📷 รูปน้อง <span class="font-normal text-gray-400">(ไม่บังคับ)</span></label>
+    <div class="flex gap-2 mb-2" id="ciRatioGroup">
+      <button type="button" class="ratio-btn sel" data-ratio="1">1:1</button>
+      <button type="button" class="ratio-btn" data-ratio="0.8">4:5</button>
+      <button type="button" class="ratio-btn" data-ratio="1.778">16:9</button>
+    </div>
+    <div id="ciPhotoPreview" class="hidden photo-preview">
+      <img id="ciPhotoImg" src="" alt="preview" style="aspect-ratio:1/1;"/>
+      <button class="rm" id="ciPhotoRemove">✕</button>
+    </div>
+    <label class="flex items-center gap-2 px-4 py-2.5 border-2 border-dashed border-gray-300 rounded-2xl cursor-pointer hover:border-brand-orange hover:bg-orange-50 transition-colors text-sm text-gray-500 font-semibold mb-4">
+      📷 เลือกรูป
+      <input type="file" id="ciPhotoInput" accept="image/*" class="hidden"/>
+    </label>
+    <!-- Note -->
+    <label class="block text-sm font-bold text-gray-700 mb-1.5">💬 แคปชั่น <span class="font-normal text-gray-400">(ไม่บังคับ)</span></label>
+    <textarea id="ciNote" rows="2" placeholder="เล่าประสบการณ์สั้นๆ..."
+      class="w-full border-2 border-gray-200 rounded-2xl px-4 py-2.5 text-sm resize-none focus:outline-none focus:border-brand-orange mb-4 placeholder-gray-300"></textarea>
+    <div id="ciUploadBar" class="hidden mb-3">
+      <div class="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+        <div id="ciUploadProgress" class="h-full bg-brand-orange rounded-full transition-all" style="width:0%"></div>
+      </div>
+      <p class="text-xs text-gray-400 mt-1 text-center">กำลังอัพโหลดรูป...</p>
+    </div>
+    <button id="ciSubmit" class="w-full bg-brand-orange text-white font-bold py-3.5 rounded-2xl hover:bg-orange-600 transition-all disabled:opacity-50">📸 Check-in!</button>
+    <p id="ciErr" class="text-xs text-red-500 text-center mt-2 hidden"></p>
+  </div>
+</div>
+
+<script type="module">
+import '/js/navbar.js';
+import { db } from '/js/firebase-config.js';
+import { onAuthChange, initNavAuth } from '/js/auth.js';
+initNavAuth();
+import {
+  collection, query, where, orderBy, limit, getDocs, addDoc, updateDoc,
+  doc, serverTimestamp, getDoc, Timestamp, arrayUnion, arrayRemove, deleteDoc
+} from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js';
+
+const storage = getStorage();
+let currentUser = null;
+let currentTab  = 'go';
+let goPlace     = null;
+let ciPlace     = null;
+let goSelectedPets = new Set();
+let ciSelectedPets = new Set();
+let ciPhotoFile = null;
+
+// ── Auth ──────────────────────────────────────────────────────
+onAuthChange(async user => {
+  currentUser = user;
+  if (user) {
+    loadUserPets(user.uid, 'goPetBoxes', goSelectedPets);
+    loadUserPets(user.uid, 'ciPetBoxes', ciSelectedPets);
+  } else {
+    ['goPetBoxes','ciPetBoxes'].forEach(id => {
+      document.getElementById(id).innerHTML = `<a href="/login" class="text-xs text-brand-orange font-semibold">เข้าสู่ระบบเพื่อเลือกน้อง →</a>`;
+    });
+  }
+});
+
+// ── Toast ─────────────────────────────────────────────────────
+function toast(msg, type='s') {
+  const map = {s:'toast-s ✅',e:'toast-e ❌',w:'toast-w ⚠️'};
+  const [cls, ico] = map[type].split(' ');
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = `toast ${cls}`;
+  t.innerHTML = `<span>${ico}</span><span>${msg}</span>`;
+  c.appendChild(t);
+  setTimeout(() => { t.classList.add('hide'); t.addEventListener('animationend',()=>t.remove()); }, 3000);
+}
+
+// ── Tabs ──────────────────────────────────────────────────────
+document.querySelectorAll('.tab-pill').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-pill').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentTab = btn.dataset.tab;
+    const fabLabel = document.getElementById('fabLabel');
+    fabLabel.textContent = currentTab === 'go' ? 'นัดไปด้วยกัน' : currentTab === 'checkin' ? 'Check-in' : 'Check-in';
+    loadFeed();
+  });
+});
+
+// ── FAB ───────────────────────────────────────────────────────
+document.getElementById('fabBtn').addEventListener('click', () => {
+  if (!currentUser) { window.location.href = '/login'; return; }
+  if (currentTab === 'go') openModal('goModal');
+  else openModal('ciModal');
+});
+
+// ── Modal open/close ──────────────────────────────────────────
+function openModal(id) {
+  const today = new Date().toISOString().split('T')[0];
+  if (id === 'goModal') { document.getElementById('goDate').value = today; document.getElementById('goDate').min = today; }
+  document.getElementById(id).classList.add('show');
+}
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+document.querySelectorAll('.modal-close').forEach(btn => {
+  btn.addEventListener('click', () => closeModal(btn.dataset.modal));
+});
+['goModal','ciModal'].forEach(id => {
+  document.getElementById(id).addEventListener('click', e => { if (e.target === document.getElementById(id)) closeModal(id); });
+});
+
+// ── Load user pets ────────────────────────────────────────────
+async function loadUserPets(uid, boxId, selectedSet) {
+  try {
+    const snap = await getDocs(query(collection(db,'pet_cards'), where('ownerId','==',uid), limit(10)));
+    const pets = snap.docs.map(d => ({id:d.id,...d.data()}));
+    const box  = document.getElementById(boxId);
+    if (!pets.length) { box.innerHTML='<p class="text-xs text-gray-400">ยังไม่มีน้อง — <a href="/pets" class="text-brand-orange font-semibold">เพิ่มน้องก่อน</a></p>'; return; }
+    box.innerHTML = pets.map(p=>`
+      <label class="pet-lbl" data-name="${p.name}">
+        <input type="checkbox" value="${p.name}"/>
+        <span class="text-sm font-semibold text-gray-700">${p.name}</span>
+      </label>`).join('');
+    box.querySelectorAll('.pet-lbl').forEach(lbl => {
+      lbl.addEventListener('click', () => {
+        lbl.classList.toggle('sel');
+        const n = lbl.dataset.name;
+        if (lbl.classList.contains('sel')) selectedSet.add(n); else selectedSet.delete(n);
+      });
+    });
+  } catch(e){}
+}
+
+// ── Place search (shared) ─────────────────────────────────────
+function initPlaceSearch(inputId, resultsId, chipId, nameId, clearId, onSelect) {
+  let timer;
+  const inp = document.getElementById(inputId);
+  const res = document.getElementById(resultsId);
+  inp.addEventListener('input', () => {
+    clearTimeout(timer);
+    const v = inp.value.trim();
+    if (!v) { res.classList.add('hidden'); return; }
+    timer = setTimeout(async () => {
+      try {
+        const q    = query(collection(db,'places'), where('name','>=',v), where('name','<=',v+''), limit(6));
+        const snap = await getDocs(q);
+        const list = snap.docs.map(d=>({id:d.id,...d.data()}));
+        const rows = list.map(p=>`
+          <div class="sr-item" data-id="${p.id}" data-name="${p.name.replace(/"/g,'&quot;')}" data-img="${p.imageUrl||''}" data-url="${p.slug?'/place/'+p.slug:'/place?id='+p.id}">
+            📍 ${p.name}${p.city?` <span class="text-gray-400">· ${p.city}</span>`:''}
+          </div>`).join('');
+        const freeRow = `<div class="sr-item" style="color:#6b7280;border-top:${list.length?'1px solid #f3f4f6':'none'}" data-free="${v.replace(/"/g,'&quot;')}">✏️ ใช้ "<strong style="color:#374151">${v}</strong>" เป็นสถานที่</div>`;
+        res.innerHTML = rows + freeRow;
+        res.classList.remove('hidden');
+        res.querySelectorAll('.sr-item:not([data-free])').forEach(item => {
+          item.addEventListener('click', () => {
+            const place = {id:item.dataset.id, name:item.dataset.name, imageUrl:item.dataset.img, url:item.dataset.url};
+            onSelect(place);
+            inp.value = '';
+            res.classList.add('hidden');
+            document.getElementById(nameId).textContent = '📍 ' + place.name;
+            document.getElementById(chipId).style.display = 'flex';
+          });
+        });
+        res.querySelector('[data-free]')?.addEventListener('click', () => {
+          const name = res.querySelector('[data-free]').dataset.free;
+          onSelect({id: null, name, imageUrl: null, url: null});
+          inp.value = '';
+          res.classList.add('hidden');
+          document.getElementById(nameId).textContent = '📍 ' + name;
+          document.getElementById(chipId).style.display = 'flex';
+        });
+      } catch(e){}
+    }, 300);
+  });
+  document.getElementById(clearId).addEventListener('click', () => {
+    onSelect(null);
+    document.getElementById(chipId).style.display = 'none';
+    inp.value = '';
+  });
+  document.addEventListener('click', e => {
+    if (!e.target.closest('#'+inputId) && !e.target.closest('#'+resultsId)) res.classList.add('hidden');
+  });
+}
+
+initPlaceSearch('goPlaceSearch','goPlaceResults','goSelectedChip','goSelectedName','goClearPlace', p => { goPlace = p; });
+initPlaceSearch('ciPlaceSearch','ciPlaceResults','ciSelectedChip','ciSelectedName','ciClearPlace', p => { ciPlace = p; });
+
+// ── Time options ──────────────────────────────────────────────
+document.querySelectorAll('.go-time').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.go-time').forEach(b=>b.classList.remove('sel'));
+    btn.classList.add('sel');
+  });
+});
+
+// ── Canvas crop ───────────────────────────────────────────────
+let ciRatio = 1; // default 1:1
+document.getElementById('ciRatioGroup').addEventListener('click', e => {
+  const btn = e.target.closest('.ratio-btn');
+  if (!btn) return;
+  document.querySelectorAll('.ratio-btn').forEach(b => b.classList.remove('sel'));
+  btn.classList.add('sel');
+  ciRatio = parseFloat(btn.dataset.ratio);
+  // Re-crop if image already selected
+  if (_ciOrigFile) applyCrop(_ciOrigFile);
+});
+
+let _ciOrigFile = null;
+
+async function applyCrop(file) {
+  return new Promise(resolve => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      const srcW = img.naturalWidth, srcH = img.naturalHeight;
+      let sx, sy, sw, sh;
+      if (srcW / srcH > ciRatio) {
+        sh = srcH; sw = sh * ciRatio; sx = (srcW - sw) / 2; sy = 0;
+      } else {
+        sw = srcW; sh = sw / ciRatio; sx = 0; sy = (srcH - sh) / 2;
+      }
+      const outW = Math.min(sw, 1080);
+      const outH = outW / ciRatio;
+      const canvas = document.createElement('canvas');
+      canvas.width = outW; canvas.height = outH;
+      canvas.getContext('2d').drawImage(img, sx, sy, sw, sh, 0, 0, outW, outH);
+      URL.revokeObjectURL(url);
+      // Show preview
+      const previewUrl = canvas.toDataURL('image/jpeg', 0.92);
+      const imgEl = document.getElementById('ciPhotoImg');
+      imgEl.src = previewUrl;
+      imgEl.style.aspectRatio = `${ciRatio}/1`;
+      document.getElementById('ciPhotoPreview').classList.remove('hidden');
+      // Store cropped blob
+      canvas.toBlob(blob => { ciPhotoFile = blob; resolve(blob); }, 'image/jpeg', 0.92);
+    };
+    img.src = url;
+  });
+}
+
+// ── Photo preview ─────────────────────────────────────────────
+document.getElementById('ciPhotoInput').addEventListener('change', async e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (file.size > 20 * 1024 * 1024) { toast('รูปใหญ่เกิน 20MB','e'); return; }
+  _ciOrigFile = file;
+  await applyCrop(file);
+});
+document.getElementById('ciPhotoRemove').addEventListener('click', () => {
+  ciPhotoFile = null; _ciOrigFile = null;
+  document.getElementById('ciPhotoPreview').classList.add('hidden');
+  document.getElementById('ciPhotoInput').value = '';
+});
+
+// ── Submit Go Trip ────────────────────────────────────────────
+document.getElementById('goSubmit').addEventListener('click', async () => {
+  const errEl = document.getElementById('goErr');
+  errEl.classList.add('hidden');
+  if (!goPlace) { errEl.textContent='กรุณาเลือกสถานที่'; errEl.classList.remove('hidden'); return; }
+  const dateVal = document.getElementById('goDate').value;
+  if (!dateVal) { errEl.textContent='กรุณาเลือกวันที่'; errEl.classList.remove('hidden'); return; }
+
+  const btn = document.getElementById('goSubmit');
+  btn.disabled = true; btn.textContent = 'กำลังสร้าง...';
+
+  try {
+    const timeBtn = document.querySelector('.go-time.sel');
+    await addDoc(collection(db,'trips'), {
+      placeId:   goPlace.id,
+      placeName: goPlace.name,
+      placeImage: goPlace.imageUrl || null,
+      placeUrl:  goPlace.url,
+      userId:    currentUser.uid,
+      userName:  currentUser.displayName || currentUser.email?.split('@')[0] || 'PawDee User',
+      userPhoto: currentUser.photoURL || null,
+      petNames:  [...goSelectedPets],
+      tripDate:  Timestamp.fromDate(new Date(dateVal)),
+      tripTime:  timeBtn?.dataset.time || null,
+      note:      document.getElementById('goNote').value.trim() || null,
+      joiners:   [],
+      createdAt: serverTimestamp(),
+    });
+    closeModal('goModal');
+    resetGoForm();
+    toast('สร้างทริปแล้ว! 🐾');
+    loadFeed();
+  } catch(e) {
+    errEl.textContent='เกิดข้อผิดพลาด กรุณาลองใหม่';
+    errEl.classList.remove('hidden');
+  } finally { btn.disabled=false; btn.textContent='🐾 นัดไปด้วยกัน!'; }
+});
+
+function resetGoForm() {
+  goPlace = null; goSelectedPets.clear();
+  document.getElementById('goSelectedChip').style.display='none';
+  document.getElementById('goNote').value='';
+  document.getElementById('goPetBoxes').querySelectorAll('.pet-lbl').forEach(l=>l.classList.remove('sel'));
+}
+
+// ── Submit Check-in ───────────────────────────────────────────
+document.getElementById('ciSubmit').addEventListener('click', async () => {
+  const errEl = document.getElementById('ciErr');
+  errEl.classList.add('hidden');
+  if (!ciPlace) { errEl.textContent='กรุณาเลือกสถานที่'; errEl.classList.remove('hidden'); return; }
+
+  const btn = document.getElementById('ciSubmit');
+  btn.disabled = true; btn.textContent = 'กำลัง Check-in...';
+
+  try {
+    let imageUrl = null;
+    if (ciPhotoFile) {
+      const bar  = document.getElementById('ciUploadBar');
+      const prog = document.getElementById('ciUploadProgress');
+      bar.classList.remove('hidden');
+      const storageRef = ref(storage, `checkins/${currentUser.uid}/${Date.now()}_${ciPhotoFile.name}`);
+      await new Promise((resolve, reject) => {
+        const task = uploadBytesResumable(storageRef, ciPhotoFile);
+        task.on('state_changed',
+          snap => { prog.style.width = (snap.bytesTransferred/snap.totalBytes*100)+'%'; },
+          reject,
+          async () => { imageUrl = await getDownloadURL(task.snapshot.ref); resolve(); }
+        );
+      });
+      bar.classList.add('hidden');
+    }
+
+    await addDoc(collection(db,'checkins'), {
+      placeId:   ciPlace.id,
+      placeName: ciPlace.name,
+      placeImage: ciPlace.imageUrl || null,
+      placeUrl:  ciPlace.url,
+      userId:    currentUser.uid,
+      userName:  currentUser.displayName || currentUser.email?.split('@')[0] || 'PawDee User',
+      userPhoto: currentUser.photoURL || null,
+      petNames:  [...ciSelectedPets],
+      imageUrl,
+      note:      document.getElementById('ciNote').value.trim() || null,
+      likes:     [],
+      createdAt: serverTimestamp(),
+    });
+    closeModal('ciModal');
+    resetCiForm();
+    toast('Check-in เรียบร้อย! 📸');
+    if (currentTab === 'checkin' || currentTab === 'feed') loadFeed();
+  } catch(e) {
+    console.error(e);
+    errEl.textContent='เกิดข้อผิดพลาด กรุณาลองใหม่';
+    errEl.classList.remove('hidden');
+  } finally { btn.disabled=false; btn.textContent='📸 Check-in!'; }
+});
+
+function resetCiForm() {
+  ciPlace=null; ciSelectedPets.clear(); ciPhotoFile=null;
+  document.getElementById('ciSelectedChip').style.display='none';
+  document.getElementById('ciNote').value='';
+  document.getElementById('ciPhotoPreview').classList.add('hidden');
+  document.getElementById('ciPhotoInput').value='';
+  document.getElementById('ciPetBoxes').querySelectorAll('.pet-lbl').forEach(l=>l.classList.remove('sel'));
+}
+
+// ── Load feed ─────────────────────────────────────────────────
+async function loadFeed() {
+  document.getElementById('feedLoading').classList.remove('hidden');
+  document.getElementById('mainFeed').classList.add('hidden');
+  document.getElementById('feedEmpty').classList.add('hidden');
+
+  try {
+    if (currentTab === 'go') {
+      const startOfToday = new Date(); startOfToday.setHours(0,0,0,0);
+      const now = Timestamp.fromDate(startOfToday);
+      const snap = await getDocs(query(collection(db,'trips'), where('tripDate','>=',now), orderBy('tripDate','asc'), limit(30)));
+      const trips = snap.docs.map(d=>({id:d.id,...d.data()}));
+      updateStats(trips.length, null);
+      renderTrips(trips);
+    } else if (currentTab === 'checkin') {
+      const snap = await getDocs(query(collection(db,'checkins'), orderBy('createdAt','desc'), limit(30)));
+      const items = snap.docs.map(d=>({id:d.id,...d.data()}));
+      updateStats(null, items.length);
+      renderCheckins(items);
+    } else {
+      // Feed: mix of both
+      const [tSnap, cSnap] = await Promise.all([
+        getDocs(query(collection(db,'trips'), orderBy('createdAt','desc'), limit(15))),
+        getDocs(query(collection(db,'checkins'), orderBy('createdAt','desc'), limit(15))),
+      ]);
+      const trips    = tSnap.docs.map(d=>({id:d.id,_type:'trip',...d.data()}));
+      const checkins = cSnap.docs.map(d=>({id:d.id,_type:'checkin',...d.data()}));
+      const mixed    = [...trips,...checkins].sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
+      renderMixed(mixed);
+    }
+  } catch(e) {
+    console.error(e);
+    document.getElementById('feedLoading').classList.add('hidden');
+    document.getElementById('feedEmpty').classList.remove('hidden');
+  }
+}
+
+function updateStats(trips, checkins) {
+  if (trips   != null) document.getElementById('statTrips').textContent    = trips;
+  if (checkins != null) document.getElementById('statCheckins').textContent = checkins;
+}
+
+function showFeed(html) {
+  document.getElementById('feedLoading').classList.add('hidden');
+  const feed = document.getElementById('mainFeed');
+  if (!html) {
+    feed.classList.add('hidden');
+    document.getElementById('feedEmpty').classList.remove('hidden');
+    return;
+  }
+  feed.innerHTML = html;
+  feed.classList.remove('hidden');
+}
+
+// ── Render trips ──────────────────────────────────────────────
+function renderTrips(trips) {
+  if (!trips.length) {
+    setEmpty('🗺️','ยังไม่มีทริปที่นัดไว้','เป็นคนแรกที่นัดพาน้องออกไปเที่ยว!');
+    showFeed('');
+    return;
+  }
+  showFeed(trips.map(t => buildTripCard(t)).join(''));
+  bindTripBtns();
+}
+
+function buildTripCard(t) {
+  const date = t.tripDate?.toDate ? t.tripDate.toDate().toLocaleDateString('th-TH',{weekday:'short',month:'short',day:'numeric'}) : '—';
+  const joiners = t.joiners||[];
+  const total   = 1 + joiners.length;
+  const isOwner = currentUser?.uid === t.userId;
+  const joined  = currentUser && joiners.some(j=>j.userId===currentUser.uid);
+
+  let btn = '';
+  if (isOwner)   btn = `<button class="trip-del text-xs text-red-400 hover:text-red-600 font-semibold" data-id="${t.id}">ยกเลิก</button>`;
+  else if (joined) btn = `<button class="trip-leave text-sm font-bold px-4 py-2 rounded-2xl bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors" data-id="${t.id}">✓ ไปด้วยแล้ว</button>`;
+  else             btn = `<button class="trip-join text-sm font-bold px-4 py-2 rounded-2xl bg-brand-orange text-white hover:bg-orange-600 transition-all" data-id="${t.id}">🐾 ขอไปด้วย!</button>`;
+
+  const avs = joiners.slice(0,3).map(j=>`<div class="av">${(j.userName||'U')[0].toUpperCase()}</div>`).join('');
+  return `
+    <div class="card fade-in">
+      ${t.placeImage?`<div class="h-32 overflow-hidden"><img src="${t.placeImage}" class="w-full h-full object-cover" alt="${t.placeName}"/></div>`:''}
+      <div class="p-4">
+        <div class="flex items-start justify-between gap-2 mb-3">
+          <div>
+            <h3 class="font-extrabold text-gray-900 text-[15px] leading-tight">${t.placeName}</h3>
+            <p class="text-xs text-gray-400 mt-0.5">📅 ${date}${t.tripTime?' · '+t.tripTime:''}</p>
+          </div>
+          <span class="bg-orange-100 text-orange-700 text-xs font-bold px-2.5 py-1 rounded-full flex-shrink-0">${total} คน</span>
+        </div>
+        <div class="flex items-center gap-2.5 mb-3 pb-3 border-b border-gray-100">
+          <div class="w-8 h-8 rounded-full bg-brand-orange text-white flex items-center justify-center font-bold text-sm flex-shrink-0">${(t.userName||'U')[0].toUpperCase()}</div>
+          <div>
+            <p class="text-sm font-semibold text-gray-800">${t.userName||'PawDee User'}</p>
+            ${t.petNames?.length?`<p class="text-xs text-orange-500">🐾 ${t.petNames.join(', ')}</p>`:''}
+          </div>
+        </div>
+        ${t.note?`<p class="text-sm text-gray-600 mb-3 leading-relaxed">"${t.note}"</p>`:''}
+        ${joiners.length?`<div class="flex items-center gap-2 mb-3"><div class="av-stack">${avs}</div><p class="text-xs text-gray-500 font-semibold">${joiners.length} คนขอไปด้วยแล้ว</p></div>`:''}
+        <div class="flex items-center gap-2">
+          ${btn}
+          <a href="${t.placeUrl||'#'}" class="text-sm font-semibold text-brand-orange bg-orange-50 px-3 py-2 rounded-2xl hover:bg-orange-100 transition-colors flex-shrink-0">ดูสถานที่</a>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ── Render check-ins ──────────────────────────────────────────
+function renderCheckins(items) {
+  if (!items.length) {
+    setEmpty('📸','ยังไม่มี Check-in','กด Check-in เมื่อพาน้องไปสถานที่!');
+    showFeed('');
+    return;
+  }
+  showFeed(items.map(ci => buildCheckinCard(ci)).join(''));
+  bindLikeBtns();
+}
+
+function buildCheckinCard(ci) {
+  const date = ci.createdAt?.toDate ? ci.createdAt.toDate().toLocaleDateString('th-TH',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '';
+  const liked   = currentUser && (ci.likes||[]).includes(currentUser.uid);
+  const likeCount = (ci.likes||[]).length;
+  return `
+    <div class="card fade-in">
+      ${ci.imageUrl?`<div class="h-64 overflow-hidden"><img src="${ci.imageUrl}" class="w-full h-full object-cover" alt="check-in"/></div>`:''}
+      <div class="p-4">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-9 h-9 rounded-full bg-brand-orange text-white flex items-center justify-center font-bold text-sm flex-shrink-0">${(ci.userName||'U')[0].toUpperCase()}</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-bold text-gray-900">${ci.userName||'PawDee User'}
+              ${ci.petNames?.length?`<span class="font-normal text-orange-500"> กับ ${ci.petNames.join(', ')}</span>`:''}
+            </p>
+            <div class="flex items-center gap-1.5 text-xs text-gray-400">
+              <span>📍 <a href="${ci.placeUrl||'#'}" class="hover:text-brand-orange transition-colors font-semibold">${ci.placeName}</a></span>
+              ${date?`<span>· ${date}</span>`:''}
+            </div>
+          </div>
+        </div>
+        ${ci.note?`<p class="text-sm text-gray-700 leading-relaxed mb-2">${ci.note}</p>`:''}
+        <div class="flex items-center gap-2 pt-2 border-t border-gray-100">
+          <button class="like-btn ${liked?'liked':''}" data-id="${ci.id}" data-liked="${liked}">
+            ${liked?'❤️':'🤍'} ${likeCount||''}
+          </button>
+          <a href="${ci.placeUrl||'#'}" class="text-xs text-gray-400 hover:text-brand-orange ml-auto font-semibold">ดูสถานที่ →</a>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ── Render mixed feed ─────────────────────────────────────────
+function renderMixed(items) {
+  if (!items.length) {
+    setEmpty('💬','ยังไม่มี Feed','สร้างทริปหรือ Check-in เป็นคนแรก!');
+    showFeed('');
+    return;
+  }
+  showFeed(items.map(item => item._type==='trip' ? buildTripCard(item) : buildCheckinCard(item)).join(''));
+  bindTripBtns();
+  bindLikeBtns();
+}
+
+// ── Event binding ─────────────────────────────────────────────
+function bindTripBtns() {
+  document.querySelectorAll('.trip-join').forEach(btn => {
+    btn.addEventListener('click', () => joinTrip(btn.dataset.id));
+  });
+  document.querySelectorAll('.trip-leave').forEach(btn => {
+    btn.addEventListener('click', () => leaveTrip(btn.dataset.id));
+  });
+  document.querySelectorAll('.trip-del').forEach(btn => {
+    btn.addEventListener('click', () => deleteTrip(btn.dataset.id));
+  });
+}
+
+function bindLikeBtns() {
+  document.querySelectorAll('.like-btn').forEach(btn => {
+    btn.addEventListener('click', () => toggleLike(btn.dataset.id, btn.dataset.liked==='true'));
+  });
+}
+
+// ── Trip actions ──────────────────────────────────────────────
+async function joinTrip(id) {
+  if (!currentUser) { window.location.href='/login'; return; }
+  try {
+    const joiner = { userId:currentUser.uid, userName:currentUser.displayName||currentUser.email?.split('@')[0]||'PawDee User', userPhoto:currentUser.photoURL||null, petNames:[] };
+    await updateDoc(doc(db,'trips',id), { joiners: arrayUnion(joiner) });
+    toast('เข้าร่วมทริปแล้ว! 🐾');
+    loadFeed();
+  } catch(e){ toast('เกิดข้อผิดพลาด','e'); }
+}
+
+async function leaveTrip(id) {
+  if (!currentUser) return;
+  try {
+    const snap = await getDoc(doc(db,'trips',id));
+    const joiner = snap.data()?.joiners?.find(j=>j.userId===currentUser.uid);
+    if (joiner) { await updateDoc(doc(db,'trips',id), { joiners: arrayRemove(joiner) }); toast('ออกจากทริปแล้ว','w'); loadFeed(); }
+  } catch(e){ toast('เกิดข้อผิดพลาด','e'); }
+}
+
+async function deleteTrip(id) {
+  if (!currentUser) return;
+  if (!confirm('ยืนยันยกเลิกทริปนี้?')) return;
+  try { await deleteDoc(doc(db,'trips',id)); toast('ยกเลิกทริปแล้ว','w'); loadFeed(); }
+  catch(e){ toast('เกิดข้อผิดพลาด','e'); }
+}
+
+// ── Like ──────────────────────────────────────────────────────
+async function toggleLike(id, isLiked) {
+  if (!currentUser) { window.location.href='/login'; return; }
+  try {
+    const op = isLiked ? arrayRemove(currentUser.uid) : arrayUnion(currentUser.uid);
+    await updateDoc(doc(db,'checkins',id), { likes: op });
+    loadFeed();
+  } catch(e){}
+}
+
+// ── Helpers ───────────────────────────────────────────────────
+function setEmpty(icon, title, desc) {
+  document.getElementById('emptyIcon').textContent  = icon;
+  document.getElementById('emptyTitle').textContent = title;
+  document.getElementById('emptyDesc').textContent  = desc;
+}
+
+// ── Load stats ────────────────────────────────────────────────
+async function loadStats() {
+  try {
+    const [tSnap, cSnap] = await Promise.all([
+      getDocs(query(collection(db,'trips'), limit(100))),
+      getDocs(query(collection(db,'checkins'), limit(100))),
+    ]);
+    document.getElementById('statTrips').textContent    = tSnap.size;
+    document.getElementById('statCheckins').textContent = cSnap.size;
+    const allPets = new Set();
+    cSnap.docs.forEach(d => (d.data().petNames||[]).forEach(n=>allPets.add(n)));
+    document.getElementById('statPets').textContent = allPets.size || '—';
+  } catch(e){}
+}
+
+// ── Init ──────────────────────────────────────────────────────
+loadFeed();
+loadStats();
+</script>
+</body>
+</html>
